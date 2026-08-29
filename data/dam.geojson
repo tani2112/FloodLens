@@ -1,0 +1,31 @@
+{
+  "type": "FeatureCollection",
+  "name": "dam",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "dam-idukki-001",
+        "name": "Idukki Arch Dam & Cheruthoni Dam",
+        "river": "Periyar River",
+        "dam_type": "Concrete Double Curvature Arch",
+        "height_m": 168.91,
+        "length_m": 365.85,
+        "storage_capacity_mm3": 1996.0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          76.979,
+          10.0526
+        ]
+      }
+    }
+  ]
+}

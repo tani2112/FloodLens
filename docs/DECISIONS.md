@@ -14,21 +14,27 @@ This document serves as the single source of truth for architectural decisions, 
 
 ## 2. Canonical Area of Interest (AOI) Decision
 
-> [!IMPORTANT]
-> **STATUS: PENDING DECISION**  
-> The team must formally select and commit the primary canonical Area of Interest (AOI) before Phase 3 data preparation.
+> [!NOTE]
+> **STATUS: RESOLVED & ADOPTED (Canonical AOI)**  
+> The team has formally selected and committed the primary canonical Area of Interest (AOI) for FloodLens simulation and demonstration.
 
-### AOI Selection Options & Evaluation Criteria
+### Canonical AOI Specification: Idukki Dam & Periyar River Catchment
 
-| Criteria | Option A: Indian Dam & District (Primary Candidate) | Option B: Bhotekoshi–Trishuli Catchment (Nepal) |
-|---|---|---|
-| **Role** | Canonical MVP Demo AOI | Retrospective Demonstration Case Study |
-| **DEM Availability** | SRTM 30m / Copernicus DEM 30m (Freely available) | SRTM 30m (Freely available) |
-| **Settlement Vector Data** | OpenStreetMap village nodes & administrative bounds | OpenStreetMap settlement nodes |
-| **Hydraulic Geometry** | Public CWC / State Dam registry parameters | Published literature parameters (GLOF / Landslide dam) |
-| **Presentation Label** | "Primary Dam-Break Inundation Scenario" | "Retrospective Case Study — Not a Live Prediction" |
+- **AOI Name:** Idukki Dam & Periyar Catchment
+- **Country / State / District:** India / Kerala / Idukki & Ernakulam Districts
+- **Primary Water Body & Dam:** Periyar River & Idukki Arch Dam / Cheruthoni Dam (`10.0526° N, 76.9790° E`)
+- **Downstream Settlements:** Cheruthoni, Painavu, Vazhathope, Lower Periyar, Chelachuvadu, Adimali
+- **Bounding Box (WGS84):** `[76.80, 9.85, 77.10, 10.20]` (Min Lon: 76.80, Min Lat: 9.85, Max Lon: 77.10, Max Lat: 10.20)
+- **Approximate Domain Area:** $\sim 1,280\,\text{km}^2$ ($33\,\text{km} \times 39\,\text{km}$)
+- **Canonical Metric CRS (Backend/GIS):** `EPSG:32643` (WGS 84 / UTM Zone 43N)
+- **Canonical Geographic CRS (Frontend/GeoJSON):** `EPSG:4326` (WGS 84)
+- **Elevation Dataset:** SRTM 30m / Copernicus DEM 30m GeoTIFF
+- **Hydrologic & Settlement Vectors:** OpenStreetMap (`waterway=river`, `place=village`, `place=town`, `highway=*`)
 
-**Required Action Before Phase 3:** Select a specific named Indian dam and downstream district (e.g., Machhu II dam / Rajkot district or Idukki dam / Periyar catchment), verify 30m DEM raster coverage, verify OSM village node density, and record the exact bounding box in `docs/DECISIONS.md`.
+### Evaluation & Rationale for Selection
+1. **Topographic Steepness:** Mountainous gorge transitioning to alluvial floodplain provides dramatic elevation gradients for cellular flow routing and SWE solver comparison.
+2. **Settlement Density:** High density of documented OpenStreetMap village nodes downstream along the Periyar valley, ideal for early warning threshold testing.
+3. **Documented Hydraulic Parameters:** Public CWC and KSEB records provide real dam height ($168.91\,\text{m}$), spillway elevation, and reservoir storage capacity ($1,996\,\text{Mm}^3$).
 
 ---
 

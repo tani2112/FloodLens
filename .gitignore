@@ -33,6 +33,7 @@ wheels/
 # Data Files (Rasters & Large Blobs)
 data/*.tif
 data/*.tiff
+data/*.tif.json
 data/*.nc
 data/raw/
 

@@ -47,7 +47,19 @@ Where:
 
 #### Derived Velocity & Arrival Time:
 - **Velocity Proxy:** $u_{\text{cell}} = \frac{\sum |q_{ij}|}{h_{\text{cell}} \cdot \Delta x}$.
-- **Arrival Time ($T_{\text{arr}}$):** The first simulation timestep $t$ where cell depth $h(x,y,t) \ge 0.1\,\text{m}$.
+- **Arrival Time ($T_{\text{arr}}$):** The first simulation time $t$ (in minutes) where cell depth $h(x,y,t) \ge 0.05\,\text{m}$. Uninundated cells remain `NaN`.
+
+---
+
+### 2.2 Phase 4 Implementation Details (`simulation/level1_diffusive.py`)
+
+The native Python Level 1 engine executes the 2D diffusive wave formulation using NumPy vectorization and active subgrid bounding-box tracking:
+
+- **Source Injection Hydrograph:** Water volume is released from the dam source cell using a parameterized hydrograph peaking at $t = t_b$:
+  $$Q_{\text{breach}}(t) = Q_{\text{peak}} \cdot \min\left(1.0, \frac{t}{t_b}\right) \cdot \exp\left(-\frac{\max(0, t - t_b)}{t_b}\right)$$
+- **Flux Capping & Non-Negativity:** Inter-cell volume transfer per timestep $\Delta t$ is strictly capped to $\le 20\%$ of current source cell storage, guaranteeing non-negative depth ($h \ge 0$) and preventing numerical oscillations.
+- **Mass Balance Audit:** Every run tracks initial volume, cumulative injected source volume, domain storage volume, and mass balance error percentage.
+- **Contract Fulfillment:** Returns `StandardGridResult` containing 3D depth and velocity arrays `[timesteps, height, width]`, 2D arrival time array `[height, width]`, grid metadata, mass balance statistics, and summary execution metrics.
 
 ---
 

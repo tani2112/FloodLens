@@ -1,20 +1,29 @@
-from fastapi import APIRouter
+"""
+FloodLens REST API — Study Areas Router
+Endpoints: GET /api/v1/study-areas, GET /api/v1/study-areas/{study_area_id}
+"""
+
 from typing import List
+from fastapi import APIRouter, HTTPException, status
 from backend.schemas import StudyAreaSchema
+from backend.services.study_area_service import list_study_areas, get_study_area_by_id
 
 router = APIRouter(prefix="/study-areas", tags=["Study Areas"])
 
+
 @router.get("", response_model=List[StudyAreaSchema])
-def list_study_areas():
-    return [
-        StudyAreaSchema(
-            id="sa-demo-01",
-            name="Demo Catchment (Canonical AOI)",
-            bbox=[76.8, 10.2, 77.2, 10.5],
-            river="Demo River",
-            damOrBlockage="Demo Main Dam",
-            demDataset="SRTM",
-            satelliteDataset="Sentinel-1",
-            createdAt="2026-08-29T10:00:00Z"
+def get_all_study_areas():
+    """Returns list of registered study areas (canonical Idukki AOI)."""
+    return list_study_areas()
+
+
+@router.get("/{study_area_id}", response_model=StudyAreaSchema)
+def get_study_area(study_area_id: str):
+    """Retrieves specific study area configuration by ID."""
+    area = get_study_area_by_id(study_area_id)
+    if not area:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Study area '{study_area_id}' not found."
         )
-    ]
+    return area

@@ -1,0 +1,123 @@
+{
+  "simulationId": "sim-level1-25e465",
+  "depthThresholdM": 0.1,
+  "villageExposure": [
+    {
+      "simulationId": "sim-level1-25e465",
+      "assetId": "v-001",
+      "assetType": "village",
+      "name": "Cheruthoni",
+      "coordinates": [
+        76.974,
+        10.051
+      ],
+      "maxDepthM": 0.0,
+      "arrivalTimeMin": null,
+      "exposed": false,
+      "warningLevel": "advisory",
+      "exposureTier": "SAFE",
+      "population": 8450,
+      "populationExposed": null,
+      "populationDataStatus": "available"
+    },
+    {
+      "simulationId": "sim-level1-25e465",
+      "assetId": "v-002",
+      "assetType": "village",
+      "name": "Painavu",
+      "coordinates": [
+        76.981,
+        10.038
+      ],
+      "maxDepthM": 0.0,
+      "arrivalTimeMin": null,
+      "exposed": false,
+      "warningLevel": "advisory",
+      "exposureTier": "SAFE",
+      "population": 4200,
+      "populationExposed": null,
+      "populationDataStatus": "available"
+    },
+    {
+      "simulationId": "sim-level1-25e465",
+      "assetId": "v-003",
+      "assetType": "village",
+      "name": "Vazhathope",
+      "coordinates": [
+        76.962,
+        10.029
+      ],
+      "maxDepthM": 0.0,
+      "arrivalTimeMin": null,
+      "exposed": false,
+      "warningLevel": "advisory",
+      "exposureTier": "SAFE",
+      "population": 6100,
+      "populationExposed": null,
+      "populationDataStatus": "available"
+    },
+    {
+      "simulationId": "sim-level1-25e465",
+      "assetId": "v-004",
+      "assetType": "village",
+      "name": "Chelachuvadu",
+      "coordinates": [
+        76.92,
+        10.075
+      ],
+      "maxDepthM": 0.0,
+      "arrivalTimeMin": null,
+      "exposed": false,
+      "warningLevel": "advisory",
+      "exposureTier": "SAFE",
+      "population": 5300,
+      "populationExposed": null,
+      "populationDataStatus": "available"
+    },
+    {
+      "simulationId": "sim-level1-25e465",
+      "assetId": "v-005",
+      "assetType": "village",
+      "name": "Lower Periyar",
+      "coordinates": [
+        76.885,
+        10.091
+      ],
+      "maxDepthM": 0.0,
+      "arrivalTimeMin": null,
+      "exposed": false,
+      "warningLevel": "advisory",
+      "exposureTier": "SAFE",
+      "population": 3800,
+      "populationExposed": null,
+      "populationDataStatus": "available"
+    },
+    {
+      "simulationId": "sim-level1-25e465",
+      "assetId": "v-006",
+      "assetType": "village",
+      "name": "Adimali",
+      "coordinates": [
+        76.953,
+        10.104
+      ],
+      "maxDepthM": 0.0,
+      "arrivalTimeMin": null,
+      "exposed": false,
+      "warningLevel": "advisory",
+      "exposureTier": "SAFE",
+      "population": 15800,
+      "populationExposed": null,
+      "populationDataStatus": "available"
+    }
+  ],
+  "roadExposure": {
+    "simulationId": "sim-level1-25e465",
+    "totalNetworkLengthKm": 7.916,
+    "affectedRoadsLengthKm": 0.0,
+    "affectedPercent": 0.0,
+    "affectedSegmentsCount": 0,
+    "affectedSegments": []
+  },
+  "warnings": []
+}

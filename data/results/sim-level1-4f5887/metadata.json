@@ -1,0 +1,42 @@
+{
+  "simulation_id": "sim-level1-4f5887",
+  "solver_name": "Level1_DiffusiveWave",
+  "solver_level": "level1",
+  "execution_time_seconds": 8.145002126693726,
+  "depth_threshold_m": 0.1,
+  "grid_meta": {
+    "crs": "EPSG:32643",
+    "width": 1100,
+    "height": 1300,
+    "cell_size": 30.0
+  },
+  "summary_stats": {
+    "total_flood_area_km2": 2.7351,
+    "max_depth_m": 7.727590084075928,
+    "mean_depth_m": 1.8269115686416626,
+    "max_velocity_ms": 15.0,
+    "mean_velocity_ms": 5.366822719573975,
+    "min_arrival_time_min": 0.0833333358168602,
+    "max_arrival_time_min": 29.983333587646484,
+    "inundated_cell_count": 3039,
+    "arrival_threshold_m": 0.05,
+    "breach_source_cell": [
+      585,
+      88
+    ]
+  },
+  "mass_balance_info": {
+    "initial_volume_m3": 0.0,
+    "source_injected_volume_m3": 5000000.0,
+    "expected_total_volume_m3": 5000000.0,
+    "final_domain_volume_m3": 5000008.0,
+    "mass_error_m3": 8.0,
+    "mass_balance_error_percent": 0.00015999999999999999,
+    "is_conserved": true
+  },
+  "outputs": {
+    "flood_extent_geojson": "results/sim-level1-4f5887/flood_extent.geojson",
+    "flood_layers_json": "results/sim-level1-4f5887/flood_layers.json",
+    "exposure_json": "results/sim-level1-4f5887/exposure.json"
+  }
+}

@@ -1,0 +1,174 @@
+[
+  {
+    "simulationId": "sim-level1-553d26",
+    "kind": "vector",
+    "layerType": "extent",
+    "timestepMin": 30.0,
+    "source": {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "name": "flood_extent_sim-level1-553d26",
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+          }
+        },
+        "features": [
+          {
+            "type": "Feature",
+            "properties": {
+              "simulation_id": "sim-level1-553d26",
+              "timestep_index": 6,
+              "timestep_min": 30.0,
+              "depth_threshold_m": 0.1,
+              "inundated_cell_count": 2960,
+              "area_km2": 2.664,
+              "max_depth_m": 7.73,
+              "solver_level": "level1"
+            },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    76.814455,
+                    10.046269
+                  ],
+                  [
+                    76.876091,
+                    10.046269
+                  ],
+                  [
+                    76.876091,
+                    10.033077
+                  ],
+                  [
+                    76.814455,
+                    10.033077
+                  ],
+                  [
+                    76.814455,
+                    10.046269
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "properties": {
+          "simulation_id": "sim-level1-553d26",
+          "depth_threshold_m": 0.1,
+          "total_area_km2": 2.664
+        }
+      }
+    },
+    "legend": {
+      "unit": "boolean",
+      "bins": [
+        {
+          "value": 1.0,
+          "color": "#3B82F6"
+        }
+      ]
+    }
+  },
+  {
+    "simulationId": "sim-level1-553d26",
+    "kind": "raster",
+    "layerType": "depth",
+    "timestepMin": 30.0,
+    "source": {
+      "type": "geojson",
+      "url": "/api/v1/simulations/sim-level1-553d26/rasters/depth?timestep=6"
+    },
+    "legend": {
+      "unit": "m",
+      "bins": [
+        {
+          "value": 0.1,
+          "color": "#93C5FD"
+        },
+        {
+          "value": 0.5,
+          "color": "#60A5FA"
+        },
+        {
+          "value": 1.5,
+          "color": "#2563EB"
+        },
+        {
+          "value": 3.0,
+          "color": "#1D4ED8"
+        },
+        {
+          "value": 5.0,
+          "color": "#1E3A8A"
+        }
+      ]
+    }
+  },
+  {
+    "simulationId": "sim-level1-553d26",
+    "kind": "raster",
+    "layerType": "velocity",
+    "timestepMin": 30.0,
+    "source": {
+      "type": "geojson",
+      "url": "/api/v1/simulations/sim-level1-553d26/rasters/velocity?timestep=6"
+    },
+    "legend": {
+      "unit": "m/s",
+      "bins": [
+        {
+          "value": 0.5,
+          "color": "#FEF08A"
+        },
+        {
+          "value": 1.5,
+          "color": "#FACC15"
+        },
+        {
+          "value": 3.0,
+          "color": "#F97316"
+        },
+        {
+          "value": 5.0,
+          "color": "#DC2626"
+        }
+      ]
+    }
+  },
+  {
+    "simulationId": "sim-level1-553d26",
+    "kind": "raster",
+    "layerType": "arrivalTime",
+    "timestepMin": 30.0,
+    "source": {
+      "type": "geojson",
+      "url": "/api/v1/simulations/sim-level1-553d26/rasters/arrival_time"
+    },
+    "legend": {
+      "unit": "min",
+      "bins": [
+        {
+          "value": 5.0,
+          "color": "#EF4444"
+        },
+        {
+          "value": 15.0,
+          "color": "#F97316"
+        },
+        {
+          "value": 30.0,
+          "color": "#FBBF24"
+        },
+        {
+          "value": 60.0,
+          "color": "#10B981"
+        }
+      ]
+    }
+  }
+]

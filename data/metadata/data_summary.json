@@ -1,0 +1,61 @@
+{
+  "pipeline_version": "1.0.0",
+  "processed_at": "2026-08-29T10:21:55.015723Z",
+  "aoi": {
+    "name": "Idukki Dam & Periyar River Catchment",
+    "bbox_wgs84": [
+      76.8,
+      9.85,
+      77.1,
+      10.2
+    ],
+    "area_approx_km2": 1280.0
+  },
+  "crs": {
+    "geographic": "EPSG:4326",
+    "metric": "EPSG:32643"
+  },
+  "raster_layers": {
+    "dem": {
+      "file": "processed/dem.tif",
+      "width": 1100,
+      "height": 1300,
+      "resolution_m": 30.0,
+      "crs": "EPSG:32643",
+      "min_elevation_m": 50.0,
+      "max_elevation_m": 700.0,
+      "nodata": -9999.0
+    }
+  },
+  "vector_layers": {
+    "villages": {
+      "file": "processed/villages.geojson",
+      "feature_count": 6,
+      "crs": "EPSG:4326"
+    },
+    "rivers": {
+      "file": "processed/rivers.geojson",
+      "feature_count": 1,
+      "crs": "EPSG:4326"
+    },
+    "roads": {
+      "file": "processed/roads.geojson",
+      "feature_count": 1,
+      "crs": "EPSG:4326"
+    },
+    "dam": {
+      "file": "processed/dam.geojson",
+      "feature_count": 1,
+      "crs": "EPSG:4326"
+    }
+  },
+  "simulation_readiness": {
+    "status": "ready",
+    "target_solvers": [
+      "level1",
+      "level2",
+      "sph_adapter",
+      "delft3d_adapter"
+    ]
+  }
+}
