@@ -1,9 +1,11 @@
+@import 'maplibre-gl/dist/maplibre-gl.css';
+
 /* FloodLens Scientific Instrument Design System Tokens */
 :root {
   --bg-canvas: #0B1220;
   --bg-surface-dark: #111A2E;
   --bg-surface-card: #182238;
-  --bg-surface-light: #FFFFFF;
+  --bg-surface-hover: #1F2C4A;
   
   --text-primary: #F8FAFC;
   --text-secondary: #94A3B8;
@@ -56,4 +58,106 @@ a:hover {
 
 code, pre {
   font-family: var(--font-mono);
+}
+
+/* Custom UI Component Utility Classes */
+.card {
+  background: var(--bg-surface-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.card:hover {
+  border-color: #3B82F6;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.badge-advisory { background: #1E293B; color: #94A3B8; border: 1px solid #334155; }
+.badge-watch { background: #422006; color: #FDE047; border: 1px solid #713F12; }
+.badge-warning { background: #431407; color: #FB923C; border: 1px solid #7C2D12; }
+.badge-critical { background: #450A0A; color: #FCA5A5; border: 1px solid #7F1D1D; }
+
+.badge-completed { background: #052E16; color: #4ADE80; border: 1px solid #14532D; }
+.badge-running { background: #0C4A6E; color: #38BDF8; border: 1px solid #0369A1; }
+.badge-pending { background: #1E293B; color: #94A3B8; border: 1px solid #334155; }
+.badge-failed { background: #450A0A; color: #FCA5A5; border: 1px solid #7F1D1D; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s ease-in-out;
+}
+
+.btn-primary {
+  background: var(--accent-cyan);
+  color: #000;
+}
+
+.btn-primary:hover {
+  background: #38BDF8;
+}
+
+.btn-secondary {
+  background: var(--bg-surface-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-surface-hover);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+table.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+table.data-table th, table.data-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+table.data-table th {
+  background: var(--bg-surface-dark);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+table.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+table.data-table tr:hover td {
+  background: var(--bg-surface-hover);
 }

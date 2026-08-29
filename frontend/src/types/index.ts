@@ -9,16 +9,28 @@ export interface StudyArea {
   bbox: [number, number, number, number]; // [min_lon, min_lat, max_lon, max_lat]
   river: string;
   damOrBlockage: string;
-  demDataset: 'SRTM' | 'ASTER' | 'Copernicus';
-  satelliteDataset?: 'Sentinel-1' | 'Sentinel-2' | 'Landsat';
+  demDataset: string;
+  satelliteDataset?: string;
   createdAt?: string;
+}
+
+export interface ScenarioParameters {
+  initialWaterLevelM?: number;
+  reservoirVolumeMm3?: number;
+  damHeightM?: number;
+  breachWidthM?: number;
+  breachDepthM?: number;
+  breachFormationTimeMin?: number;
+  simulationDurationHr?: number;
+  roughnessCoefficient?: number;
+  [key: string]: number | string | undefined;
 }
 
 export interface Scenario {
   id: string;
   studyAreaId: string;
   type: 'dam_break' | 'natural_blockage' | 'glof' | 'water_release';
-  parameters: Record<string, number | string>;
+  parameters: ScenarioParameters;
   createdAt?: string;
 }
 
@@ -53,9 +65,11 @@ export interface FloodResult {
   maxVelocityMs: number;
   arrivalTimeMin: number;
   durationHr: number;
-  populationExposed: number;
-  buildingsAffected: number;
+  populationExposed?: number;
+  buildingsAffected?: number;
   roadsAffectedKm: number;
+  massBalanceErrorPercent?: number;
+  executionTimeSeconds?: number;
   dataSource: 'mock' | 'live';
 }
 
@@ -64,16 +78,18 @@ export interface FloodLayerBin {
   color: string;
 }
 
+export interface FloodLayerSource {
+  type: string;
+  url?: string;
+  data?: any;
+}
+
 export interface FloodLayer {
   simulationId: string;
   kind: 'raster' | 'vector';
   layerType: 'extent' | 'depth' | 'velocity' | 'arrivalTime' | 'duration';
   timestepMin: number;
-  source: {
-    type: 'mock' | 'geojson' | 'geotiff-tile';
-    url?: string;
-    data?: any;
-  };
+  source: FloodLayerSource;
   legend: {
     unit: string;
     bins: FloodLayerBin[];
@@ -85,26 +101,33 @@ export interface ExposureResult {
   assetId: string;
   assetType: 'village' | 'road' | 'bridge' | 'hospital' | 'school' | 'agriculture';
   name: string;
+  coordinates?: [number, number];
   maxDepthM: number;
-  arrivalTimeMin: number;
+  arrivalTimeMin?: number | null;
   exposed: boolean;
   warningLevel: 'advisory' | 'watch' | 'warning' | 'critical';
+  exposureTier?: 'SAFE' | 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL';
+  population?: number | null;
+  populationExposed?: number | null;
+  populationDataStatus?: 'available' | 'unavailable' | 'estimated';
 }
 
 export interface Warning {
   simulationId: string;
   villageId: string;
+  villageName?: string;
   level: 'advisory' | 'watch' | 'warning' | 'critical';
-  arrivalTimeMin: number;
+  arrivalTimeMin?: number | null;
   maxDepthM: number;
   maxVelocityMs: number;
   triggeredBy: string;
+  disclaimer?: string;
 }
 
 export interface ModelResult {
   simulationId: string;
   modelLevel: ModelLevel;
-  floodResult: FloodResult;
+  result: FloodResult;
 }
 
 export interface ComparisonResult {
