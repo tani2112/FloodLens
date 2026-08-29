@@ -1,0 +1,59 @@
+/* FloodLens Scientific Instrument Design System Tokens */
+:root {
+  --bg-canvas: #0B1220;
+  --bg-surface-dark: #111A2E;
+  --bg-surface-card: #182238;
+  --bg-surface-light: #FFFFFF;
+  
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  
+  --border-color: #2D3748;
+  --border-focus: #38BDF8;
+  
+  --accent-cyan: #0EA5E9;
+  --accent-blue: #2563EB;
+  
+  /* Warning Tier Tokens */
+  --warning-advisory: #64748B;
+  --warning-watch: #EAB308;
+  --warning-warning: #F97316;
+  --warning-critical: #EF4444;
+  
+  /* Status Tokens */
+  --status-pending: #64748B;
+  --status-running: #38BDF8;
+  --status-completed: #22C55E;
+  --status-failed: #EF4444;
+  
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--accent-cyan);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, pre {
+  font-family: var(--font-mono);
+}
