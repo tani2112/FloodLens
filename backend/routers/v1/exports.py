@@ -1,40 +1,33 @@
-"""
-FloodLens REST API — Exports Router
-Endpoints: POST /api/v1/export/{simulation_id}
-"""
-
-import os
-from fastapi import APIRouter, HTTPException, status
-from backend.schemas import ExportJobSchema, ExportRequestSchema
-from backend.services.result_service import get_safe_result_file_path
+import uuid
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.orm import Session
+from backend.schemas import ExportRequestSchema, ExportJobSchema
+from backend.services.result_service import simulation_exists
+from backend.db import get_db
 
 router = APIRouter(prefix="/export", tags=["Exports"])
 
-
 @router.post("/{simulation_id}", response_model=ExportJobSchema)
-def create_export_job(simulation_id: str, payload: ExportRequestSchema):
-    """
-    Triggers GIS result export job.
-    - Supported: 'geojson' (returns download path to exported flood_extent.geojson)
-    - Unsupported ('shp', 'kml', 'geotiff', 'report_pdf'): Returns status 'idle' / HTTP 501 Not Implemented response cleanly without faking files.
-    """
-    fmt = payload.format.lower()
-    
-    if fmt == "geojson":
-        path = get_safe_result_file_path(simulation_id, "flood_extent.geojson")
-        if not path:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Simulation results for '{simulation_id}' not found."
-            )
-        return ExportJobSchema(
-            simulationId=simulation_id,
-            format="geojson",
-            status="ready",
-            downloadUrl=f"/api/v1/simulations/{simulation_id}/files/flood_extent.geojson"
-        )
-    else:
+def trigger_export_endpoint(simulation_id: str, payload: ExportRequestSchema, db: Session = Depends(get_db)):
+    """Triggers GIS vector export job."""
+    if not simulation_exists(simulation_id, db=db):
         raise HTTPException(
-            status_code=status.HTTP_501_NOT_IMPLEMENTED,
-            detail=f"Export format '{fmt}' is planned and not currently executable. Supported format in Phase 6: 'geojson'."
+            status_code=404,
+            detail=f"Simulation '{simulation_id}' not found."
         )
+
+    supported_formats = {"geojson"}
+    if payload.format not in supported_formats:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Export format '{payload.format}' is not supported. Choose from {supported_formats}."
+        )
+
+    job_id = f"exp-{uuid.uuid4().hex[:8]}"
+    return ExportJobSchema(
+        jobId=job_id,
+        simulationId=simulation_id,
+        format=payload.format,
+        status="completed",
+        downloadUrl=f"/api/v1/simulations/{simulation_id}/files/flood_extent.geojson"
+    )

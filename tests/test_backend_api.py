@@ -149,6 +149,20 @@ class TestBackendAPI(unittest.TestCase):
         self.assertEqual(root_resp.status_code, 200)
         self.assertIn("canonical_study_area", root_resp.json())
 
+    def test_12_simulation_timeline_endpoint(self):
+        # Retrieve timeline for default or completed simulation
+        timeline_resp = client.get("/api/v1/simulations/sim-level1-default/timeline")
+        self.assertEqual(timeline_resp.status_code, 200)
+        data = timeline_resp.json()
+        self.assertEqual(data["simulationId"], "sim-level1-default")
+        self.assertIsInstance(data["timesteps"], list)
+        self.assertGreater(len(data["timesteps"]), 0)
+        first_ts = data["timesteps"][0]
+        self.assertIn("timeMin", first_ts)
+        self.assertIn("floodAreaKm2", first_ts)
+        self.assertIn("maxDepthM", first_ts)
+        self.assertIn("maxVelocityMs", first_ts)
+
 
 if __name__ == "__main__":
     unittest.main()

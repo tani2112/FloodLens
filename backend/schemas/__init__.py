@@ -6,7 +6,6 @@ Strictly matching docs/API.md and docs/ARCHITECTURE.md specification contracts
 from typing import List, Dict, Any, Optional, Union
 from pydantic import BaseModel, Field
 
-
 # 1. Study Area Schemas
 class StudyAreaSchema(BaseModel):
     id: str = Field(..., example="idukki-canonical")
@@ -17,7 +16,6 @@ class StudyAreaSchema(BaseModel):
     demDataset: str = Field(..., example="SRTM 30m / Copernicus DEM")
     satelliteDataset: Optional[str] = "Sentinel-1 / Sentinel-2"
     createdAt: Optional[str] = "2026-08-29T10:00:00Z"
-
 
 # 2. Scenario Schemas
 class ScenarioParametersSchema(BaseModel):
@@ -30,12 +28,12 @@ class ScenarioParametersSchema(BaseModel):
     simulationDurationHr: float = Field(default=1.0, description="Simulation duration (hours)")
     roughnessCoefficient: Optional[float] = Field(default=0.035, description="Manning n roughness")
 
+HydrodynamicParametersSchema = ScenarioParametersSchema
 
 class ScenarioCreateSchema(BaseModel):
     studyAreaId: str = Field(..., example="idukki-canonical")
     type: str = Field(..., example="dam_break", description="dam_break, natural_blockage, glof, or water_release")
     parameters: ScenarioParametersSchema
-
 
 class ScenarioSchema(BaseModel):
     id: str
@@ -44,12 +42,10 @@ class ScenarioSchema(BaseModel):
     parameters: Dict[str, Any]
     createdAt: str
 
-
 # 3. Simulation & Status Schemas
 class SimulationCreateSchema(BaseModel):
     scenarioId: str = Field(..., example="scen-001")
     modelLevel: str = Field(..., example="level1", description="level1, level2, sph_adapter, delft3d_adapter")
-
 
 class SimulationSchema(BaseModel):
     id: str
@@ -59,18 +55,15 @@ class SimulationSchema(BaseModel):
     dataSource: str = "live"
     createdAt: str
 
-
 class SimulationStageSchema(BaseModel):
     name: str
     status: str = Field(..., example="done", description="pending, running, done, failed")
-
 
 class SimulationStatusSchema(BaseModel):
     simulationId: str
     stage: str
     stagePercent: float
     stages: List[SimulationStageSchema]
-
 
 # 4. Flood Results & Map Layers Schemas
 class FloodResultSchema(BaseModel):
@@ -87,22 +80,29 @@ class FloodResultSchema(BaseModel):
     executionTimeSeconds: Optional[float] = 0.0
     dataSource: str = "live"
 
+class TimestepSummarySchema(BaseModel):
+    timestepIndex: int
+    timeMin: float
+    floodAreaKm2: float
+    maxDepthM: float
+    maxVelocityMs: float
+
+class TimelineSummarySchema(BaseModel):
+    simulationId: str
+    timesteps: List[TimestepSummarySchema]
 
 class FloodLayerLegendBinSchema(BaseModel):
     value: float
     color: str
 
-
 class FloodLayerLegendSchema(BaseModel):
     unit: str
     bins: List[FloodLayerLegendBinSchema]
-
 
 class FloodLayerSourceSchema(BaseModel):
     type: str = Field(..., example="geojson")
     url: Optional[str] = None
     data: Optional[Dict[str, Any]] = None
-
 
 class FloodLayerSchema(BaseModel):
     simulationId: str
@@ -111,7 +111,6 @@ class FloodLayerSchema(BaseModel):
     timestepMin: float
     source: FloodLayerSourceSchema
     legend: FloodLayerLegendSchema
-
 
 # 5. Exposure & Early Warning Schemas
 class ExposureResultSchema(BaseModel):
@@ -129,7 +128,6 @@ class ExposureResultSchema(BaseModel):
     populationExposed: Optional[int] = None
     populationDataStatus: Optional[str] = "available"
 
-
 class WarningSchema(BaseModel):
     simulationId: str
     villageId: str
@@ -141,13 +139,16 @@ class WarningSchema(BaseModel):
     triggeredBy: str
     disclaimer: str = "Scenario-based early-warning / decision-support output — not an official disaster warning."
 
-
 # 6. Comparison, Validation & Export Schemas
-class ComparisonResultSchema(BaseModel):
-    runA: Dict[str, Any]
-    runB: Dict[str, Any]
-    diff: Dict[str, Any]
+class ModelResultSchema(BaseModel):
+    simulationId: str
+    modelLevel: str
+    result: FloodResultSchema
 
+class ComparisonResultSchema(BaseModel):
+    runA: ModelResultSchema
+    runB: ModelResultSchema
+    diff: Dict[str, Any]
 
 class ValidationResultSchema(BaseModel):
     simulationId: str
@@ -156,17 +157,116 @@ class ValidationResultSchema(BaseModel):
     recall: float
     f1: float
     areaDifferenceKm2: float
-    observedExtent: Dict[str, Any]
-    simulatedExtent: Dict[str, Any]
+    observedExtent: Optional[Dict[str, Any]] = None
+    simulatedExtent: Optional[Dict[str, Any]] = None
     status: str = "mock"
-
 
 class ExportRequestSchema(BaseModel):
     format: str = Field(..., example="geojson", description="geojson, shp, kml, geotiff, report_pdf")
 
-
 class ExportJobSchema(BaseModel):
+    jobId: Optional[str] = None
     simulationId: str
     format: str
     status: str = Field(..., example="ready", description="idle, preparing, ready, failed")
     downloadUrl: Optional[str] = None
+
+# 7. Impact Analytics Schemas
+class SettlementImpactItemSchema(BaseModel):
+    simulationId: str
+    assetId: str
+    assetType: str = "village"
+    name: str
+    coordinates: List[float]
+    maxDepthM: float
+    arrivalTimeMin: Optional[float] = None
+    timeOfPeakDepthMin: Optional[float] = None
+    durationInundatedMin: Optional[float] = None
+    exposed: bool
+    warningLevel: str
+    exposureTier: str
+    population: Optional[int] = None
+    populationExposed: Optional[int] = None
+    populationDataStatus: str = "requires_census_dataset"
+
+class SettlementImpactSummarySchema(BaseModel):
+    totalEvaluated: int
+    totalAffected: int
+    safeCount: int
+    lowCount: int
+    moderateCount: int
+    highCount: int
+    criticalCount: int
+    earliestAffectedSettlement: Optional[str] = None
+    latestAffectedSettlement: Optional[str] = None
+    maxSettlementDepthM: float
+    maxSettlementSeverity: str
+    populationDataStatus: str = "requires_census_dataset"
+    settlements: List[SettlementImpactItemSchema]
+
+class RoadSegmentImpactSchema(BaseModel):
+    roadId: str
+    name: str
+    highwayType: str
+    lengthKm: float
+    affectedLengthKm: float
+    affectedPercent: float
+    severity: str = "SAFE"
+
+class RoadImpactSummarySchema(BaseModel):
+    simulationId: str
+    totalNetworkLengthKm: float
+    affectedRoadsLengthKm: float
+    unaffectedLengthKm: float
+    affectedPercent: float
+    affectedSegmentsCount: int
+    firstTimestepAffectedMin: Optional[float] = None
+    peakAffectedRoadLengthKm: float
+    affectedSegments: List[RoadSegmentImpactSchema] = []
+    roadImpactTimeline: List[Dict[str, Any]] = []
+
+class InfrastructureImpactSummarySchema(BaseModel):
+    status: str = Field("dataset_unavailable", description="available or dataset_unavailable")
+    message: str
+    evaluatedAssetsCount: int = 0
+    affectedAssetsCount: int = 0
+    assets: List[Dict[str, Any]] = []
+
+class ImpactTimelineItemSchema(BaseModel):
+    timestepIndex: int
+    timeMin: float
+    floodAreaKm2: float
+    maxDepthM: float
+    maxVelocityMs: float
+    settlementsAffectedCount: int
+    criticalSettlementsCount: int
+    affectedRoadsLengthKm: float
+    affectedPercent: float
+
+class ImpactTimelineSchema(BaseModel):
+    simulationId: str
+    firstInundationTimeMin: Optional[float] = None
+    peakInundationAreaTimeMin: Optional[float] = None
+    peakDepthTimeMin: Optional[float] = None
+    peakVelocityTimeMin: Optional[float] = None
+    settlementFirstImpactTimeMin: Optional[float] = None
+    roadFirstImpactTimeMin: Optional[float] = None
+    timeline: List[ImpactTimelineItemSchema] = []
+
+class SeveritySummarySchema(BaseModel):
+    overallImpactSeverity: str
+    advisoryLevel: str
+    primaryRiskFactors: List[str] = []
+
+class ImpactSummarySchema(BaseModel):
+    simulationId: str
+    scenarioType: str = "dam_break"
+    modelLevel: str = "level1"
+    floodMetrics: Dict[str, Any]
+    settlementMetrics: SettlementImpactSummarySchema
+    roadMetrics: RoadImpactSummarySchema
+    infrastructureMetrics: InfrastructureImpactSummarySchema
+    temporalMetrics: Dict[str, Any]
+    severitySummary: SeveritySummarySchema
+    scientificDisclaimer: str = "Scenario-based early-warning / decision-support output — not an official disaster warning."
+

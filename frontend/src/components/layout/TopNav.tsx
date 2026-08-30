@@ -9,12 +9,18 @@ export const TopNav: React.FC = () => {
 
   useEffect(() => {
     apiClient.checkHealth()
-      .then(() => {
-        setApiStatus('LIVE API connected');
+      .then((res: any) => {
+        if (res.database === 'ok') {
+          setApiStatus('SYSTEM READY • DATABASE CONNECTED');
+        } else if (res.status === 'ok') {
+          setApiStatus('SYSTEM READY • CONNECTED');
+        } else {
+          setApiStatus('DATABASE UNAVAILABLE');
+        }
         setIsLive(true);
       })
       .catch(() => {
-        setApiStatus('API Disconnected / Offline');
+        setApiStatus('API DISCONNECTED');
         setIsLive(false);
       });
   }, []);
@@ -22,20 +28,31 @@ export const TopNav: React.FC = () => {
   const navItems = [
     { path: '/', label: 'Dashboard' },
     { path: '/simulations', label: 'Simulations' },
-    { path: '/simulations/new/study-area', label: '+ New Simulation' },
     { path: '/study-areas', label: 'Study Areas' },
-    { path: '/comparison', label: 'Comparison' },
+    { path: '/comparison', label: 'Compare' },
+    { path: '/validation/sim-canonical', label: 'Validation' },
     { path: '/case-studies/bhotekoshi-trishuli', label: 'Case Studies' },
     { path: '/about', label: 'About' }
   ];
 
   return (
-    <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1.5rem', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-surface-dark)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-        <Link to="/" style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--accent-cyan)', letterSpacing: '-0.02em' }}>
-          FloodLens <span style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--text-secondary)' }}>SIH26161</span>
+    <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 2rem', background: '#ffffff', borderBottom: '1px solid var(--border-color)', boxShadow: '0 1px 3px rgba(23, 43, 58, 0.03)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '2.5rem' }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none' }}>
+          <div style={{ width: '34px', height: '34px', borderRadius: '7px', background: 'linear-gradient(135deg, var(--accent-primary) 0%, #0284c7 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontWeight: 800, fontSize: '1.05rem', letterSpacing: '-0.03em' }}>
+            FL
+          </div>
+          <div>
+            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+              FloodLens
+            </div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+              Operational Flood Intelligence
+            </div>
+          </div>
         </Link>
-        <nav style={{ display: 'flex', gap: '1rem' }}>
+
+        <nav style={{ display: 'flex', gap: '0.35rem' }}>
           {navItems.map((item) => {
             const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
             return (
@@ -43,9 +60,15 @@ export const TopNav: React.FC = () => {
                 key={item.path}
                 to={item.path}
                 style={{
-                  color: isActive ? 'var(--accent-cyan)' : 'var(--text-secondary)',
-                  fontWeight: isActive ? '600' : 'normal',
-                  fontSize: '0.9rem'
+                  padding: '0.45rem 0.85rem',
+                  borderRadius: '6px',
+                  fontSize: '0.88rem',
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+                  background: isActive ? 'var(--bg-surface-muted)' : 'transparent',
+                  border: isActive ? '1px solid var(--border-color)' : '1px solid transparent',
+                  textDecoration: 'none',
+                  transition: 'all 0.15s ease'
                 }}
               >
                 {item.label}
@@ -54,16 +77,21 @@ export const TopNav: React.FC = () => {
           })}
         </nav>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.85rem' }}>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <Link to="/simulations/new/study-area" className="btn btn-primary" style={{ fontSize: '0.82rem', padding: '0.45rem 0.9rem' }}>
+          + Run Simulation
+        </Link>
         <span
           className="badge"
           style={{
-            background: isLive ? '#052E16' : '#450A0A',
-            color: isLive ? '#4ADE80' : '#FCA5A5',
-            border: isLive ? '1px solid #14532D' : '1px solid #7F1D1D'
+            background: isLive ? 'var(--status-completed-bg)' : 'var(--status-failed-bg)',
+            color: isLive ? 'var(--status-completed-text)' : 'var(--status-failed-text)',
+            border: isLive ? '1px solid var(--status-completed-border)' : '1px solid var(--status-failed-border)',
+            fontWeight: 600
           }}
         >
-          {apiStatus}
+          ● {apiStatus}
         </span>
       </div>
     </header>

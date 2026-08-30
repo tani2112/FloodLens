@@ -47,3 +47,32 @@ class BaseSimulationEngine(ABC):
     def run(self, scenario_config: Dict[str, Any], dem_raster_path: str) -> StandardGridResult:
         """Execute simulation scenario and return a StandardGridResult."""
         pass
+
+@dataclass
+class HydrodynamicEngineConfig:
+    aoi_id: str = "idukki-canonical"
+    scenario_type: str = "dam_break"
+    initial_head_m: float = 50.0
+    storage_volume_mm3: float = 10.0
+    breach_width_m: float = 100.0
+    breach_formation_time_min: float = 30.0
+    simulation_duration_hr: float = 1.0
+    manning_n: float = 0.035
+    simulation_id: Optional[str] = None
+
+class HydrodynamicSimulationEngine:
+    def __init__(self, config: HydrodynamicEngineConfig):
+        self.config = config
+
+    def run_simulation(self) -> StandardGridResult:
+        from simulation.level1_diffusive import Level1DiffusiveModel
+        model = Level1DiffusiveModel()
+        scenario_config = {
+            "simulation_id": self.config.simulation_id or "sim-level1-default",
+            "initial_water_level_m": self.config.initial_head_m,
+            "reservoir_volume_m3": self.config.storage_volume_mm3 * 1e6,
+            "breach_formation_time_s": self.config.breach_formation_time_min * 60.0,
+            "simulation_duration_min": self.config.simulation_duration_hr * 60.0,
+            "roughness_coefficient": self.config.manning_n
+        }
+        return model.run(scenario_config=scenario_config, dem_raster_path="data/processed/dem.tif")

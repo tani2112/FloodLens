@@ -30,12 +30,20 @@ wheels/
 .installed.cfg
 *.egg
 
-# Data Files (Rasters & Large Blobs)
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+data/*.db
+
+# Data Files & Backups
 data/*.tif
 data/*.tiff
 data/*.tif.json
 data/*.nc
 data/raw/
+data/results/sim-*
+data/backups/
 
 # Environment Files
 .env

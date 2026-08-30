@@ -9,15 +9,18 @@ import {
   Simulation,
   SimulationStatus,
   FloodResult,
+  TimelineSummary,
   FloodLayer,
   ExposureResult,
   Warning,
   ComparisonResult,
   ValidationResult,
-  ExportJob
+  ExportJob,
+  ImpactSummary,
+  ImpactTimeline
 } from '../../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 const IS_DEMO_MODE = import.meta.env.VITE_DEMO_MODE === 'true';
 
 export class ApiError extends Error {
@@ -46,7 +49,7 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     let detail = response.statusText;
     try {
       const errData = await response.json();
-      detail = errData.detail || JSON.stringify(errData);
+      detail = errData.detail || errData.error?.message || JSON.stringify(errData);
     } catch (_) {
       // Fallback to response status text
     }
@@ -59,7 +62,10 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
 export const apiClient = {
   async checkHealth(): Promise<{ status: string }> {
     if (IS_DEMO_MODE) return { status: 'ok (demo mode)' };
-    const res = await fetch('http://localhost:8000/health');
+    const healthUrl = API_BASE_URL.startsWith('http')
+      ? `${API_BASE_URL.replace('/v1', '')}/health`
+      : '/api/health';
+    const res = await fetch(healthUrl);
     return res.json();
   },
 
@@ -169,6 +175,26 @@ export const apiClient = {
     return request<FloodResult>(`/simulations/${id}/results`);
   },
 
+  async getSimulationTimeline(id: string): Promise<TimelineSummary> {
+    if (IS_DEMO_MODE) {
+      return {
+        simulationId: id,
+        timesteps: [
+          { timestepIndex: 0, timeMin: 0, floodAreaKm2: 0, maxDepthM: 0, maxVelocityMs: 0 },
+          { timestepIndex: 1, timeMin: 5, floodAreaKm2: 0.85, maxDepthM: 2.1, maxVelocityMs: 1.4 },
+          { timestepIndex: 2, timeMin: 10, floodAreaKm2: 1.72, maxDepthM: 3.4, maxVelocityMs: 2.1 },
+          { timestepIndex: 3, timeMin: 15, floodAreaKm2: 2.65, maxDepthM: 4.5, maxVelocityMs: 2.8 },
+          { timestepIndex: 4, timeMin: 20, floodAreaKm2: 3.48, maxDepthM: 5.2, maxVelocityMs: 3.1 },
+          { timestepIndex: 5, timeMin: 25, floodAreaKm2: 4.20, maxDepthM: 5.8, maxVelocityMs: 3.3 },
+          { timestepIndex: 6, timeMin: 30, floodAreaKm2: 4.85, maxDepthM: 6.0, maxVelocityMs: 3.4 },
+          { timestepIndex: 7, timeMin: 45, floodAreaKm2: 5.20, maxDepthM: 6.1, maxVelocityMs: 3.4 },
+          { timestepIndex: 8, timeMin: 60, floodAreaKm2: 5.38, maxDepthM: 6.2, maxVelocityMs: 3.4 }
+        ]
+      };
+    }
+    return request<TimelineSummary>(`/simulations/${id}/timeline`);
+  },
+
   async getFloodLayers(id: string, timestep: number = -1): Promise<FloodLayer[]> {
     if (IS_DEMO_MODE) {
       return [];
@@ -181,6 +207,14 @@ export const apiClient = {
       return [];
     }
     return request<ExposureResult[]>(`/simulations/${id}/exposure`);
+  },
+
+  async getImpactSummary(id: string): Promise<ImpactSummary> {
+    return request<ImpactSummary>(`/simulations/${id}/impact-summary`);
+  },
+
+  async getImpactTimeline(id: string): Promise<ImpactTimeline> {
+    return request<ImpactTimeline>(`/simulations/${id}/impact-timeline`);
   },
 
   async getWarnings(id: string): Promise<Warning[]> {

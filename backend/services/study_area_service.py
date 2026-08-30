@@ -1,54 +1,66 @@
-"""
-FloodLens Backend — Study Area Service
-Loads canonical AOI configuration and manages study area definitions.
-"""
-
-import json
 import os
-from typing import List, Dict, Any, Optional
+import json
+from typing import List, Optional
+from sqlalchemy.orm import Session
 from backend.schemas import StudyAreaSchema
+from backend.models.database import StudyAreaModel
 
+def get_all_study_areas(db: Optional[Session] = None) -> List[StudyAreaSchema]:
+    if db:
+        areas = db.query(StudyAreaModel).all()
+        if areas:
+            return [
+                StudyAreaSchema(
+                    id=a.id,
+                    name=a.name,
+                    bbox=tuple(a.bbox),
+                    river=a.river,
+                    damOrBlockage=a.dam_or_blockage,
+                    demDataset=a.dem_dataset,
+                    satelliteDataset=a.satellite_dataset,
+                    createdAt=a.created_at
+                )
+                for a in areas
+            ]
+    
+    # Fallback to config file
+    config_path = os.path.join("data", "config", "canonical_aoi.json")
+    if os.path.exists(config_path):
+        with open(config_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return [
+            StudyAreaSchema(
+                id=data.get("id", "idukki-canonical"),
+                name=data.get("name", "Idukki Dam & Periyar River Catchment"),
+                bbox=tuple(data.get("bbox", [76.80, 9.85, 77.10, 10.20])),
+                river=data.get("river", "Periyar River"),
+                damOrBlockage=data.get("dam_or_blockage", "Idukki Arch Dam & Cheruthoni Dam"),
+                demDataset=data.get("dem_dataset", "SRTM 30m / Copernicus DEM"),
+                satelliteDataset=data.get("satellite_dataset", "Sentinel-1 / Sentinel-2")
+            )
+        ]
+    return []
 
-def get_canonical_aoi_data() -> Dict[str, Any]:
-    """Loads study area configuration from data/config/canonical_aoi.json."""
-    path = "data/config/canonical_aoi.json"
-    if os.path.exists(path):
-        with open(path, "r") as f:
-            return json.load(f)
-            
-    # Default fallback matching canonical specification
-    return {
-        "id": "idukki-canonical",
-        "name": "Idukki Dam & Periyar River Catchment",
-        "river": "Periyar River",
-        "dam_or_blockage": "Idukki Arch Dam / Cheruthoni Spillway",
-        "bbox_wgs84": [76.80, 9.85, 77.10, 10.20],
-        "dem_dataset": "SRTM 30m / Copernicus DEM",
-        "crs_metric": "EPSG:32643",
-        "crs_geographic": "EPSG:4326"
-    }
+list_study_areas = get_all_study_areas
+get_canonical_aoi_data = lambda db=None: get_all_study_areas(db)[0] if get_all_study_areas(db) else None
 
-
-def list_study_areas() -> List[StudyAreaSchema]:
-    """Returns list of all registered study areas."""
-    raw = get_canonical_aoi_data()
-    area = StudyAreaSchema(
-        id=raw.get("id", "idukki-canonical"),
-        name=raw.get("name", "Idukki Dam & Periyar River Catchment"),
-        bbox=raw.get("bbox_wgs84", [76.80, 9.85, 77.10, 10.20]),
-        river=raw.get("river", "Periyar River"),
-        damOrBlockage=raw.get("dam_or_blockage", "Idukki Arch Dam / Cheruthoni Spillway"),
-        demDataset=raw.get("dem_dataset", "SRTM 30m / Copernicus DEM"),
-        satelliteDataset="Sentinel-1 / Sentinel-2",
-        createdAt="2026-08-29T10:00:00Z"
-    )
-    return [area]
-
-
-def get_study_area_by_id(study_area_id: str) -> Optional[StudyAreaSchema]:
-    """Retrieves specific study area by ID."""
-    areas = list_study_areas()
-    for a in areas:
-        if a.id == study_area_id:
-            return a
+def get_study_area_by_id(study_area_id: str, db: Optional[Session] = None) -> Optional[StudyAreaSchema]:
+    if db:
+        a = db.query(StudyAreaModel).filter(StudyAreaModel.id == study_area_id).first()
+        if a:
+            return StudyAreaSchema(
+                id=a.id,
+                name=a.name,
+                bbox=tuple(a.bbox),
+                river=a.river,
+                damOrBlockage=a.dam_or_blockage,
+                demDataset=a.dem_dataset,
+                satelliteDataset=a.satellite_dataset,
+                createdAt=a.created_at
+            )
+    
+    areas = get_all_study_areas(db)
+    for area in areas:
+        if area.id == study_area_id:
+            return area
     return None

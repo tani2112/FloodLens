@@ -2,180 +2,175 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { SimulationNav } from '../components/simulations/SimulationNav';
 import { apiClient } from '../services/api/client';
-import { FloodResult, ExportJob } from '../types';
+import { FloodResult, TimelineSummary, ImpactSummary, ExposureResult } from '../types';
+import { KpiCard } from '../components/common/KpiCard';
+import { ScenarioProfile } from '../components/common/ScenarioProfile';
+import { InsightsPanel } from '../components/common/InsightsPanel';
+import { EnhancedTemporalChart } from '../components/simulations/EnhancedTemporalChart';
+import { analyzeScenarioIntelligence } from '../services/analytics/scenarioIntelligence';
+import { LoadingState, ErrorState } from '../components/common/StateComponents';
+import { ScientificDisclaimer } from '../components/common/ScientificDisclaimer';
 
 export const ResultsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const simId = id || 'sim-level1-default';
 
   const [results, setResults] = useState<FloodResult | null>(null);
+  const [impact, setImpact] = useState<ImpactSummary | null>(null);
+  const [timeline, setTimeline] = useState<TimelineSummary | null>(null);
+  const [exposure, setExposure] = useState<ExposureResult[]>([]);
+  const [activeTsIdx, setActiveTsIdx] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [exportJob, setExportJob] = useState<ExportJob | null>(null);
-  const [exportLoading, setExportLoading] = useState<boolean>(false);
-  const [exportError, setExportError] = useState<string | null>(null);
-
   useEffect(() => {
-    apiClient.getFloodResults(simId)
-      .then((data) => {
-        setResults(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.detail || err.message || 'Failed loading simulation results');
-        setLoading(false);
-      });
+    let isMounted = true;
+    async function loadData() {
+      try {
+        setLoading(true);
+        const [res, imp, tl, exp] = await Promise.all([
+          apiClient.getFloodResults(simId).catch(() => null),
+          apiClient.getImpactSummary(simId).catch(() => null),
+          apiClient.getSimulationTimeline(simId).catch(() => null),
+          apiClient.getExposureResults(simId).catch(() => [])
+        ]);
+
+        if (isMounted) {
+          setResults(res);
+          setImpact(imp);
+          setTimeline(tl);
+          setExposure(exp);
+        }
+      } catch (err: any) {
+        if (isMounted) setError(err.message || 'Failed loading simulation results');
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    loadData();
+    return () => { isMounted = false; };
   }, [simId]);
 
-  const handleExport = async (format: string) => {
-    setExportLoading(true);
-    setExportError(null);
-    try {
-      const job = await apiClient.exportSimulation(simId, format);
-      setExportJob(job);
-    } catch (err: any) {
-      setExportError(err.detail || err.message || 'Export format not implemented');
-    } finally {
-      setExportLoading(false);
-    }
-  };
+  const intelligence = analyzeScenarioIntelligence(results, impact, timeline, exposure);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>
-            Hydrodynamic Results & Summary KPIs
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+            Hydrodynamic Simulation Results Workspace
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-            Simulation Run: <code style={{ color: 'var(--accent-cyan)' }}>{simId}</code>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+            Simulation Run ID: <strong>{simId}</strong> | Solver: Level 1 2D Diffusive Wave Engine
           </p>
         </div>
-        <span className="badge badge-completed">Level 1 — Simplified Diffusive Wave</span>
+        <span className="badge badge-completed">Level 1 Complete</span>
       </div>
 
       <SimulationNav simulationId={simId} />
 
-      {/* Mandatory Scientific Disclaimer Banner */}
-      <div className="card" style={{ borderColor: '#0284C7', background: '#0C4A6E', color: '#E0F2FE', fontSize: '0.85rem' }}>
-        <strong>Scientific Disclaimer:</strong> Scenario-based / simplified inundation model for scenario screening, not for engineering design or official disaster warnings.
-      </div>
-
       {loading ? (
-        <div className="card" style={{ color: 'var(--text-secondary)' }}>Loading simulation results...</div>
+        <LoadingState message="Loading hydrodynamic simulation results..." subtext="Querying raster summaries, timeline series, and mass conservation error metrics." />
       ) : error ? (
-        <div className="card" style={{ borderColor: '#7F1D1D', background: '#450A0A', color: '#FCA5A5' }}>{error}</div>
+        <ErrorState title="Failed Loading Results" message={error} onRetry={() => window.location.reload()} />
       ) : results ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {/* Summary KPI Cards Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
-            <div className="card">
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-                Inundated Flood Area
-              </span>
-              <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: 'var(--accent-cyan)', marginTop: '0.25rem' }}>
-                {results.floodAreaKm2.toFixed(3)} <span style={{ fontSize: '1rem', fontWeight: 'normal', color: 'var(--text-secondary)' }}>km²</span>
-              </div>
-            </div>
+          {/* Scenario Profile Header */}
+          <ScenarioProfile simulationId={simId} />
 
-            <div className="card">
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-                Maximum Water Depth
-              </span>
-              <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: '#38BDF8', marginTop: '0.25rem' }}>
-                {results.maxDepthM.toFixed(2)} <span style={{ fontSize: '1rem', fontWeight: 'normal', color: 'var(--text-secondary)' }}>m</span>
+          {/* How to Read Hydrodynamic Results Guide */}
+          <div className="card" style={{ background: 'var(--bg-surface-secondary)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              💡 How to Read Hydrodynamic Results
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+              <div>
+                <strong style={{ color: 'var(--text-primary)' }}>Peak Inundated Area (km²):</strong> Total surface area covered by floodwater envelope at maximum extent.
               </div>
-            </div>
-
-            <div className="card">
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-                Maximum Flow Velocity
-              </span>
-              <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: '#F97316', marginTop: '0.25rem' }}>
-                {results.maxVelocityMs.toFixed(2)} <span style={{ fontSize: '1rem', fontWeight: 'normal', color: 'var(--text-secondary)' }}>m/s</span>
+              <div>
+                <strong style={{ color: 'var(--text-primary)' }}>Maximum Water Depth (m):</strong> Peak vertical water head column recorded in river channel or floodplain.
               </div>
-            </div>
-
-            <div className="card">
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-                Min Arrival Time
-              </span>
-              <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: '#EAB308', marginTop: '0.25rem' }}>
-                {results.arrivalTimeMin.toFixed(1)} <span style={{ fontSize: '1rem', fontWeight: 'normal', color: 'var(--text-secondary)' }}>min</span>
+              <div>
+                <strong style={{ color: 'var(--text-primary)' }}>Peak Flow Velocity (m/s):</strong> Cellular flow speed (speeds &gt;2 m/s present structural risk to buildings &amp; bridges).
               </div>
-            </div>
-
-            <div className="card">
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-                Affected Road Length
-              </span>
-              <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: 'var(--text-primary)', marginTop: '0.25rem' }}>
-                {results.roadsAffectedKm.toFixed(2)} <span style={{ fontSize: '1rem', fontWeight: 'normal', color: 'var(--text-secondary)' }}>km</span>
-              </div>
-            </div>
-
-            <div className="card">
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-                Mass Balance Error
-              </span>
-              <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: '#22C55E', marginTop: '0.25rem' }}>
-                {(results.massBalanceErrorPercent || 0.0).toFixed(4)}%
+              <div>
+                <strong style={{ color: 'var(--text-primary)' }}>Mass Balance Error (%):</strong> Numerical fluid conservation check (error &lt;1% verifies mass conservation).
               </div>
             </div>
           </div>
 
-          {/* Model Information Table */}
+          {/* Key Result KPI Cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
+            <KpiCard
+              label="Inundated Flood Area"
+              value={results.floodAreaKm2.toFixed(3)}
+              unit="km²"
+              subtext="Total submerged surface envelope"
+              badge="Extent"
+            />
+
+            <KpiCard
+              label="Maximum Water Depth"
+              value={results.maxDepthM.toFixed(2)}
+              unit="m"
+              subtext="Peak channel head elevation"
+              badge="High Depth"
+              badgeType="warning"
+            />
+
+            <KpiCard
+              label="Maximum Flow Velocity"
+              value={results.maxVelocityMs.toFixed(2)}
+              unit="m/s"
+              subtext="Cellular discharge velocity"
+              badge="Speed"
+            />
+
+            <KpiCard
+              label="Min Wave Arrival"
+              value={results.arrivalTimeMin.toFixed(1)}
+              unit="min"
+              subtext="Lead time to first downstream target"
+              badge="Arrival"
+              badgeType="safe"
+            />
+
+            <KpiCard
+              label="Mass Balance Error"
+              value={(results.massBalanceErrorPercent || 0.0).toFixed(4)}
+              unit="%"
+              subtext="Numerical conservation check"
+              badge="Conservation"
+              badgeType="safe"
+            />
+          </div>
+
+          {/* Scenario Analytical Insights */}
+          <InsightsPanel intelligence={intelligence} />
+
+          {/* Enhanced Multi-Variable Temporal Chart */}
+          <EnhancedTemporalChart
+            timeline={timeline}
+            impactTimeline={impact?.temporalMetrics?.impactTimeline}
+            activeStepIndex={activeTsIdx}
+            onSelectTimestep={(idx) => setActiveTsIdx(idx)}
+          />
+
+          {/* Technical Execution Specifications */}
           <div className="card">
-            <h3 style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '1rem', color: 'var(--text-primary)' }}>
-              Execution Technical Specifications
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-primary)', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.4rem' }}>
+              ⚙️ Technical Execution Metadata
             </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
               <div><strong>Solver Engine:</strong> Level 1 — Native 2D Diffusive Wave</div>
-              <div><strong>Execution Duration:</strong> {(results.executionTimeSeconds || 0.0).toFixed(2)} seconds</div>
-              <div><strong>Data Source:</strong> {results.dataSource === 'live' ? 'Live Hydrodynamic Output' : 'Mock Sample'}</div>
-              <div><strong>CRS Processing:</strong> EPSG:32643 (UTM Zone 43N) &rarr; EPSG:4326 (WGS84)</div>
+              <div><strong>Execution Wall Time:</strong> {(results.executionTimeSeconds || 0.0).toFixed(2)} seconds</div>
+              <div><strong>Data Source:</strong> {results.dataSource === 'live' ? 'Live Python 2D Engine Output' : 'Cached Pipeline Result'}</div>
+              <div><strong>CRS Transformation:</strong> EPSG:32643 (UTM 43N) → EPSG:4326 (WGS84 GeoJSON)</div>
             </div>
           </div>
 
-          {/* Export GIS Results Section */}
-          <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>
-              Export GIS Results & Data Products
-            </h3>
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-              <button onClick={() => handleExport('geojson')} disabled={exportLoading} className="btn btn-primary">
-                Export GeoJSON (Extent)
-              </button>
-              <button onClick={() => handleExport('shp')} disabled={exportLoading} className="btn btn-secondary">
-                Export Shapefile (SHP)
-              </button>
-              <button onClick={() => handleExport('kml')} disabled={exportLoading} className="btn btn-secondary">
-                Export KML
-              </button>
-              <button onClick={() => handleExport('geotiff')} disabled={exportLoading} className="btn btn-secondary">
-                Export GeoTIFF
-              </button>
-              <button onClick={() => handleExport('report_pdf')} disabled={exportLoading} className="btn btn-secondary">
-                Export PDF Summary
-              </button>
-            </div>
-
-            {exportJob && exportJob.downloadUrl && (
-              <div style={{ background: '#052E16', border: '1px solid #14532D', color: '#4ADE80', padding: '0.75rem', borderRadius: '6px', fontSize: '0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>GeoJSON Export Ready: <strong>{exportJob.downloadUrl}</strong></span>
-                <a href={apiClient.getResultFileUrl(simId, 'flood_extent.geojson')} target="_blank" rel="noreferrer" className="btn btn-primary" style={{ fontSize: '0.75rem' }}>
-                  Download GeoJSON
-                </a>
-              </div>
-            )}
-
-            {exportError && (
-              <div style={{ background: '#450A0A', border: '1px solid #7F1D1D', color: '#FCA5A5', padding: '0.75rem', borderRadius: '6px', fontSize: '0.85rem' }}>
-                <strong>Export Error:</strong> {exportError}
-              </div>
-            )}
-          </div>
+          <ScientificDisclaimer />
         </div>
       ) : null}
     </div>

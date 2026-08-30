@@ -1,197 +1,258 @@
-"""
-FloodLens Backend — Simulation Orchestration Service
-Orchestrates simulation execution, connects Level 1 solver to Phase 5 GIS exporter,
-and tracks simulation lifecycle status.
-"""
-
 import os
-import time
+import json
+import datetime
 import uuid
-from typing import List, Dict, Any, Optional
+import time
+import logging
+from typing import List, Optional
+from fastapi import HTTPException
+from sqlalchemy.orm import Session
 
 from backend.schemas import (
-    SimulationSchema,
     SimulationCreateSchema,
+    SimulationSchema,
     SimulationStatusSchema,
     SimulationStageSchema
 )
-from backend.services.scenario_service import get_scenario_by_id
-from simulation.level1_diffusive import Level1DiffusiveModel
+from backend.services.scenario_service import get_scenario
+from backend.models.database import (
+    SimulationModel,
+    SimulationResultModel,
+    ResultArtifactModel
+)
+from simulation.engine import HydrodynamicEngineConfig, HydrodynamicSimulationEngine
 from gis.exporter import export_simulation_gis_results
 
-# In-Memory Lifecycle Store
-SIMULATION_STORE: Dict[str, Dict[str, Any]] = {}
+logger = logging.getLogger("floodlens.simulation")
 
+_IN_MEMORY_SIMULATIONS: dict = {}
 
-def list_simulations() -> List[SimulationSchema]:
-    """Returns list of past simulation runs."""
-    res = []
-    for s_id, s_data in SIMULATION_STORE.items():
-        res.append(SimulationSchema(
-            id=s_id,
-            scenarioId=s_data["scenarioId"],
-            modelLevel=s_data["modelLevel"],
-            status=s_data["status"],
-            dataSource="live" if s_data["status"] == "completed" else "mock",
-            createdAt=s_data.get("createdAt", "2026-08-29T10:00:00Z")
-        ))
-    return res
+def list_simulations(db: Optional[Session] = None) -> List[SimulationSchema]:
+    if db:
+        sims = db.query(SimulationModel).all()
+        if sims:
+            return [
+                SimulationSchema(
+                    id=s.id,
+                    scenarioId=s.scenario_id,
+                    modelLevel=s.model_level,
+                    status=s.status,
+                    dataSource=s.data_source,
+                    createdAt=s.created_at
+                )
+                for s in sims
+            ]
+    return list(_IN_MEMORY_SIMULATIONS.values())
 
+def get_simulation(simulation_id: str, db: Optional[Session] = None) -> Optional[SimulationSchema]:
+    if db:
+        s = db.query(SimulationModel).filter(SimulationModel.id == simulation_id).first()
+        if s:
+            return SimulationSchema(
+                id=s.id,
+                scenarioId=s.scenario_id,
+                modelLevel=s.model_level,
+                status=s.status,
+                dataSource=s.data_source,
+                createdAt=s.created_at
+            )
+    return _IN_MEMORY_SIMULATIONS.get(simulation_id)
 
-def get_simulation_by_id(simulation_id: str) -> Optional[SimulationSchema]:
-    """Retrieves simulation record by ID."""
-    if simulation_id in SIMULATION_STORE:
-        d = SIMULATION_STORE[simulation_id]
-        return SimulationSchema(
-            id=simulation_id,
-            scenarioId=d["scenarioId"],
-            modelLevel=d["modelLevel"],
-            status=d["status"],
-            dataSource="live" if d["status"] == "completed" else "mock",
-            createdAt=d.get("createdAt", "2026-08-29T10:00:00Z")
+get_simulation_by_id = get_simulation
+
+def get_simulation_status(simulation_id: str, db: Optional[Session] = None) -> SimulationStatusSchema:
+    if db:
+        s = db.query(SimulationModel).filter(SimulationModel.id == simulation_id).first()
+        if s:
+            stages = [
+                SimulationStageSchema(name="Scenario Preparation & Validation", status="done"),
+                SimulationStageSchema(name="Level 1 Hydrodynamic Solver Execution", status="done" if s.status == "completed" else "running" if s.status == "running" else "failed" if s.status == "failed" else "pending"),
+                SimulationStageSchema(name="GIS Flood Layer & Vector Exporter", status="done" if s.status == "completed" else "pending"),
+                SimulationStageSchema(name="Settlement Exposure & Warning Alerts", status="done" if s.status == "completed" else "pending")
+            ]
+            return SimulationStatusSchema(
+                simulationId=s.id,
+                stage=s.stage,
+                stagePercent=s.stage_percent,
+                stages=stages
+            )
+
+    sim = get_simulation(simulation_id, db)
+    if not sim:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Simulation '{simulation_id}' not found."
         )
-    return None
 
-
-def get_simulation_status(simulation_id: str) -> Optional[SimulationStatusSchema]:
-    """Returns lifecycle progress status for polling."""
-    if simulation_id not in SIMULATION_STORE:
-        return None
-        
-    d = SIMULATION_STORE[simulation_id]
-    status = d["status"]
-    
-    if status == "completed":
-        stages = [
-            SimulationStageSchema(name="DEM Grid Ingestion", status="done"),
-            SimulationStageSchema(name="2D Diffusive Propagation", status="done"),
-            SimulationStageSchema(name="GIS Extent Vectorization", status="done"),
-            SimulationStageSchema(name="Settlement Exposure Analysis", status="done"),
-            SimulationStageSchema(name="Warning Alert Generation", status="done")
-        ]
-        pct = 100.0
-        current_stage = "Completed"
-    elif status == "failed":
-        stages = [
-            SimulationStageSchema(name="Model Selection", status="done"),
-            SimulationStageSchema(name="Execution", status="failed")
-        ]
-        pct = 0.0
-        current_stage = d.get("error", "Execution Failed")
-    else:
-        stages = [
-            SimulationStageSchema(name="Model Selection", status="done"),
-            SimulationStageSchema(name="Execution", status="running")
-        ]
-        pct = 50.0
-        current_stage = "Running Simulation Engine"
-        
+    stages = [
+        SimulationStageSchema(name="Scenario Preparation & Validation", status="done"),
+        SimulationStageSchema(name="Level 1 Hydrodynamic Solver Execution", status="done" if sim.status == "completed" else "failed" if sim.status == "failed" else "pending"),
+        SimulationStageSchema(name="GIS Flood Layer & Vector Exporter", status="done" if sim.status == "completed" else "pending"),
+        SimulationStageSchema(name="Settlement Exposure & Warning Alerts", status="done" if sim.status == "completed" else "pending")
+    ]
     return SimulationStatusSchema(
-        simulationId=simulation_id,
-        stage=current_stage,
-        stagePercent=pct,
+        simulationId=sim.id,
+        stage="Completed" if sim.status == "completed" else "Failed",
+        stagePercent=100.0 if sim.status == "completed" else 0.0,
         stages=stages
     )
 
-
-def create_and_run_simulation(req: SimulationCreateSchema) -> SimulationSchema:
-    """
-    Orchestrates end-to-end simulation execution pipeline.
-    
-    1. Validates Scenario.
-    2. Validates Model Level.
-    3. Executes Level 1 Diffusive Solver if requested.
-    4. Passes StandardGridResult to GIS Exporter.
-    5. Returns completed simulation record.
-    """
-    scenario = get_scenario_by_id(req.scenarioId)
+def create_and_run_simulation(data: SimulationCreateSchema, db: Optional[Session] = None) -> SimulationSchema:
+    scenario = get_scenario(data.scenarioId, db)
     if not scenario:
-        raise ValueError(f"Unknown scenarioId: {req.scenarioId}")
-
-    supported_models = ["level1", "level2", "sph_adapter", "delft3d_adapter"]
-    if req.modelLevel not in supported_models:
-        raise ValueError(f"Invalid modelLevel: {req.modelLevel}. Must be one of {supported_models}")
-
-    sim_id = f"sim-{req.modelLevel}-{uuid.uuid4().hex[:6]}"
-    created_at = "2026-08-29T10:40:00Z"
-
-    # Handle Planned / Unimplemented Models explicitly
-    if req.modelLevel != "level1":
-        SIMULATION_STORE[sim_id] = {
-            "id": sim_id,
-            "scenarioId": req.scenarioId,
-            "modelLevel": req.modelLevel,
-            "status": "failed",
-            "error": f"Model '{req.modelLevel}' is planned/adapter-only and not executable at Level 1 REST pipeline.",
-            "createdAt": created_at
-        }
-        raise NotImplementedError(
-            f"Model '{req.modelLevel}' is planned/adapter-only. Only Level 1 ('level1') native solver is executable in Phase 6."
+        logger.warning(f"Simulation creation failed: Scenario '{data.scenarioId}' not found.")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Scenario '{data.scenarioId}' not found."
         )
 
-    # Register Running State
-    SIMULATION_STORE[sim_id] = {
-        "id": sim_id,
-        "scenarioId": req.scenarioId,
-        "modelLevel": req.modelLevel,
-        "status": "running",
-        "createdAt": created_at
-    }
+    supported_models = {"level1"}
+    planned_models = {"level2", "sph_adapter", "delft3d_adapter"}
 
-    try:
-        # Prepare Scenario Parameters for Level 1 Solver
-        scen_params = scenario.parameters
-        solver_config = {
-            "simulation_id": sim_id,
-            "initial_water_level_m": float(scen_params.get("initialWaterLevelM", 50.0)),
-            "reservoir_volume_m3": float(scen_params.get("reservoirVolumeMm3", 10.0)) * 1000000.0,
-            "dam_height_m": float(scen_params.get("damHeightM", 168.9)),
-            "breach_width_m": float(scen_params.get("breachWidthM", 100.0)),
-            "breach_depth_m": float(scen_params.get("breachDepthM", 25.0)),
-            "breach_formation_time_s": float(scen_params.get("breachFormationTimeMin", 30.0)) * 60.0,
-            "simulation_duration_min": float(scen_params.get("simulationDurationHr", 1.0)) * 60.0,
-            "roughness_coefficient": float(scen_params.get("roughnessCoefficient", 0.035)),
-            "output_interval_min": 5.0,
-            "arrival_threshold_m": 0.05
-        }
-
-        # Dem Path Resolution
-        dem_path = "data/processed/dem.tif"
-        if not os.path.exists(dem_path):
-            dem_path = "data/dem.tif"
-
-        # 1. Execute Level 1 Hydrodynamic Solver
-        solver = Level1DiffusiveModel()
-        grid_result = solver.run(solver_config, dem_raster_path=dem_path)
-
-        # 2. Execute GIS Processing & Export Pipeline
-        export_paths = export_simulation_gis_results(
-            grid_result=grid_result,
-            villages_path="data/processed/villages.geojson",
-            roads_path="data/processed/roads.geojson",
-            output_base_dir="data/results",
-            depth_threshold_m=0.10
+    if data.modelLevel in planned_models:
+        logger.warning(f"Simulation creation rejected: Model level '{data.modelLevel}' is planned/adapter-only.")
+        raise HTTPException(
+            status_code=501,
+            detail=f"Model level '{data.modelLevel}' is planned/adapter-only for a future release and is not yet implemented."
         )
 
-        # 3. Save Completed State in Store
-        SIMULATION_STORE[sim_id].update({
-            "status": "completed",
-            "grid_result": grid_result,
-            "export_paths": export_paths,
-            "summary_stats": grid_result.summary_stats,
-            "mass_balance_info": grid_result.mass_balance_info
-        })
+    if data.modelLevel not in supported_models:
+        logger.warning(f"Simulation creation rejected: Invalid model level '{data.modelLevel}'.")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid model level '{data.modelLevel}'. Must be one of {supported_models}."
+        )
 
-        return SimulationSchema(
+    sim_id = f"sim-level1-{uuid.uuid4().hex[:6]}"
+    created_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    sim_schema = SimulationSchema(
+        id=sim_id,
+        scenarioId=data.scenarioId,
+        modelLevel=data.modelLevel,
+        status="running",
+        dataSource="live",
+        createdAt=created_at
+    )
+    _IN_MEMORY_SIMULATIONS[sim_id] = sim_schema
+
+    if db:
+        sim_model = SimulationModel(
             id=sim_id,
-            scenarioId=req.scenarioId,
-            modelLevel=req.modelLevel,
-            status="completed",
-            dataSource="live",
-            createdAt=created_at
+            scenario_id=data.scenarioId,
+            model_level=data.modelLevel,
+            status="running",
+            stage="Running Level 1 Hydrodynamic Engine",
+            stage_percent=25.0,
+            data_source="live",
+            created_at=created_at
         )
+        db.add(sim_model)
+        db.commit()
+
+    logger.info(f"[{sim_id}] Simulation created and registered. Initializing Level 1 hydrodynamic engine...")
+    start_time = time.time()
+    try:
+        engine_config = HydrodynamicEngineConfig(
+            simulation_id=sim_id,
+            aoi_id=scenario.studyAreaId,
+            scenario_type=scenario.type,
+            initial_head_m=float(scenario.parameters.get("initialWaterLevelM", 50.0)),
+            storage_volume_mm3=float(scenario.parameters.get("reservoirVolumeMm3", 10.0)),
+            breach_width_m=float(scenario.parameters.get("breachWidthM", 100.0)),
+            breach_formation_time_min=float(scenario.parameters.get("breachFormationTimeMin", 30.0)),
+            simulation_duration_hr=float(scenario.parameters.get("simulationDurationHr", 1.0)),
+            manning_n=float(scenario.parameters.get("roughnessCoefficient", 0.035))
+        )
+
+        engine = HydrodynamicSimulationEngine(config=engine_config)
+        grid_result = engine.run_simulation()
+        logger.info(f"[{sim_id}] Level 1 2D hydrodynamic solver complete. Exporting GIS result layers...")
+
+        export_paths = export_simulation_gis_results(
+            grid_result=grid_result
+        )
+        results_dir = os.path.dirname(export_paths["metadata"])
+
+        exec_time = time.time() - start_time
+        logger.info(f"[{sim_id}] GIS export complete. Total duration: {exec_time:.2f}s.")
+
+        # Read exported summary metadata KPI values
+        meta_path = os.path.join(results_dir, "metadata.json")
+        meta_data = {}
+        if os.path.exists(meta_path):
+            with open(meta_path, "r", encoding="utf-8") as f:
+                meta_data = json.load(f)
+
+        sim_schema.status = "completed"
+
+        if db:
+            sim_model = db.query(SimulationModel).filter(SimulationModel.id == sim_id).first()
+            if sim_model:
+                sim_model.status = "completed"
+                sim_model.stage = "Completed"
+                sim_model.stage_percent = 100.0
+                sim_model.completed_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+            stats = grid_result.summary_stats or {}
+            mb = grid_result.mass_balance_info or {}
+
+            # Insert SimulationResultModel
+            res_model = SimulationResultModel(
+                id=f"res-{uuid.uuid4().hex[:8]}",
+                simulation_id=sim_id,
+                flood_area_km2=float(meta_data.get("flood_area_km2", stats.get("total_flood_area_km2", 0.0))),
+                max_depth_m=float(meta_data.get("max_depth_m", stats.get("max_depth_m", 0.0))),
+                max_velocity_ms=float(meta_data.get("max_velocity_ms", stats.get("max_velocity_ms", 0.0))),
+                arrival_time_min=float(meta_data.get("arrival_time_min", stats.get("min_arrival_time_min", 0.0))),
+                duration_hr=float(meta_data.get("duration_hr", 1.0)),
+                population_exposed=meta_data.get("population_exposed", 0),
+                buildings_affected=meta_data.get("buildings_affected", 0),
+                roads_affected_km=float(meta_data.get("roads_affected_km", 0.0)),
+                mass_balance_error_percent=float(mb.get("mass_balance_error_percent", 0.0)),
+                execution_time_seconds=float(exec_time),
+                data_source="live"
+            )
+            db.add(res_model)
+
+            # Insert ResultArtifactModel records
+            artifact_files = [
+                ("flood_extent.geojson", "extent_geojson", "application/geo+json"),
+                ("flood_layers.json", "layers_json", "application/json"),
+                ("exposure.json", "exposure_json", "application/json"),
+                ("metadata.json", "metadata_json", "application/json")
+            ]
+
+            for fname, atype, ctype in artifact_files:
+                fpath = os.path.join(results_dir, fname)
+                fsize = os.path.getsize(fpath) if os.path.exists(fpath) else 0
+                rel_path = os.path.relpath(fpath, os.getcwd())
+                art_model = ResultArtifactModel(
+                    id=f"art-{uuid.uuid4().hex[:8]}",
+                    simulation_id=sim_id,
+                    artifact_type=atype,
+                    relative_path=rel_path,
+                    file_size=fsize,
+                    content_type=ctype
+                )
+                db.add(art_model)
+
+            db.commit()
+            logger.info(f"[{sim_id}] Simulation state and result artifacts persisted to database.")
+
+        return sim_schema
 
     except Exception as e:
-        SIMULATION_STORE[sim_id]["status"] = "failed"
-        SIMULATION_STORE[sim_id]["error"] = str(e)
-        raise RuntimeError(f"Simulation pipeline failed: {str(e)}")
+        logger.error(f"[{sim_id}] Simulation failed during execution: {e}", exc_info=True)
+        sim_schema.status = "failed"
+        if db:
+            sim_model = db.query(SimulationModel).filter(SimulationModel.id == sim_id).first()
+            if sim_model:
+                sim_model.status = "failed"
+                sim_model.stage = "Failed"
+                sim_model.error_message = str(e)
+                db.commit()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Simulation failed during execution: {str(e)}"
+        )

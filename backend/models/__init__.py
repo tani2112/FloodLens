@@ -1,4 +1,15 @@
-"""
-FloodLens Database Models Package (SQLAlchemy / GeoAlchemy2)
-Phase 2 Shell — Model classes to be implemented in Phase 6.
-"""
+from backend.models.database import (
+    StudyAreaModel,
+    ScenarioModel,
+    SimulationModel,
+    SimulationResultModel,
+    ResultArtifactModel
+)
+
+__all__ = [
+    "StudyAreaModel",
+    "ScenarioModel",
+    "SimulationModel",
+    "SimulationResultModel",
+    "ResultArtifactModel"
+]

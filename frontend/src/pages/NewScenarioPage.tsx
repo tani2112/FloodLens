@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../services/api/client';
 import { useSimulationDraftStore } from '../store/useSimulationDraftStore';
+import { SimulationStepper } from '../components/common/SimulationStepper';
 
 export const NewScenarioPage: React.FC = () => {
   const navigate = useNavigate();
@@ -48,115 +49,111 @@ export const NewScenarioPage: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div style={{ maxWidth: '850px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div>
-        <div style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)', fontWeight: 600, textTransform: 'uppercase' }}>
-          Simulation Wizard — Step 2 of 3
+        <div style={{ fontSize: '0.8rem', color: 'var(--accent-primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          Simulation Wizard — Step 2 of 4
         </div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>
-          Scenario Parameters Configuration
+        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '0.2rem' }}>
+          Scenario Hydraulics Configuration
         </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
           Define breach hydrograph hydraulics and reservoir storage volumes for canonical AOI.
         </p>
       </div>
 
+      <SimulationStepper currentStep={2} />
+
       {error && (
-        <div className="card" style={{ borderColor: '#7F1D1D', background: '#450A0A', color: '#FCA5A5' }}>
+        <div className="card" style={{ borderColor: '#fca5a5', background: '#fee2e2', color: '#991b1b' }}>
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-        <div>
-          <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>
-            Hazard Event Type
-          </label>
+        <div className="form-group">
+          <label className="form-label">Hazard Event Type</label>
           <select
             value={scenarioType}
             onChange={(e) => setScenarioType(e.target.value as any)}
-            style={{ width: '100%', padding: '0.6rem', background: 'var(--bg-canvas)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '6px' }}
+            className="form-select"
           >
             <option value="dam_break">Dam Break / Structure Failure</option>
             <option value="natural_blockage">Landslide Dam / Natural Blockage Failure</option>
             <option value="glof">Glacial Lake Outburst Flood (GLOF)</option>
             <option value="water_release">Controlled Heavy Spillway Release</option>
           </select>
+          <span className="form-help">Select the primary mechanism initiating rapid water release into the downstream river channel.</span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-          <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.35rem', color: 'var(--text-secondary)' }}>
-              Initial Reservoir Head (m)
-            </label>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+          <div className="form-group">
+            <label className="form-label">Initial Reservoir Head (m)</label>
             <input
               type="number"
               step="0.1"
               value={initialWaterLevelM}
               onChange={(e) => setInitialWaterLevelM(parseFloat(e.target.value))}
-              style={{ width: '100%', padding: '0.5rem', background: 'var(--bg-canvas)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '6px' }}
+              className="form-input"
             />
+            <span className="form-help">The water surface elevation behind the dam relative to the downstream river bed.</span>
           </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.35rem', color: 'var(--text-secondary)' }}>
-              Reservoir Storage Volume (Mm³)
-            </label>
+          <div className="form-group">
+            <label className="form-label">Reservoir Storage Volume (Mm³)</label>
             <input
               type="number"
               step="0.1"
               value={reservoirVolumeMm3}
               onChange={(e) => setReservoirVolumeMm3(parseFloat(e.target.value))}
-              style={{ width: '100%', padding: '0.5rem', background: 'var(--bg-canvas)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '6px' }}
+              className="form-input"
             />
+            <span className="form-help">The total volume of impounded water in million cubic meters available to drain.</span>
           </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.35rem', color: 'var(--text-secondary)' }}>
-              Final Breach Width (m)
-            </label>
+          <div className="form-group">
+            <label className="form-label">Final Breach Width (m)</label>
             <input
               type="number"
               step="1"
               value={breachWidthM}
               onChange={(e) => setBreachWidthM(parseFloat(e.target.value))}
-              style={{ width: '100%', padding: '0.5rem', background: 'var(--bg-canvas)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '6px' }}
+              className="form-input"
             />
+            <span className="form-help">The approximate width of the dam breach opening through which water discharges.</span>
           </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.35rem', color: 'var(--text-secondary)' }}>
-              Breach Formation Time (min)
-            </label>
+          <div className="form-group">
+            <label className="form-label">Breach Formation Time (min)</label>
             <input
               type="number"
               step="1"
               value={breachFormationTimeMin}
               onChange={(e) => setBreachFormationTimeMin(parseFloat(e.target.value))}
-              style={{ width: '100%', padding: '0.5rem', background: 'var(--bg-canvas)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '6px' }}
+              className="form-input"
             />
+            <span className="form-help">The duration over which the breach gap widens to its maximum dimension.</span>
           </div>
         </div>
 
-        <div>
-          <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.35rem', color: 'var(--text-secondary)' }}>
-            Simulation Duration (hours)
-          </label>
+        <div className="form-group">
+          <label className="form-label">Simulation Propagation Duration (hours)</label>
           <input
             type="number"
             step="0.1"
             value={simulationDurationHr}
             onChange={(e) => setSimulationDurationHr(parseFloat(e.target.value))}
-            style={{ width: '100%', padding: '0.5rem', background: 'var(--bg-canvas)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '6px' }}
+            className="form-input"
           />
+          <span className="form-help">Total timeframe for tracking the 2D flood wave downstream through the catchment.</span>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
           <button type="button" onClick={() => navigate('/simulations/new/study-area')} className="btn btn-secondary">
-            &larr; Back to Step 1
+            ← Back to Step 1
           </button>
           <button type="submit" disabled={loading} className="btn btn-primary">
-            {loading ? 'Creating Scenario...' : 'Continue to Step 3: Model Level &rarr;'}
+            {loading ? 'Creating Scenario...' : 'Continue to Step 3: Model Level →'}
           </button>
         </div>
       </form>

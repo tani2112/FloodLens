@@ -1,114 +1,95 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiClient } from '../services/api/client';
 import { useSimulationDraftStore } from '../store/useSimulationDraftStore';
 import { ModelLevel } from '../types';
+import { SimulationStepper } from '../components/common/SimulationStepper';
 
 export const NewModelPage: React.FC = () => {
   const navigate = useNavigate();
-  const { scenario, selectedModelLevel, setModelLevel } = useSimulationDraftStore();
-
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const { selectedModelLevel, setModelLevel } = useSimulationDraftStore();
 
   const modelOptions = [
     {
       id: 'level1',
-      title: 'Level 1 — 2D Diffusive Wave Engine',
-      status: 'implemented',
-      badge: 'Implemented & Ready',
-      desc: 'Native Python 2D cellular diffusive flow solver over SRTM/Copernicus DEM. Computes water depth, arrival time, and velocity grids.'
+      title: 'Level 1 — 2D Diffusive Wave Hydrodynamic Engine',
+      isAvailable: true,
+      badge: 'Active Solver',
+      desc: 'Native Python 2D finite-volume cellular diffusive-wave flow solver over DEM elevation rasters. Computes spatial inundation extent, water depth, flow velocity, and arrival lead times in metric EPSG:32643 projection.'
     },
     {
       id: 'level2',
       title: 'Level 2 — Full 2D Shallow Water Equations (SWE)',
-      status: 'planned',
-      badge: 'Planned Phase',
-      desc: 'High-fidelity inertia & momentum conserving SWE solver. Returns 501 Not Implemented if triggered.'
+      isAvailable: false,
+      badge: 'Not Available',
+      desc: 'High-fidelity momentum-conserving 2D SWE numerical solver suite for high-velocity turbulent hydrodynamics. Planned for future scientific release.'
     },
     {
       id: 'sph_adapter',
       title: 'Level 3 — SPH Particle Adapter Interface',
-      status: 'adapter_sample_only',
-      badge: 'Adapter Interface Stub',
-      desc: 'Smoothed Particle Hydrodynamics (SPH) 3D turbulent flow adapter contract interface.'
+      isAvailable: false,
+      badge: 'Not Available',
+      desc: 'Smoothed Particle Hydrodynamics (SPH) 3D turbulent flow adapter contract interface stub.'
     },
     {
       id: 'delft3d_adapter',
       title: 'Level 3 — Delft3D Execution Adapter Interface',
-      status: 'adapter_sample_only',
-      badge: 'Adapter Interface Stub',
-      desc: 'Industrial hydrodynamic modeling suite execution wrapper contract interface.'
+      isAvailable: false,
+      badge: 'Not Available',
+      desc: 'External industrial Delft3D hydrodynamic modeling suite execution wrapper contract interface stub.'
     }
   ];
 
-  const handleRunSimulation = async () => {
-    if (!scenario?.id) {
-      setError('No scenario configured. Please complete Step 2 first.');
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const simulation = await apiClient.createSimulation({
-        scenarioId: scenario.id,
-        modelLevel: selectedModelLevel
-      });
-
-      navigate(`/simulations/${simulation.id}`);
-    } catch (err: any) {
-      setError(err.detail || err.message || 'Failed to start simulation orchestration pipeline');
-    } finally {
-      setLoading(false);
+  const handleSelectModel = (id: string, isAvailable: boolean) => {
+    if (isAvailable) {
+      setModelLevel(id as ModelLevel);
     }
   };
 
+  const handleNext = () => {
+    navigate('/simulations/new/review');
+  };
+
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div style={{ maxWidth: '850px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div>
-        <div style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)', fontWeight: 600, textTransform: 'uppercase' }}>
-          Simulation Wizard — Step 3 of 3
+        <div style={{ fontSize: '0.8rem', color: 'var(--accent-primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          Simulation Wizard — Step 3 of 4
         </div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>
+        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '0.2rem', letterSpacing: '-0.02em' }}>
           Hydrodynamic Model Selection
         </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-          Select scientific fidelity tier for 2D flow propagation and GIS exposure analysis.
+          Select the physics engine tier for 2D flow propagation, cell-by-cell raster routing, and GIS exposure calculation.
         </p>
       </div>
 
-      {error && (
-        <div className="card" style={{ borderColor: '#7F1D1D', background: '#450A0A', color: '#FCA5A5' }}>
-          <h4 style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>Model Execution Warning</h4>
-          <p style={{ fontSize: '0.85rem' }}>{error}</p>
-        </div>
-      )}
+      <SimulationStepper currentStep={3} />
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {modelOptions.map((opt) => {
-          const isSelected = selectedModelLevel === opt.id;
+          const isSelected = selectedModelLevel === opt.id && opt.isAvailable;
           return (
             <div
               key={opt.id}
-              onClick={() => setModelLevel(opt.id as ModelLevel)}
+              onClick={() => handleSelectModel(opt.id, opt.isAvailable)}
               className="card"
               style={{
-                cursor: 'pointer',
-                borderColor: isSelected ? 'var(--accent-cyan)' : 'var(--border-color)',
-                background: isSelected ? 'var(--bg-surface-hover)' : 'var(--bg-surface-card)'
+                cursor: opt.isAvailable ? 'pointer' : 'not-allowed',
+                opacity: opt.isAvailable ? 1 : 0.65,
+                borderColor: isSelected ? 'var(--accent-primary)' : 'var(--border-color)',
+                background: isSelected ? 'var(--bg-surface-muted)' : 'var(--bg-surface)',
+                boxShadow: isSelected ? '0 0 0 2px rgba(59, 130, 182, 0.25)' : '0 1px 3px rgba(23, 43, 58, 0.03)'
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <h3 style={{ fontSize: '1.05rem', color: isSelected ? 'var(--accent-cyan)' : 'var(--text-primary)' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: isSelected ? 'var(--accent-primary)' : 'var(--text-primary)' }}>
                   {opt.title}
                 </h3>
-                <span className={`badge ${opt.status === 'implemented' ? 'badge-completed' : 'badge-pending'}`}>
+                <span className={`badge ${opt.isAvailable ? 'badge-completed' : 'badge-pending'}`}>
                   {opt.badge}
                 </span>
               </div>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                 {opt.desc}
               </p>
             </div>
@@ -117,10 +98,10 @@ export const NewModelPage: React.FC = () => {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
           <button onClick={() => navigate('/simulations/new/scenario')} className="btn btn-secondary">
-            &larr; Back to Step 2
+            ← Back to Step 2
           </button>
-          <button onClick={handleRunSimulation} disabled={loading} className="btn btn-primary">
-            {loading ? 'Orchestrating Simulation...' : 'Run Hydrodynamic Simulation \u25B6'}
+          <button onClick={handleNext} className="btn btn-primary">
+            Continue to Step 4: Final Review →
           </button>
         </div>
       </div>
