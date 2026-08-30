@@ -30,13 +30,13 @@ def get_all_study_areas(db: Optional[Session] = None) -> List[StudyAreaSchema]:
             data = json.load(f)
         return [
             StudyAreaSchema(
-                id=data.get("id", "idukki-canonical"),
-                name=data.get("name", "Idukki Dam & Periyar River Catchment"),
-                bbox=tuple(data.get("bbox", [76.80, 9.85, 77.10, 10.20])),
-                river=data.get("river", "Periyar River"),
-                damOrBlockage=data.get("dam_or_blockage", "Idukki Arch Dam & Cheruthoni Dam"),
-                demDataset=data.get("dem_dataset", "SRTM 30m / Copernicus DEM"),
-                satelliteDataset=data.get("satellite_dataset", "Sentinel-1 / Sentinel-2")
+                id=data.get("id", "scen-nepal-glof"),
+                name=data.get("name", "Lhende Khola & Bhote Koshi / Trishuli River Catchment"),
+                bbox=tuple(data.get("bbox", [85.20, 27.90, 85.50, 28.40])),
+                river=data.get("river", "Bhote Koshi / Trishuli River"),
+                damOrBlockage=data.get("dam_or_blockage", "Rasuwagadhi Dam & Lhende Khola Barrier Lake"),
+                demDataset=data.get("dem_dataset", "Copernicus DEM 30m / SRTM 30m Nepal Himalayas"),
+                satelliteDataset=data.get("satellite_dataset", "Sentinel-1 / Sentinel-2 / PlanetScope")
             )
         ]
     return []

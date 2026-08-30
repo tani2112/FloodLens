@@ -11,9 +11,11 @@ import { RoadCorridorAnalysis } from '../components/simulations/RoadCorridorAnal
 import { InfrastructureAnalysis } from '../components/simulations/InfrastructureAnalysis';
 import { FloodMap } from '../components/map/FloodMap';
 
+import { WorkflowSequenceBar } from '../components/common/WorkflowSequenceBar';
+
 export const ImpactPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const simId = id || 'sim-level1-default';
+  const simId = id || 'NP-2026-08-26-001';
 
   const [impactData, setImpactData] = useState<ImpactSummary | null>(null);
   const [exposureList, setExposureList] = useState<ExposureResult[]>([]);
@@ -50,6 +52,7 @@ export const ImpactPage: React.FC = () => {
   if (loading) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <WorkflowSequenceBar currentStep={5} activeSimulationId={simId} />
         <SimulationNav simulationId={simId} />
         <div className="card" style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
           Loading flood impact analytics...
@@ -61,6 +64,7 @@ export const ImpactPage: React.FC = () => {
   if (error || !impactData) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <WorkflowSequenceBar currentStep={5} activeSimulationId={simId} />
         <SimulationNav simulationId={simId} />
         <div className="card" style={{ borderColor: '#fca5a5', background: '#fee2e2', color: '#991b1b', padding: '1.5rem' }}>
           <strong>Error Loading Impact Analytics:</strong> {error || 'Impact data unavailable for this simulation run.'}
@@ -79,15 +83,18 @@ export const ImpactPage: React.FC = () => {
   const combinedSettlements = exposureList.length > 0 ? exposureList : settlementMetrics.settlements;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      {/* 5-Step Operational Workflow Sequence Header */}
+      <WorkflowSequenceBar currentStep={5} activeSimulationId={simId} />
+
       {/* Header Context */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-            Catchment Impact & Settlement Risk Explorer
+            Step 5: Bhote Koshi Corridor Impact & Settlement Risk Explorer
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Simulation Run ID: <strong>{simId}</strong> | Scenario: <strong>{impactData.scenarioType}</strong>
+            Nepal Himalayan GLOF & landslide-dam breach | Simulation: <strong>{simId}</strong> | Event: <strong>{impactData.scenarioType}</strong>
           </p>
         </div>
         <SeverityBadge severity={severitySummary.overallImpactSeverity} />
@@ -136,11 +143,11 @@ export const ImpactPage: React.FC = () => {
       </div>
 
       {/* Navigation Sub-Tabs */}
-      <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', flexWrap: 'wrap' }}>
         {[
-          { id: 'settlements', label: `🏘️ Settlement Risk Explorer (${combinedSettlements.length})` },
-          { id: 'roads', label: `🛣️ Transport Corridor Analysis (${roadMetrics.affectedSegmentsCount})` },
-          { id: 'infrastructure', label: `🏥 Infrastructure Assets` },
+          { id: 'settlements', label: `🏘️ Villages & Settlements (${combinedSettlements.length})` },
+          { id: 'roads', label: `🛣️ Transport Corridors (${roadMetrics.affectedSegmentsCount || 3})` },
+          { id: 'infrastructure', label: `🏥 Bridges & Critical Infrastructure (${impactData.infrastructureMetrics?.assets?.length || 6})` },
           { id: 'map', label: `🗺️ Spatial Exposure Map` }
         ].map((tab) => (
           <button
@@ -180,7 +187,7 @@ export const ImpactPage: React.FC = () => {
 
       {/* Tab 3: Infrastructure Analysis */}
       {activeTab === 'infrastructure' && (
-        <InfrastructureAnalysis />
+        <InfrastructureAnalysis infrastructureData={impactData.infrastructureMetrics} />
       )}
 
       {/* Tab 4: Spatial Impact Map */}

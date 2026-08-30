@@ -8,7 +8,7 @@ import { ScientificDisclaimer } from '../components/common/ScientificDisclaimer'
 
 export const WarningsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const simId = id || 'sim-level1-default';
+  const simId = id || 'NP-2026-08-26-001';
 
   const [warnings, setWarnings] = useState<Warning[]>([]);
   const [loading, setLoading] = useState<boolean>(true);

@@ -37,17 +37,17 @@ class TestDatabasePersistence(unittest.TestCase):
             os.remove(self.temp_db_path)
 
     def test_01_canonical_aoi_seeding_and_idempotency(self):
-        """Tests that canonical Idukki study area is seeded and init_db is idempotent."""
-        canonical = self.db.query(StudyAreaModel).filter(StudyAreaModel.id == "idukki-canonical").first()
+        """Tests that canonical Nepal study area is seeded and init_db is idempotent."""
+        canonical = self.db.query(StudyAreaModel).filter(StudyAreaModel.id == "scen-nepal-glof").first()
         if not canonical:
             area = StudyAreaModel(
-                id="idukki-canonical",
-                name="Idukki Dam & Periyar River Catchment",
-                description="Canonical AOI",
-                bbox=[76.80, 9.85, 77.10, 10.20],
-                river="Periyar River",
-                dam_or_blockage="Idukki Arch Dam & Cheruthoni Dam",
-                dem_dataset="SRTM 30m / Copernicus DEM",
+                id="scen-nepal-glof",
+                name="Lhende Khola & Bhote Koshi / Trishuli River Catchment",
+                description="Canonical AOI for Nepal GLOF",
+                bbox=[85.20, 27.90, 85.50, 28.40],
+                river="Bhote Koshi / Trishuli River",
+                dam_or_blockage="Rasuwagadhi Dam & Lhende Khola Barrier Lake",
+                dem_dataset="Copernicus DEM 30m / SRTM 30m Nepal Himalayas",
                 satellite_dataset="Sentinel-1 / Sentinel-2"
             )
             self.db.add(area)
@@ -55,29 +55,29 @@ class TestDatabasePersistence(unittest.TestCase):
 
         areas = get_all_study_areas(db=self.db)
         self.assertGreaterEqual(len(areas), 1)
-        self.assertEqual(areas[0].id, "idukki-canonical")
+        self.assertEqual(areas[0].id, "scen-nepal-glof")
 
     def test_02_scenario_persistence(self):
         """Tests persisting scenarios in the database and retrieving them."""
         # Ensure study area exists
         area = StudyAreaModel(
-            id="idukki-canonical",
-            name="Idukki Dam",
-            bbox=[76.80, 9.85, 77.10, 10.20],
-            river="Periyar River",
-            dam_or_blockage="Idukki Dam",
-            dem_dataset="SRTM 30m"
+            id="scen-nepal-glof",
+            name="Rasuwagadhi Dam",
+            bbox=[85.20, 27.90, 85.50, 28.40],
+            river="Bhote Koshi River",
+            dam_or_blockage="Rasuwagadhi Dam",
+            dem_dataset="Copernicus DEM 30m"
         )
         self.db.add(area)
         self.db.commit()
 
         payload = ScenarioCreateSchema(
-            studyAreaId="idukki-canonical",
-            type="dam_break",
+            studyAreaId="scen-nepal-glof",
+            type="glof",
             parameters=HydrodynamicParametersSchema(
-                initialWaterLevelM=50.0,
-                reservoirVolumeMm3=10.0,
-                breachWidthM=100.0
+                initialWaterLevelM=75.0,
+                reservoirVolumeMm3=15.0,
+                breachWidthM=120.0
             )
         )
         scen = create_scenario(payload, db=self.db)
@@ -88,29 +88,29 @@ class TestDatabasePersistence(unittest.TestCase):
         retrieved = get_scenario(scen.id, db=db2)
         self.assertIsNotNone(retrieved)
         self.assertEqual(retrieved.id, scen.id)
-        self.assertEqual(retrieved.type, "dam_break")
+        self.assertEqual(retrieved.type, "glof")
         db2.close()
 
     def test_03_simulation_lifecycle_and_result_persistence(self):
         """Tests running simulation, persisting KPIs, and artifact references."""
         area = StudyAreaModel(
-            id="idukki-canonical",
-            name="Idukki Dam",
-            bbox=[76.80, 9.85, 77.10, 10.20],
-            river="Periyar River",
-            dam_or_blockage="Idukki Dam",
-            dem_dataset="SRTM 30m"
+            id="scen-nepal-glof",
+            name="Rasuwagadhi Dam",
+            bbox=[85.20, 27.90, 85.50, 28.40],
+            river="Bhote Koshi River",
+            dam_or_blockage="Rasuwagadhi Dam",
+            dem_dataset="Copernicus DEM 30m"
         )
         self.db.add(area)
         self.db.commit()
 
         scen_payload = ScenarioCreateSchema(
-            studyAreaId="idukki-canonical",
-            type="dam_break",
+            studyAreaId="scen-nepal-glof",
+            type="glof",
             parameters=HydrodynamicParametersSchema(
-                initialWaterLevelM=50.0,
-                reservoirVolumeMm3=10.0,
-                breachWidthM=100.0
+                initialWaterLevelM=75.0,
+                reservoirVolumeMm3=15.0,
+                breachWidthM=120.0
             )
         )
         scen = create_scenario(scen_payload, db=self.db)

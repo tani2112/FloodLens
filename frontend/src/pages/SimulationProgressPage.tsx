@@ -5,6 +5,8 @@ import { SimulationStatus, Simulation } from '../types';
 import { StatusBadge } from '../components/common/StatusBadge';
 import { ErrorState } from '../components/common/StateComponents';
 
+import { WorkflowSequenceBar } from '../components/common/WorkflowSequenceBar';
+
 export const SimulationProgressPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -56,7 +58,8 @@ export const SimulationProgressPage: React.FC = () => {
 
   if (error) {
     return (
-      <div style={{ maxWidth: '750px', margin: '2rem auto' }}>
+      <div style={{ maxWidth: '850px', margin: '1.5rem auto' }}>
+        <WorkflowSequenceBar currentStep={3} activeSimulationId={id || 'NP-2026-08-26-001'} />
         <ErrorState
           title="Simulation Execution Error"
           message={error}
@@ -82,17 +85,17 @@ export const SimulationProgressPage: React.FC = () => {
   ];
 
   return (
-    <div style={{ maxWidth: '800px', margin: '2rem auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div style={{ maxWidth: '950px', margin: '1rem auto', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      {/* 5-Step Operational Workflow Sequence Header */}
+      <WorkflowSequenceBar currentStep={3} activeSimulationId={id || 'NP-2026-08-26-001'} />
+
       <div>
-        <div style={{ fontSize: '0.8rem', color: 'var(--accent-primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-          Simulation Execution Pipeline
-        </div>
         <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '0.2rem' }}>
-          Execution Workspace: {id}
+          Step 3: Nepal Himalayan GLOF Solver Execution Pipeline
         </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
           {isComplete
-            ? 'Simulation & GIS vector export completed successfully.'
+            ? 'Simulation & GIS vector export completed successfully. Proceed to Step 4 to view the Dynamic Inundation Map.'
             : isFailed
             ? 'Simulation execution encountered an error during flow routing.'
             : 'Executing Level 1 2D hydrodynamic finite-volume solver...'}
@@ -107,7 +110,7 @@ export const SimulationProgressPage: React.FC = () => {
         </div>
         <div>
           <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Scenario ID</div>
-          <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary)' }}>{simDetails?.scenarioId || 'scenario-dam-break-01'}</div>
+          <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary)' }}>{simDetails?.scenarioId || 'scen-nepal-glof'}</div>
         </div>
         <div>
           <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Solver Model</div>
@@ -190,24 +193,15 @@ export const SimulationProgressPage: React.FC = () => {
         {/* Completed Simulation View */}
         {isComplete && !isFailed && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginTop: '0.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--status-completed-text)' }}>
-              ✓ Level 1 Hydrodynamic Solver Complete
+            <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--status-completed-text)' }}>
+              ✓ Step 3 Hydrodynamic Solver Complete!
             </span>
-            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-              <button onClick={() => navigate(`/simulations/${id}`)} className="btn btn-primary" style={{ padding: '0.55rem 0.9rem', fontSize: '0.82rem' }}>
-                📋 Overview
+            <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+              <button onClick={() => navigate(`/simulations/${id}/map`)} className="btn btn-primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.88rem', fontWeight: 700 }}>
+                Step 4: View Dynamic Inundation Map →
               </button>
-              <button onClick={() => navigate(`/simulations/${id}/map`)} className="btn btn-secondary" style={{ padding: '0.55rem 0.9rem', fontSize: '0.82rem' }}>
-                🗺️ View Map
-              </button>
-              <button onClick={() => navigate(`/simulations/${id}/results`)} className="btn btn-secondary" style={{ padding: '0.55rem 0.9rem', fontSize: '0.82rem' }}>
-                📊 Results
-              </button>
-              <button onClick={() => navigate(`/simulations/${id}/impact`)} className="btn btn-outline" style={{ padding: '0.55rem 0.9rem', fontSize: '0.82rem' }}>
-                🏘️ Impact
-              </button>
-              <button onClick={() => navigate(`/simulations/${id}/warnings`)} className="btn btn-outline" style={{ padding: '0.55rem 0.9rem', fontSize: '0.82rem' }}>
-                🚨 Alerts
+              <button onClick={() => navigate(`/simulations/${id}/impact`)} className="btn btn-secondary" style={{ padding: '0.6rem 1rem', fontSize: '0.85rem' }}>
+                Step 5: Analyze Impact & Evacuation →
               </button>
             </div>
           </div>

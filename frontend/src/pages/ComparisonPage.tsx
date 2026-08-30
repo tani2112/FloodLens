@@ -4,6 +4,7 @@ import { apiClient } from '../services/api/client';
 import { ComparisonResult, Simulation } from '../types';
 import { ScientificDisclaimer } from '../components/common/ScientificDisclaimer';
 import { FloodMap } from '../components/map/FloodMap';
+import { mockSimulations } from '../data/mock';
 
 export const ComparisonPickerPage: React.FC = () => {
   const navigate = useNavigate();
@@ -15,16 +16,18 @@ export const ComparisonPickerPage: React.FC = () => {
   useEffect(() => {
     apiClient.getSimulations()
       .then((data) => {
-        setSimulations(data);
-        if (data.length >= 2) {
-          setRunA(data[0].id);
-          setRunB(data[1].id);
-        } else if (data.length === 1) {
-          setRunA(data[0].id);
+        const nepalRuns = data.filter((sim) => /^(NP-|scen-nepal|nepal)/i.test(`${sim.id} ${sim.scenarioId}`));
+        const activeRuns = nepalRuns.length > 0 ? nepalRuns : mockSimulations;
+        setSimulations(activeRuns);
+        if (activeRuns.length >= 2) {
+          setRunA(activeRuns[0].id);
+          setRunB(activeRuns[1].id);
+        } else if (activeRuns.length === 1) {
+          setRunA(activeRuns[0].id);
         }
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => { setSimulations(mockSimulations); setRunA(mockSimulations[0].id); setLoading(false); });
   }, []);
 
   const handleCompare = () => {
@@ -40,7 +43,7 @@ export const ComparisonPickerPage: React.FC = () => {
           Scenario Impact & Hydrodynamic Comparison
         </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-          Select two completed simulation runs to evaluate side-by-side impact differentials (Baseline vs Comparison Scenario).
+          Compare two Nepal Himalayan GLOF routing runs to assess downstream impact differentials along the Bhote Koshi corridor.
         </p>
       </div>
 

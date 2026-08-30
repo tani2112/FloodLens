@@ -8,11 +8,11 @@ from pydantic import BaseModel, Field
 
 # 1. Study Area Schemas
 class StudyAreaSchema(BaseModel):
-    id: str = Field(..., example="idukki-canonical")
-    name: str = Field(..., example="Idukki Dam & Periyar River Catchment")
-    bbox: List[float] = Field(..., description="[min_lon, min_lat, max_lon, max_lat]", example=[76.80, 9.85, 77.10, 10.20])
-    river: str = Field(..., example="Periyar River")
-    damOrBlockage: str = Field(..., example="Idukki Arch Dam / Cheruthoni Spillway")
+    id: str = Field(..., example="scen-nepal-glof")
+    name: str = Field(..., example="Lhende Khola & Bhote Koshi / Trishuli River Catchment")
+    bbox: List[float] = Field(..., description="[min_lon, min_lat, max_lon, max_lat]", example=[85.20, 27.90, 85.50, 28.40])
+    river: str = Field(..., example="Bhote Koshi / Trishuli River")
+    damOrBlockage: str = Field(..., example="Rasuwagadhi Dam & Lhende Khola Barrier Lake")
     demDataset: str = Field(..., example="SRTM 30m / Copernicus DEM")
     satelliteDataset: Optional[str] = "Sentinel-1 / Sentinel-2"
     createdAt: Optional[str] = "2026-08-29T10:00:00Z"

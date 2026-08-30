@@ -16,10 +16,10 @@ from simulation.engine import StandardGridResult, GridMetadata
 def wgs84_to_grid_idx(lon: float, lat: float, meta: GridMetadata) -> Tuple[int, int]:
     """
     Converts WGS84 EPSG:4326 longitude/latitude into DEM grid cell indices (row, col).
-    Uses canonical Idukki geographic bounding box [76.80, 9.85, 77.10, 10.20].
+    Uses canonical Nepal Himalayan geographic bounding box [85.20, 27.90, 85.50, 28.40].
     """
-    min_lon, max_lon = 76.80, 77.10
-    min_lat, max_lat = 9.85, 10.20
+    min_lon, max_lon = 85.20, 85.50
+    min_lat, max_lat = 27.90, 28.40
 
     col_frac = (lon - min_lon) / (max_lon - min_lon)
     row_frac = (max_lat - lat) / (max_lat - min_lat)

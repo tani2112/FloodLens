@@ -145,7 +145,27 @@ class Level1DiffusiveModel(BaseSimulationEngine):
         vol_initial = float(np.sum(H) * cell_area)
         vol_source_cumulative = 0.0
 
-        q_peak = (2.0 * vol_reservoir) / (t_breach_s * 1.5)
+        # 5. Physics-Based Peak Outflow Hydrograph Calculation (Froehlich 2008 & Ritter 1D)
+        breach_type = str(scenario_config.get("breach_type", scenario_config.get("type", "dam_break"))).lower()
+        breach_width_m = float(scenario_config.get("breach_width_m", 100.0))
+        g = 9.81  # Acceleration due to gravity (m/s²)
+
+        if "overtopping" in breach_type and breach_type != "dam_break":
+            # Froehlich (2008) Overtopping Empirical Peak Discharge Formula + Broad-Crested Weir
+            q_froehlich = 0.607 * (max(1.0, vol_reservoir) ** 0.295) * (max(1.0, h_initial) ** 1.24)
+            q_weir = 1.7 * breach_width_m * (h_initial ** 1.5)
+            q_peak = max(q_froehlich, q_weir)
+        elif "piping" in breach_type:
+            # MacDonald & Langridge-Monopolis (1984) Piping Peak Discharge Formula
+            q_macdonald = 1.154 * ((max(1.0, vol_reservoir) * max(1.0, h_initial) / 1e6) ** 0.412) * 1000.0
+            q_peak = max(500.0, q_macdonald)
+        elif "instantaneous" in breach_type or "collapse" in breach_type:
+            # Ritter (1892) 1D Dam-Break Analytical Solution: Q = (8/27) * B * sqrt(g) * H^(3/2)
+            q_ritter = (8.0 / 27.0) * breach_width_m * np.sqrt(g) * (h_initial ** 1.5)
+            q_peak = max(1000.0, q_ritter)
+        else:
+            # Standard Triangular Hydrograph Peak Discharge
+            q_peak = (2.0 * vol_reservoir) / (t_breach_s * 1.5)
 
         rec_idx = 0
         depth_array[0] = H.copy()
@@ -159,7 +179,7 @@ class Level1DiffusiveModel(BaseSimulationEngine):
         current_time_s = 0.0
         
         while current_time_s < sim_duration_s:
-            # 5.1 Breach Water Source Injection
+            # 5.1 Breach Water Source Hydrograph Injection
             if current_time_s <= t_breach_s * 2.0 and vol_source_cumulative < vol_reservoir:
                 if current_time_s <= t_breach_s:
                     q_inflow = q_peak * (current_time_s / t_breach_s)

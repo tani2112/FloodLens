@@ -26,8 +26,8 @@ def main():
     parser.add_argument(
         "--aoi-bbox",
         type=str,
-        default="76.80,9.85,77.10,10.20",
-        help="Bounding box coordinates in WGS84: min_lon,min_lat,max_lon,max_lat (Default: Idukki Dam Catchment)"
+        default="85.20,27.90,85.50,28.40",
+        help="Bounding box coordinates in WGS84: min_lon,min_lat,max_lon,max_lat (Default: Nepal Himalayas Bhote Koshi Catchment)"
     )
     parser.add_argument(
         "--output-dir",

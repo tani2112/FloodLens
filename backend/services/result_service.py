@@ -147,12 +147,16 @@ def get_exposure_results(simulation_id: str, db: Optional[Session] = None) -> Op
         return None
 
     exp_path = os.path.join(get_simulation_result_dir(simulation_id), "exposure.json")
-    if not os.path.exists(exp_path):
-        return []
-
-    with open(exp_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-        v_exp = data.get("villageExposure", [])
+    v_exp = []
+    if os.path.exists(exp_path):
+        with open(exp_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            v_exp = data.get("villageExposure", [])
+    else:
+        from backend.services.impact_service import get_impact_summary
+        imp_summary = get_impact_summary(simulation_id, db=db)
+        if imp_summary and "settlementMetrics" in imp_summary:
+            v_exp = imp_summary["settlementMetrics"].get("settlements", [])
 
     res = []
     for item in v_exp:

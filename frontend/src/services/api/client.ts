@@ -99,7 +99,7 @@ export const apiClient = {
   }): Promise<Scenario> {
     if (IS_DEMO_MODE) {
       return {
-        id: `scen-demo-${Date.now().toString().slice(-4)}`,
+        id: `scen-nepal-glof-${Date.now().toString().slice(-4)}`,
         studyAreaId: payload.studyAreaId,
         type: payload.type as any,
         parameters: payload.parameters,
@@ -131,7 +131,7 @@ export const apiClient = {
   async createSimulation(payload: { scenarioId: string; modelLevel: string }): Promise<Simulation> {
     if (IS_DEMO_MODE) {
       return {
-        id: `sim-demo-${Date.now().toString().slice(-4)}`,
+        id: `NP-2026-08-26-${Date.now().toString().slice(-4)}`,
         scenarioId: payload.scenarioId,
         modelLevel: payload.modelLevel as any,
         status: 'completed',
@@ -161,14 +161,14 @@ export const apiClient = {
     if (IS_DEMO_MODE) {
       return {
         simulationId: id,
-        floodAreaKm2: 5.38,
-        maxDepthM: 6.2,
-        maxVelocityMs: 3.4,
-        arrivalTimeMin: 12.0,
-        durationHr: 1.0,
-        populationExposed: 1450,
-        buildingsAffected: 0,
-        roadsAffectedKm: 2.1,
+        floodAreaKm2: 42.3,
+        maxDepthM: 9.2,
+        maxVelocityMs: 8.6,
+        arrivalTimeMin: 18.0,
+        durationHr: 2.25,
+        populationExposed: 3860,
+        buildingsAffected: 84,
+        roadsAffectedKm: 12.6,
         dataSource: 'mock'
       };
     }
@@ -181,14 +181,14 @@ export const apiClient = {
         simulationId: id,
         timesteps: [
           { timestepIndex: 0, timeMin: 0, floodAreaKm2: 0, maxDepthM: 0, maxVelocityMs: 0 },
-          { timestepIndex: 1, timeMin: 5, floodAreaKm2: 0.85, maxDepthM: 2.1, maxVelocityMs: 1.4 },
-          { timestepIndex: 2, timeMin: 10, floodAreaKm2: 1.72, maxDepthM: 3.4, maxVelocityMs: 2.1 },
-          { timestepIndex: 3, timeMin: 15, floodAreaKm2: 2.65, maxDepthM: 4.5, maxVelocityMs: 2.8 },
-          { timestepIndex: 4, timeMin: 20, floodAreaKm2: 3.48, maxDepthM: 5.2, maxVelocityMs: 3.1 },
-          { timestepIndex: 5, timeMin: 25, floodAreaKm2: 4.20, maxDepthM: 5.8, maxVelocityMs: 3.3 },
-          { timestepIndex: 6, timeMin: 30, floodAreaKm2: 4.85, maxDepthM: 6.0, maxVelocityMs: 3.4 },
-          { timestepIndex: 7, timeMin: 45, floodAreaKm2: 5.20, maxDepthM: 6.1, maxVelocityMs: 3.4 },
-          { timestepIndex: 8, timeMin: 60, floodAreaKm2: 5.38, maxDepthM: 6.2, maxVelocityMs: 3.4 }
+          { timestepIndex: 1, timeMin: 10, floodAreaKm2: 2.4, maxDepthM: 3.2, maxVelocityMs: 7.8 },
+          { timestepIndex: 2, timeMin: 20, floodAreaKm2: 6.2, maxDepthM: 8.5, maxVelocityMs: 1.4 },
+          { timestepIndex: 3, timeMin: 30, floodAreaKm2: 13.5, maxDepthM: 9.2, maxVelocityMs: 8.6 },
+          { timestepIndex: 4, timeMin: 45, floodAreaKm2: 22.1, maxDepthM: 8.1, maxVelocityMs: 7.2 },
+          { timestepIndex: 5, timeMin: 60, floodAreaKm2: 29.4, maxDepthM: 7.2, maxVelocityMs: 5.8 },
+          { timestepIndex: 6, timeMin: 80, floodAreaKm2: 35.8, maxDepthM: 6.4, maxVelocityMs: 5.2 },
+          { timestepIndex: 7, timeMin: 100, floodAreaKm2: 40.2, maxDepthM: 4.8, maxVelocityMs: 4.1 },
+          { timestepIndex: 8, timeMin: 135, floodAreaKm2: 42.3, maxDepthM: 3.2, maxVelocityMs: 2.5 }
         ]
       };
     }

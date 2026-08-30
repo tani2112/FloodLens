@@ -13,7 +13,7 @@ import { ScientificDisclaimer } from '../components/common/ScientificDisclaimer'
 
 export const ResultsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const simId = id || 'sim-level1-default';
+  const simId = id || 'NP-2026-08-26-001';
 
   const [results, setResults] = useState<FloodResult | null>(null);
   const [impact, setImpact] = useState<ImpactSummary | null>(null);
@@ -62,7 +62,7 @@ export const ResultsPage: React.FC = () => {
             Hydrodynamic Simulation Results Workspace
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Simulation Run ID: <strong>{simId}</strong> | Solver: Level 1 2D Diffusive Wave Engine
+            Nepal Himalayan GLOF | Simulation Run ID: <strong>{simId}</strong> | Level 1 2D Diffusive Wave Engine
           </p>
         </div>
         <span className="badge badge-completed">Level 1 Complete</span>

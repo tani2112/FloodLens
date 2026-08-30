@@ -12,17 +12,17 @@ interface ScenarioProfileProps {
 
 export const ScenarioProfile: React.FC<ScenarioProfileProps> = ({
   simulationId,
-  studyAreaId = 'idukki-canonical',
+  studyAreaId = 'scen-nepal-glof',
   modelLevel = 'level1',
   createdAt,
   scenarioType = 'dam_break',
   parameters = {}
 }) => {
-  const headM = parameters.initialWaterLevelM ?? parameters.damHeightM ?? 70.0;
-  const volumeMm3 = parameters.reservoirVolumeMm3 ?? 5.5;
-  const breachWidthM = parameters.breachWidthM ?? 45.0;
-  const breachTimeMin = parameters.breachFormationTimeMin ?? 15.0;
-  const durationHr = parameters.simulationDurationHr ?? 1.0;
+  const headM = parameters.initialWaterLevelM ?? parameters.damHeightM ?? 75.0;
+  const volumeMm3 = parameters.reservoirVolumeMm3 ?? 15.0;
+  const breachWidthM = parameters.breachWidthM ?? 120.0;
+  const breachTimeMin = parameters.breachFormationTimeMin ?? 20.0;
+  const durationHr = parameters.simulationDurationHr ?? 2.25;
 
   return (
     <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', padding: '1.25rem' }}>
@@ -48,7 +48,7 @@ export const ScenarioProfile: React.FC<ScenarioProfileProps> = ({
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
         <div style={{ background: 'var(--bg-surface-secondary)', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
           <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block' }}>Study Area (AOI)</span>
-          <strong style={{ color: 'var(--text-primary)', fontSize: '0.88rem' }}>Idukki Catchment</strong>
+          <strong style={{ color: 'var(--text-primary)', fontSize: '0.88rem' }}>Bhote Koshi Corridor (Nepal)</strong>
         </div>
 
         <div style={{ background: 'var(--bg-surface-secondary)', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}>

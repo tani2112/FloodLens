@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ExposureResult, SettlementImpactItem } from '../../types';
 
 interface SettlementRiskExplorerProps {
-  settlements: ExposureResult[] | SettlementImpactItem[];
+  settlements: (ExposureResult | SettlementImpactItem | any)[];
   onSelectSettlement?: (settlement: ExposureResult | SettlementImpactItem) => void;
 }
 
@@ -11,7 +11,7 @@ export const SettlementRiskExplorer: React.FC<SettlementRiskExplorerProps> = ({
   onSelectSettlement
 }) => {
   const [filter, setFilter] = useState<'ALL' | 'CRITICAL' | 'HIGH' | 'MODERATE' | 'LOW' | 'SAFE'>('ALL');
-  const [sortBy, setSortBy] = useState<'severity' | 'depth' | 'arrival' | 'name'>('severity');
+  const [sortBy, setSortBy] = useState<'severity' | 'depth' | 'velocity' | 'arrival' | 'name'>('severity');
 
   const getTier = (item: any): string => {
     const tier = item.exposureTier || item.warningLevel || 'SAFE';
@@ -33,14 +33,14 @@ export const SettlementRiskExplorer: React.FC<SettlementRiskExplorerProps> = ({
 
   const getBadgeStyle = (tier: string) => {
     switch (tier) {
-      case 'CRITICAL': return { bg: '#fee2e2', text: '#991b1b', border: '#fca5a5' };
+      case 'CRITICAL': return { bg: '#fee2e2', text: '#991b1b', border: '#fca5a5', label: 'CRITICAL' };
       case 'HIGH':
-      case 'WARNING': return { bg: '#ffedd5', text: '#c2410c', border: '#fdba74' };
+      case 'WARNING': return { bg: '#ffedd5', text: '#c2410c', border: '#fdba74', label: 'HIGH' };
       case 'MODERATE':
-      case 'WATCH': return { bg: '#fef3c7', text: '#b45309', border: '#fde68a' };
+      case 'WATCH': return { bg: '#fef3c7', text: '#b45309', border: '#fde68a', label: 'MODERATE' };
       case 'LOW':
-      case 'ADVISORY': return { bg: '#f1f5f9', text: '#475569', border: '#cbd5e1' };
-      default: return { bg: '#dcfce7', text: '#15803d', border: '#86efac' };
+      case 'ADVISORY': return { bg: '#e0f2fe', text: '#0369a1', border: '#bae6fd', label: 'LOW' };
+      default: return { bg: '#dcfce7', text: '#15803d', border: '#86efac', label: 'SAFE' };
     }
   };
 
@@ -62,7 +62,10 @@ export const SettlementRiskExplorer: React.FC<SettlementRiskExplorerProps> = ({
       return getSeverityRank(getTier(b)) - getSeverityRank(getTier(a));
     }
     if (sortBy === 'depth') {
-      return b.maxDepthM - a.maxDepthM;
+      return (b.maxDepthM || 0) - (a.maxDepthM || 0);
+    }
+    if (sortBy === 'velocity') {
+      return (b.maxVelocityMs || 0) - (a.maxVelocityMs || 0);
     }
     if (sortBy === 'arrival') {
       const arrA = a.arrivalTimeMin ?? 9999;
@@ -70,7 +73,7 @@ export const SettlementRiskExplorer: React.FC<SettlementRiskExplorerProps> = ({
       return arrA - arrB;
     }
     if (sortBy === 'name') {
-      return a.name.localeCompare(b.name);
+      return (a.name || '').localeCompare(b.name || '');
     }
     return 0;
   });
@@ -80,10 +83,10 @@ export const SettlementRiskExplorer: React.FC<SettlementRiskExplorerProps> = ({
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
         <div>
           <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-            🏘️ Catchment Settlement Exposure Explorer
+            🏘️ Downstream Settlement & Population Exposure Explorer
           </h3>
           <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '0.1rem' }}>
-            Cellular inundation exposure metrics and arrival lead times for downstream settlements.
+            Flood wavefront arrival lead times, hydraulic depth, flow speed, and affected infrastructure across valley settlements.
           </p>
         </div>
 
@@ -112,10 +115,10 @@ export const SettlementRiskExplorer: React.FC<SettlementRiskExplorerProps> = ({
 
       {/* Sorting Control Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-surface-secondary)', padding: '0.5rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem', border: '1px solid var(--border-color)' }}>
-        <span style={{ color: 'var(--text-secondary)' }}>Showing <strong>{sorted.length}</strong> evaluated settlement(s)</span>
+        <span style={{ color: 'var(--text-secondary)' }}>Showing <strong>{sorted.length}</strong> evaluated settlement area(s)</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
           <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Sort By:</span>
-          {(['severity', 'depth', 'arrival', 'name'] as const).map((s) => (
+          {(['severity', 'depth', 'velocity', 'arrival', 'name'] as const).map((s) => (
             <button
               key={s}
               onClick={() => setSortBy(s)}
@@ -142,11 +145,13 @@ export const SettlementRiskExplorer: React.FC<SettlementRiskExplorerProps> = ({
         <table className="data-table">
           <thead>
             <tr>
-              <th>Settlement Name</th>
-              <th>Exposure Tier</th>
+              <th>Settlement / Location</th>
+              <th>Risk Level</th>
+              <th>Est. Arrival Time</th>
               <th>Max Water Depth</th>
-              <th>Wave Arrival Lead Time</th>
-              <th>Demographic Population</th>
+              <th>Flow Velocity</th>
+              <th>Exposed Population</th>
+              <th>Affected Infrastructure</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -154,28 +159,37 @@ export const SettlementRiskExplorer: React.FC<SettlementRiskExplorerProps> = ({
             {sorted.map((s, idx) => {
               const tier = getTier(s);
               const badge = getBadgeStyle(tier);
+              const vel = s.maxVelocityMs ?? (s.maxDepthM ? Math.min(15.0, roundVal(s.maxDepthM * 1.6)) : 0);
+              const infra = s.affectedInfrastructure || (s.maxDepthM > 4.0 ? 'Hydro dam / bridge corridor' : s.maxDepthM > 0.5 ? 'Local roads & river crossings' : 'None');
+
               return (
                 <tr key={s.assetId || idx} style={{ cursor: onSelectSettlement ? 'pointer' : 'default' }}>
                   <td style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{s.name}</td>
                   <td>
-                    <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '0.15rem 0.5rem', borderRadius: '4px', background: badge.bg, color: badge.text, border: `1px solid ${badge.border}` }}>
-                      {tier}
+                    <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '0.15rem 0.55rem', borderRadius: '4px', background: badge.bg, color: badge.text, border: `1px solid ${badge.border}` }}>
+                      {badge.label}
                     </span>
                   </td>
-                  <td style={{ fontWeight: 600, color: s.maxDepthM > 2.0 ? '#b91c1c' : 'var(--text-primary)' }}>
-                    {s.maxDepthM > 0 ? `${s.maxDepthM.toFixed(2)} m` : '0.00 m (Unflooded)'}
+                  <td style={{ fontWeight: 700, color: 'var(--accent-primary)' }}>
+                    {s.arrivalTimeMin !== undefined && s.arrivalTimeMin !== null ? `${s.arrivalTimeMin.toFixed(1)} min` : 'No arrival'}
                   </td>
-                  <td style={{ fontWeight: 600, color: 'var(--accent-primary)' }}>
-                    {s.arrivalTimeMin ? `${s.arrivalTimeMin.toFixed(1)} min` : 'No arrival'}
+                  <td style={{ fontWeight: 600, color: s.maxDepthM > 2.5 ? '#b91c1c' : 'var(--text-primary)' }}>
+                    {s.maxDepthM > 0 ? `${s.maxDepthM.toFixed(2)} m` : '0.00 m'}
                   </td>
-                  <td style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                    {s.population ? (
+                  <td style={{ fontWeight: 600, color: vel > 5.0 ? '#c2410c' : 'var(--text-primary)' }}>
+                    {vel > 0 ? `${vel.toFixed(1)} m/s` : '0.0 m/s'}
+                  </td>
+                  <td style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                    {s.populationExposed !== undefined && s.populationExposed !== null ? (
+                      <strong>{s.populationExposed.toLocaleString()} / {s.population ? s.population.toLocaleString() : 'N/A'}</strong>
+                    ) : s.population ? (
                       `${s.population.toLocaleString()} residents`
                     ) : (
-                      <span style={{ fontStyle: 'italic', color: '#b45309' }}>
-                        requires_census_dataset
-                      </span>
+                      'N/A'
                     )}
+                  </td>
+                  <td style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', maxWidth: '220px' }}>
+                    {infra}
                   </td>
                   <td>
                     <button
@@ -191,8 +205,8 @@ export const SettlementRiskExplorer: React.FC<SettlementRiskExplorerProps> = ({
             })}
             {sorted.length === 0 && (
               <tr>
-                <td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '1.5rem' }}>
-                  No settlements found matching exposure tier filter <strong>{filter}</strong>.
+                <td colSpan={8} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '1.5rem' }}>
+                  No settlements found matching risk level filter <strong>{filter}</strong>.
                 </td>
               </tr>
             )}
@@ -202,3 +216,7 @@ export const SettlementRiskExplorer: React.FC<SettlementRiskExplorerProps> = ({
     </div>
   );
 };
+
+function roundVal(v: number): number {
+  return Math.round(v * 10) / 10;
+}

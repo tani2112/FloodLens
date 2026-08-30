@@ -9,7 +9,7 @@ import { LoadingState, ErrorState } from '../components/common/StateComponents';
 
 export const ValidationPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const simId = id || 'sim-level1-default';
+  const simId = id || 'NP-2026-08-26-001';
 
   const [val, setVal] = useState<ValidationResult | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -46,8 +46,8 @@ export const ValidationPage: React.FC = () => {
 
       <ScientificDisclaimer />
 
-      <div className="card" style={{ background: '#fefce8', border: '1px solid #fef08a', color: '#713f12', fontSize: '0.85rem' }}>
-        <strong>Planned Module Status:</strong> Automated Sentinel-1 SAR imagery download and flood binary classification pipeline interface.
+      <div className="card" style={{ background: '#F0F9FF', border: '1px solid #BAE6FD', color: '#0369A1', fontSize: '0.85rem' }}>
+        <strong>Nepal Himalayan validation context:</strong> Sentinel-1 SAR and Sentinel-2 imagery can be used to compare modeled inundation along the Lhende Khola → Bhote Koshi corridor.
       </div>
 
       {loading ? (

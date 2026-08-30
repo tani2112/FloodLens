@@ -16,7 +16,7 @@ class TestSpatialPreparationPipeline(unittest.TestCase):
 
     def setUp(self):
         self.temp_dir = tempfile.mkdtemp()
-        self.canonical_bbox = [76.80, 9.85, 77.10, 10.20]
+        self.canonical_bbox = [85.20, 27.90, 85.50, 28.40]
 
     def test_validate_aoi_bbox(self):
         # Valid Bounding Box
@@ -24,11 +24,11 @@ class TestSpatialPreparationPipeline(unittest.TestCase):
         self.assertTrue(valid)
 
         # Invalid Bounding Box (min_lon > max_lon)
-        invalid, msg = validate_aoi_bbox([78.0, 9.85, 77.0, 10.20])
+        invalid, msg = validate_aoi_bbox([86.0, 27.90, 85.0, 28.40])
         self.assertFalse(invalid)
 
         # Invalid Bounding Box (out of range lat)
-        invalid_lat, msg = validate_aoi_bbox([76.8, -95.0, 77.1, 10.2])
+        invalid_lat, msg = validate_aoi_bbox([85.2, -95.0, 85.5, 28.4])
         self.assertFalse(invalid_lat)
 
     def test_dem_raster_generation_and_validation(self):
@@ -36,10 +36,10 @@ class TestSpatialPreparationPipeline(unittest.TestCase):
         meta = generate_canonical_dem_raster(
             output_path=dem_path,
             bbox=self.canonical_bbox,
-            crs_epsg="EPSG:32643",
+            crs_epsg="EPSG:32645",
             resolution_m=30.0
         )
-        self.assertEqual(meta["crs"], "EPSG:32643")
+        self.assertEqual(meta["crs"], "EPSG:32645")
         self.assertTrue(os.path.exists(dem_path))
 
         valid, msg, info = validate_dem_raster(dem_path)
@@ -63,8 +63,8 @@ class TestSpatialPreparationPipeline(unittest.TestCase):
         self.assertTrue(os.path.exists(config_path))
         with open(config_path, "r") as f:
             data = json.load(f)
-        self.assertEqual(data["aoi_name"], "Idukki Dam & Periyar River Catchment")
-        self.assertEqual(data["crs_metric"], "EPSG:32643")
+        self.assertEqual(data["aoi_name"], "Lhende Khola & Bhote Koshi / Trishuli River Catchment")
+        self.assertEqual(data["crs_metric"], "EPSG:32645")
         self.assertEqual(len(data["downstream_villages"]), 6)
 
 

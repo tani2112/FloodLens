@@ -9,7 +9,7 @@ export const AboutPage: React.FC = () => {
           About FloodLens Architecture
         </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-          Smart India Hackathon (SIH26161) — System Specifications & Authoritative Technical Reference.
+          Nepal Himalayan GLOF decision-support workspace — scientific system architecture and operating context.
         </p>
       </div>
 
@@ -30,15 +30,15 @@ export const AboutPage: React.FC = () => {
           </div>
           <div style={{ background: 'var(--bg-surface-secondary)', padding: '1rem', borderRadius: '6px' }}>
             <h4 style={{ color: 'var(--text-primary)', marginBottom: '0.35rem', fontWeight: 700 }}>Spatial CRS Engine</h4>
-            <p style={{ color: 'var(--text-secondary)' }}>EPSG:32643 (UTM Zone 43N) internal calculations, converted to EPSG:4326 GeoJSON.</p>
+            <p style={{ color: 'var(--text-secondary)' }}>EPSG:32645 (UTM Zone 45N) Himalayan corridor calculations, converted to EPSG:4326 GeoJSON for response mapping.</p>
           </div>
           <div style={{ background: 'var(--bg-surface-secondary)', padding: '1rem', borderRadius: '6px' }}>
             <h4 style={{ color: 'var(--text-primary)', marginBottom: '0.35rem', fontWeight: 700 }}>Backend Stack</h4>
             <p style={{ color: 'var(--text-secondary)' }}>FastAPI + Pydantic v2 + NumPy + Rasterio/GDAL + MapLibre GL JS.</p>
           </div>
           <div style={{ background: 'var(--bg-surface-secondary)', padding: '1rem', borderRadius: '6px' }}>
-            <h4 style={{ color: 'var(--text-primary)', marginBottom: '0.35rem', fontWeight: 700 }}>Development Team</h4>
-            <p style={{ color: 'var(--text-secondary)' }}>Saumil & Tanishk (FloodLens SIH Team)</p>
+            <h4 style={{ color: 'var(--text-primary)', marginBottom: '0.35rem', fontWeight: 700 }}>Scenario Focus</h4>
+            <p style={{ color: 'var(--text-secondary)' }}>Lhende Khola avalanche, temporary landslide dam failure, and Bhote Koshi downstream impact analysis.</p>
           </div>
         </div>
       </div>

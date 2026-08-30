@@ -53,12 +53,12 @@ class TestGISExposureEngine(unittest.TestCase):
                 {
                     "type": "Feature",
                     "properties": {"id": "v-001", "name": "Test Inundated Village", "population": 2500},
-                    "geometry": {"type": "Point", "coordinates": [76.935, 10.0075]}
+                    "geometry": {"type": "Point", "coordinates": [85.335, 28.125]}
                 },
                 {
                     "type": "Feature",
                     "properties": {"id": "v-002", "name": "Test Safe Village", "population": 1200},
-                    "geometry": {"type": "Point", "coordinates": [76.8200, 10.1800]}
+                    "geometry": {"type": "Point", "coordinates": [85.220, 28.380]}
                 }
             ]
         }
@@ -72,7 +72,7 @@ class TestGISExposureEngine(unittest.TestCase):
                     "properties": {"id": "rd-001", "name": "Primary Access Highway", "highway": "primary"},
                     "geometry": {
                         "type": "LineString",
-                        "coordinates": [[76.925, 10.0075], [76.935, 10.0075], [76.945, 10.0075]]
+                        "coordinates": [[85.325, 28.125], [85.335, 28.125], [85.345, 28.125]]
                     }
                 }
             ]

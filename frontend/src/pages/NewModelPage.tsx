@@ -4,6 +4,8 @@ import { useSimulationDraftStore } from '../store/useSimulationDraftStore';
 import { ModelLevel } from '../types';
 import { SimulationStepper } from '../components/common/SimulationStepper';
 
+import { WorkflowSequenceBar } from '../components/common/WorkflowSequenceBar';
+
 export const NewModelPage: React.FC = () => {
   const navigate = useNavigate();
   const { selectedModelLevel, setModelLevel } = useSimulationDraftStore();
@@ -14,7 +16,7 @@ export const NewModelPage: React.FC = () => {
       title: 'Level 1 — 2D Diffusive Wave Hydrodynamic Engine',
       isAvailable: true,
       badge: 'Active Solver',
-      desc: 'Native Python 2D finite-volume cellular diffusive-wave flow solver over DEM elevation rasters. Computes spatial inundation extent, water depth, flow velocity, and arrival lead times in metric EPSG:32643 projection.'
+      desc: 'Native Python 2D finite-volume cellular diffusive-wave flow solver over DEM elevation rasters. Computes spatial inundation extent, water depth, flow velocity, and arrival lead times in metric EPSG:32645 projection.'
     },
     {
       id: 'level2',
@@ -50,16 +52,16 @@ export const NewModelPage: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: '850px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div style={{ maxWidth: '950px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      {/* 5-Step Operational Workflow Sequence Header */}
+      <WorkflowSequenceBar currentStep={3} />
+
       <div>
-        <div style={{ fontSize: '0.8rem', color: 'var(--accent-primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-          Simulation Wizard — Step 3 of 4
-        </div>
         <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '0.2rem', letterSpacing: '-0.02em' }}>
-          Hydrodynamic Model Selection
+          Step 3: Hydrodynamic Solver Model Selection
         </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-          Select the physics engine tier for 2D flow propagation, cell-by-cell raster routing, and GIS exposure calculation.
+          Select the solver tier for the Lhende Khola landslide-dam breach, debris-laden valley routing, and GIS exposure analysis.
         </p>
       </div>
 

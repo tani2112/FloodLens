@@ -15,7 +15,7 @@ import { LoadingState, ErrorState } from '../components/common/StateComponents';
 
 export const OverviewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const simId = id || 'sim-level1-default';
+  const simId = id || 'NP-2026-08-26-001';
 
   const [simulation, setSimulation] = useState<Simulation | null>(null);
   const [results, setResults] = useState<FloodResult | null>(null);
@@ -79,7 +79,7 @@ export const OverviewPage: React.FC = () => {
             Analytical Scenario Workspace Overview
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Simulation Run ID: <strong>{simId}</strong> | Scientific Decision-Support Workspace
+            Nepal Himalayan GLOF & landslide-dam breach | Simulation Run ID: <strong>{simId}</strong>
           </p>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem' }}>

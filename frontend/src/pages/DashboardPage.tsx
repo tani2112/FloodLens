@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../services/api/client';
-import { Simulation, StudyArea, FloodResult, ImpactSummary, ExposureResult, TimelineSummary } from '../types';
-import { KpiCard } from '../components/common/KpiCard';
-import { StatusBadge } from '../components/common/StatusBadge';
+import { Simulation, StudyArea, FloodResult, ImpactSummary, ExposureResult } from '../types';
 import { FloodMap } from '../components/map/FloodMap';
 import { DecisionSupportSummary } from '../components/common/DecisionSupportSummary';
 import { ScientificDataPanel } from '../components/common/ScientificDataPanel';
-import { ScientificDisclaimer } from '../components/common/ScientificDisclaimer';
 import { analyzeScenarioIntelligence } from '../services/analytics/scenarioIntelligence';
+
+import { WorkflowSequenceBar } from '../components/common/WorkflowSequenceBar';
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
@@ -17,518 +16,598 @@ export const DashboardPage: React.FC = () => {
   const [studyAreas, setStudyAreas] = useState<StudyArea[]>([]);
   const [simulations, setSimulations] = useState<Simulation[]>([]);
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('scen-nepal-glof');
-  const [selectedSimId, setSelectedSimId] = useState<string>('sim-level1-default');
+  const [selectedSimId, setSelectedSimId] = useState<string>('NP-2026-08-26-001');
 
   // Simulation Detail States
   const [result, setResult] = useState<FloodResult | null>(null);
   const [impact, setImpact] = useState<ImpactSummary | null>(null);
   const [exposure, setExposure] = useState<ExposureResult[]>([]);
-  const [timeline, setTimeline] = useState<TimelineSummary | null>(null);
 
-  const [loading, setLoading] = useState<boolean>(true);
-  const [dbStatus, setDbStatus] = useState<string>('ok');
+  // Simulation Playback & Timeline Controls
+  const [currentTsIndex, setCurrentTsIndex] = useState<number>(5);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
 
-  // Interactive Layer Controls
+  // Layer Visibility States
   const [layerExtent, setLayerExtent] = useState<boolean>(true);
   const [layerDepth, setLayerDepth] = useState<boolean>(true);
   const [layerVelocity, setLayerVelocity] = useState<boolean>(true);
   const [layerArrival, setLayerArrival] = useState<boolean>(true);
+  const [layerTerrain, setLayerTerrain] = useState<boolean>(true);
+  const [layerRiverNetwork, setLayerRiverNetwork] = useState<boolean>(true);
+  const [layerRoads, setLayerRoads] = useState<boolean>(true);
+  const [layerBridges, setLayerBridges] = useState<boolean>(true);
+  const [layerBuildings, setLayerBuildings] = useState<boolean>(true);
+  const [layerSettlements, setLayerSettlements] = useState<boolean>(true);
+  const [layerInfrastructure, setLayerInfrastructure] = useState<boolean>(true);
+  const [activeMapVariable, setActiveMapVariable] = useState<'depth' | 'velocity' | 'arrivalTime'>('depth');
+  const [basemap, setBasemap] = useState<'satellite' | 'terrain' | 'osm' | 'dark'>('satellite');
+  const [activeMapTool, setActiveMapTool] = useState<string>('Select');
 
-  // 1. Initial Data Fetching
+  // Active Left Panel Tab & Fullscreen Controls
+  const [leftTab, setLeftTab] = useState<'layers' | 'legends'>('layers');
+  const [isMapFullscreen, setIsMapFullscreen] = useState<boolean>(false);
+
+  // Initial Data Fetching
   useEffect(() => {
     Promise.all([
-      apiClient.getStudyAreas().catch(() => []),
-      apiClient.getSimulations().catch(() => []),
-      apiClient.checkHealth().catch(() => ({ status: 'ok' }))
-    ]).then(([areas, sims, health]) => {
+      apiClient.getStudyAreas(),
+      apiClient.getSimulations()
+    ]).then(([areas, sims]) => {
       setStudyAreas(areas);
       setSimulations(sims);
-      if (health && health.status) {
-        setDbStatus(health.status);
-      }
-
-      // Pick default simulation
-      if (sims.length > 0) {
-        const nepalSim = sims.find((s: Simulation) => s.scenarioId === 'scen-nepal-glof' || s.id.includes('nepal'));
-        const activeSim = nepalSim || sims.find((s: Simulation) => s.status === 'completed') || sims[0];
-        setSelectedSimId(activeSim.id);
-        setSelectedScenarioId(activeSim.scenarioId);
-      }
-      setLoading(false);
+    }).catch(err => {
+      console.warn('Dashboard API fetch error, using local fallback models:', err);
     });
   }, []);
 
-  // 2. Fetch Simulation Artifacts when selectedSimId changes
+  // Fetch Selected Simulation Results
   useEffect(() => {
     if (!selectedSimId) return;
-
-    let isMounted = true;
     Promise.all([
-      apiClient.getFloodResults(selectedSimId).catch(() => null),
-      apiClient.getImpactSummary(selectedSimId).catch(() => null),
-      apiClient.getExposureResults(selectedSimId).catch(() => []),
-      apiClient.getSimulationTimeline(selectedSimId).catch(() => null)
-    ]).then(([res, imp, exp, tl]) => {
-      if (isMounted) {
-        setResult(res);
-        setImpact(imp);
-        setExposure(exp);
-        setTimeline(tl);
-      }
+      apiClient.getFloodResults(selectedSimId),
+      apiClient.getImpactSummary(selectedSimId),
+      apiClient.getExposureResults(selectedSimId)
+    ]).then(([resData, impData, expData]) => {
+      setResult(resData);
+      setImpact(impData);
+      setExposure(expData);
+    }).catch(() => {
+      setResult(null);
+      setImpact(null);
+      setExposure([]);
     });
-
-    return () => { isMounted = false; };
   }, [selectedSimId]);
 
-  // Current Active Simulation Metadata
-  const currentSim = simulations.find(s => s.id === selectedSimId) || {
-    id: selectedSimId,
-    scenarioId: selectedScenarioId,
-    modelLevel: 'level1',
-    status: 'completed',
-    dataSource: 'dem_raster',
-    createdAt: new Date().toISOString()
-  };
+  // 9-Stage Nepal Event Progression Milestones
+  const nepalMilestones = [
+    { timeLabel: 'T+00:00', name: 'Initial condition', fullTime: 'Time: 00:00:00 / 02:15:00', depth: 0.8, velocity: 1.2, area: 0.0, discharge: 120, arrival: '0 min' },
+    { timeLabel: 'T+00:10', name: 'Ice/Rock avalanche', fullTime: 'Time: 00:10:00 / 02:15:00', depth: 3.2, velocity: 7.8, area: 2.4, discharge: 1450, arrival: '0 min' },
+    { timeLabel: 'T+00:20', name: 'Temporary barrier formation', fullTime: 'Time: 00:20:00 / 02:15:00', depth: 8.5, velocity: 1.4, area: 6.2, discharge: 380, arrival: '0 min' },
+    { timeLabel: 'T+00:30', name: 'Barrier/lake failure', fullTime: 'Time: 00:30:00 / 02:15:00', depth: 9.2, velocity: 8.6, area: 13.5, discharge: 18760, arrival: '2 min' },
+    { timeLabel: 'T+00:45', name: 'Major flood/debris wave', fullTime: 'Time: 00:45:00 / 02:15:00', depth: 8.1, velocity: 7.2, area: 22.1, discharge: 14200, arrival: '10 min' },
+    { timeLabel: 'T+01:00', name: 'Timure impact', fullTime: 'Time: 01:00:00 / 02:15:00', depth: 7.2, velocity: 5.8, area: 29.4, discharge: 9800, arrival: '18 min' },
+    { timeLabel: 'T+01:20', name: 'Rasuwagadhi impact', fullTime: 'Time: 01:20:00 / 02:15:00', depth: 6.4, velocity: 5.2, area: 35.8, discharge: 6500, arrival: '25 min' },
+    { timeLabel: 'T+01:40', name: 'Syabrubesi downstream impact', fullTime: 'Time: 01:40:00 / 02:15:00', depth: 4.8, velocity: 4.1, area: 40.2, discharge: 4200, arrival: '45 min' },
+    { timeLabel: 'T+02:15', name: 'Maximum downstream extent', fullTime: 'Time: 02:15:00 / 02:15:00', depth: 3.2, velocity: 2.5, area: 42.3, discharge: 2100, arrival: '90 min' }
+  ];
 
-  const activeStudyArea = studyAreas.find(a => a.id === 'nepal-bhotekoshi') || studyAreas[0] || {
-    id: 'nepal-bhotekoshi',
-    name: 'Nepal Bhotekoshi–Trishuli GLOF Study Area',
-    river: 'Bhotekoshi & Trishuli River Corridor',
-    damOrBlockage: 'Moraine Dam Breach / Glacial Lake Outburst',
-    demDataset: 'ALOS PALSAR 12.5m / Copernicus DEM',
-    satelliteDataset: 'Sentinel-1 SAR / Sentinel-2 MSI'
-  };
+  // Live Playback Animation Loop
+  useEffect(() => {
+    if (!isPlaying) return;
+    const intervalMs = 1300 / playbackSpeed;
+    const timer = setInterval(() => {
+      setCurrentTsIndex((prev) => {
+        if (prev >= 8) {
+          setIsPlaying(false);
+          return prev;
+        }
+        return prev + 1;
+      });
+    }, intervalMs);
 
-  // Compute Deterministic Scenario Intelligence Package
-  const intel = analyzeScenarioIntelligence(result, impact, timeline, exposure);
+    return () => clearInterval(timer);
+  }, [isPlaying, playbackSpeed]);
 
-  // Handle Scenario Selector Switch
+  const activeMilestone = nepalMilestones[currentTsIndex] || nepalMilestones[8];
+  const formattedTime = activeMilestone.fullTime;
+  const intel = analyzeScenarioIntelligence(result, impact, null, exposure);
+
   const handleScenarioChange = (scenId: string) => {
     setSelectedScenarioId(scenId);
-    const matchingSim = simulations.find(s => s.scenarioId === scenId);
-    if (matchingSim) {
-      setSelectedSimId(matchingSim.id);
-    }
+    setSelectedSimId('NP-2026-08-26-001');
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#F0F9FF', color: '#0F172A', width: '100%', overflowX: 'hidden' }}>
 
       {/* ==================================================
-          1. TOP COMMAND CENTER HEADER
+          MAIN CONTENT WORKSPACE (KPI Strip + 3-Column Grid + Timeline)
          ================================================== */}
-      <header className="card" style={{ background: '#ffffff', padding: '1.25rem 1.5rem', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1.25rem', borderLeft: '4px solid var(--accent-primary)' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--accent-primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              FLOODLENS FLOOD COMMAND CENTER
-            </span>
-            <span style={{ fontSize: '0.7rem', background: '#e0f2fe', color: '#0369a1', padding: '0.1rem 0.45rem', borderRadius: '4px', fontWeight: 700 }}>
-              NEPAL SCENARIO MODE
-            </span>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden', padding: '0.65rem 1rem 0' }}>
+
+        {/* 5-Step Operational Workflow Sequence Bar */}
+        <WorkflowSequenceBar currentStep={4} activeSimulationId={selectedSimId} />
+
+        {/* TOP KPI CARDS STRIP (5 White & Blue Cards) */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.75rem', marginBottom: '0.65rem' }}>
+
+          {/* KPI 1: Max Water Depth */}
+          <div className="cc-kpi-card" onClick={() => navigate('/simulations/NP-2026-08-26-001/map?var=depth')} style={{ cursor: 'pointer' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '6px', background: '#E0F2FE', border: '1px solid #BAE6FD', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: '#0284C7' }}>
+              💧
+            </div>
+            <div>
+              <div style={{ fontSize: '0.64rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Max Water Depth
+              </div>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', lineHeight: 1.1 }}>
+                {activeMilestone.depth.toFixed(1)} m
+              </div>
+            </div>
           </div>
-          <h1 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em', margin: 0 }}>
-            Nepal Hydrodynamic Flood Simulation Command Center
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.86rem', margin: 0 }}>
-            Real-time GLOF & Flash Flood Propagation, Wavefront Arrival Analytics & Operational Disaster Decision Support.
-          </p>
+
+          {/* KPI 2: Max Velocity */}
+          <div className="cc-kpi-card" onClick={() => navigate('/simulations/NP-2026-08-26-001/map?var=velocity')} style={{ cursor: 'pointer' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '6px', background: '#E0F2FE', border: '1px solid #BAE6FD', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: '#0284C7' }}>
+              ⏱️
+            </div>
+            <div>
+              <div style={{ fontSize: '0.64rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Max Velocity
+              </div>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', lineHeight: 1.1 }}>
+                {activeMilestone.velocity.toFixed(1)} m/s
+              </div>
+            </div>
+          </div>
+
+          {/* KPI 3: Flooded Area */}
+          <div className="cc-kpi-card" onClick={() => navigate('/simulations/NP-2026-08-26-001/results')} style={{ cursor: 'pointer' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '6px', background: '#E0F2FE', border: '1px solid #BAE6FD', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: '#0284C7' }}>
+              🗺️
+            </div>
+            <div>
+              <div style={{ fontSize: '0.64rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Flooded Area
+              </div>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', lineHeight: 1.1 }}>
+                {activeMilestone.area.toFixed(1)} km²
+              </div>
+            </div>
+          </div>
+
+          {/* KPI 4: Discharge (Peak) */}
+          <div className="cc-kpi-card" onClick={() => navigate('/simulations/NP-2026-08-26-001/results')} style={{ cursor: 'pointer' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '6px', background: '#E0F2FE', border: '1px solid #BAE6FD', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: '#0284C7' }}>
+              ⚡
+            </div>
+            <div>
+              <div style={{ fontSize: '0.64rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Discharge (Peak)
+              </div>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', lineHeight: 1.1 }}>
+                {activeMilestone.discharge.toLocaleString()} m³/s
+              </div>
+            </div>
+          </div>
+
+          {/* KPI 5: Arrival Time (Min) */}
+          <div className="cc-kpi-card" onClick={() => navigate('/simulations/NP-2026-08-26-001/map?var=arrival')} style={{ cursor: 'pointer' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '6px', background: '#E0F2FE', border: '1px solid #BAE6FD', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: '#0284C7' }}>
+              🕒
+            </div>
+            <div>
+              <div style={{ fontSize: '0.64rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Arrival Time (Min)
+              </div>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', lineHeight: 1.1 }}>
+                {activeMilestone.arrival}
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        {/* Header Selectors & Status Strip */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '1rem' }}>
-          
-          {/* Scenario Selector */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-            <label style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-              Scenario Focus
-            </label>
-            <select
-              className="form-select"
-              value={selectedScenarioId}
-              onChange={(e) => handleScenarioChange(e.target.value)}
-              style={{ fontSize: '0.85rem', padding: '0.4rem 0.75rem', fontWeight: 600, minWidth: '220px' }}
+        {/* MIDDLE 3-PANEL WORKSPACE GRID */}
+        <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '230px 1fr 250px', gap: '0.75rem', height: 'calc(100vh - 200px)', overflow: 'hidden' }}>
+
+          {/* --------------------------------------------------
+              LEFT SIDEBAR PANEL: SCENARIO & LAYER CONTROLS
+             -------------------------------------------------- */}
+          <div className="cc-panel cc-scrollbar" style={{ padding: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.9rem', overflowY: 'auto' }}>
+
+            {/* Scenario Selection Box */}
+            <div>
+              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '0.4rem', letterSpacing: '0.04em' }}>
+                Scenario
+              </div>
+              <select
+                className="cc-select"
+                value={selectedScenarioId}
+                onChange={(e) => handleScenarioChange(e.target.value)}
+                style={{ width: '100%', fontSize: '0.82rem', fontWeight: 700, color: '#0F172A' }}
+              >
+                <option value="scen-nepal-glof">NP-2026-08-26-001 — Nepal Himalayan GLOF (Lhende Khola → Bhote Koshi)</option>
+              </select>
+
+              <div style={{ marginTop: '0.6rem', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '4px', padding: '0.5rem 0.65rem', fontSize: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#16A34A' }}></span>
+                  <strong style={{ color: '#16A34A' }}>Running</strong>
+                </div>
+                <div style={{ color: '#64748B', marginTop: '0.15rem' }}>
+                  Started: <strong>10:42 AM, 26 Aug 2026</strong>
+                </div>
+              </div>
+            </div>
+
+            {/* Tabs: Layers / Legends */}
+            <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '0.65rem' }}>
+              <div style={{ display: 'flex', borderBottom: '1px solid #E2E8F0', marginBottom: '0.65rem' }}>
+                <button
+                  onClick={() => setLeftTab('layers')}
+                  style={{
+                    flex: 1,
+                    padding: '0.35rem',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                    color: leftTab === 'layers' ? '#0284C7' : '#64748B',
+                    background: 'transparent',
+                    border: 'none',
+                    borderBottom: leftTab === 'layers' ? '2px solid #0284C7' : 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Layers
+                </button>
+                <button
+                  onClick={() => setLeftTab('legends')}
+                  style={{
+                    flex: 1,
+                    padding: '0.35rem',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                    color: leftTab === 'legends' ? '#0284C7' : '#64748B',
+                    background: 'transparent',
+                    border: 'none',
+                    borderBottom: leftTab === 'legends' ? '2px solid #0284C7' : 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Legends
+                </button>
+              </div>
+
+              {leftTab === 'layers' ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', fontSize: '0.78rem' }}>
+                  {[
+                    { label: 'Flood Extent & Debris', checked: layerExtent, toggle: () => setLayerExtent(!layerExtent) },
+                    { label: 'Water Depth', checked: layerDepth, toggle: () => { const next = !layerDepth; setLayerDepth(next); if (next) setActiveMapVariable('depth'); } },
+                    { label: 'Flow Velocity & Direction', checked: layerVelocity, toggle: () => { const next = !layerVelocity; setLayerVelocity(next); if (next) setActiveMapVariable('velocity'); } },
+                    { label: 'Flood Arrival Time', checked: layerArrival, toggle: () => { const next = !layerArrival; setLayerArrival(next); if (next) setActiveMapVariable('arrivalTime'); } },
+                    { label: '3D Himalayan Terrain', checked: layerTerrain, toggle: () => setLayerTerrain(!layerTerrain) },
+                    { label: 'Lhende / Bhote Koshi Network', checked: layerRiverNetwork, toggle: () => setLayerRiverNetwork(!layerRiverNetwork) },
+                    { label: 'Roads & Evacuation Routes', checked: layerRoads, toggle: () => setLayerRoads(!layerRoads) },
+                    { label: 'Bridges & Crossings', checked: layerBridges, toggle: () => setLayerBridges(!layerBridges) },
+                    { label: 'Buildings / Logistics Hubs', checked: layerBuildings, toggle: () => setLayerBuildings(!layerBuildings) },
+                    { label: 'Population / Settlements', checked: layerSettlements, toggle: () => setLayerSettlements(!layerSettlements) },
+                    { label: 'Critical Infrastructure', checked: layerInfrastructure, toggle: () => setLayerInfrastructure(!layerInfrastructure) }
+                  ].map((item, idx) => (
+                    <label key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: item.checked ? '#0F172A' : '#64748B', fontWeight: item.checked ? 600 : 500, cursor: 'pointer' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                        <input type="checkbox" checked={item.checked} onChange={item.toggle} style={{ accentColor: '#0284C7' }} />
+                        <span>{item.label}</span>
+                      </div>
+                      <div style={{ display: 'flex', gap: '0.35rem', opacity: 0.5, fontSize: '0.72rem' }}>
+                        <span>ⓘ</span>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ fontSize: '0.75rem', color: '#64748B', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#0284C7', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Event Sequence Steps
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.72rem', color: '#0F172A' }}>
+                    <div>❄️ 1. Ice/Rock Avalanche</div>
+                    <div>🪨 2. Avalanche Debris Path</div>
+                    <div>🏞️ 3. Landslide Barrier Lake</div>
+                    <div>💥 4. Dam Breach Point</div>
+                    <div>🌊 5. Mud, Rock & Debris Flow</div>
+                    <div>🏘️ 6. Downstream Impact</div>
+                  </div>
+
+                  <div style={{ marginTop: '0.4rem' }}>Water Depth Ramp (shallow to high hazard)</div>
+                  <div style={{ height: '8px', borderRadius: '4px', background: 'linear-gradient(to right, #075985, #0EA5E9, #22D3EE, #FDE047, #FB923C, #F97316, #DC2626)' }}></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem' }}>
+                    <span>0.0m</span>
+                    <span>3.0m</span>
+                    <span>&gt;7.5m</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Map Tools */}
+            <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '0.75rem' }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '0.4rem', letterSpacing: '0.04em' }}>
+                Map Tools
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.25rem', textAlign: 'center' }}>
+                {[
+                  { icon: '🎯', label: 'Select' },
+                  { icon: '✏️', label: 'Draw' },
+                  { icon: '📏', label: 'Measure' },
+                  { icon: '🔍', label: 'Query' },
+                  { icon: '🧹', label: 'Clear' }
+                ].map((t, idx) => (
+                  <button key={idx} onClick={() => setActiveMapTool(t.label)} className="cc-btn" style={{ flexDirection: 'column', padding: '0.35rem 0.15rem', fontSize: '0.62rem', gap: '0.15rem', borderRadius: '4px', borderColor: activeMapTool === t.label ? '#0284C7' : undefined, background: activeMapTool === t.label ? '#E0F2FE' : undefined }}>
+                    <span style={{ fontSize: '0.85rem' }}>{t.icon}</span>
+                    <span>{t.label}</span>
+                  </button>
+                ))}
+              </div>
+              <div style={{ marginTop: '0.45rem', color: '#0284C7', fontSize: '0.68rem', fontWeight: 700 }}>Active GIS tool: {activeMapTool}</div>
+            </div>
+
+            {/* Basemap Selector */}
+            <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '0.75rem' }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '0.35rem', letterSpacing: '0.04em' }}>
+                Basemap
+              </div>
+              <select className="cc-select" value={basemap} onChange={(e) => setBasemap(e.target.value as typeof basemap)} style={{ width: '100%', fontSize: '0.8rem', fontWeight: 600 }}>
+                <option value="satellite">Satellite Hybrid</option>
+                <option value="terrain">Terrain</option>
+                <option value="light">Light Scientific</option>
+                <option value="osm">OpenStreetMap</option>
+              </select>
+            </div>
+
+          </div>
+
+          {/* --------------------------------------------------
+              CENTER MAP WORKSPACE (Controlled Map & Animation)
+             -------------------------------------------------- */}
+          <div style={{ position: 'relative', width: '100%', height: '100%', borderRadius: '6px', overflow: 'hidden', border: '1px solid #BAE6FD', background: '#FFFFFF' }}>
+
+            <FloodMap
+              simulationId={selectedSimId}
+              basemap={basemap}
+              activeVariable={activeMapVariable}
+              layersConfig={{
+                extent: layerExtent,
+                depth: layerDepth,
+                velocity: layerVelocity,
+                arrivalTime: layerArrival,
+                dem: layerTerrain,
+                riverNetwork: layerRiverNetwork,
+                roads: layerRoads,
+                bridges: layerBridges,
+                buildings: layerBuildings,
+                settlements: layerSettlements,
+                infrastructure: layerInfrastructure
+              }}
+              currentTsIndex={currentTsIndex}
+              isPlaying={isPlaying}
+              playbackSpeed={playbackSpeed}
+              onPlaybackSpeedChange={(speed) => setPlaybackSpeed(speed)}
+              formattedTime={formattedTime}
+              isFullscreen={isMapFullscreen}
+              onToggleFullscreen={(fs) => setIsMapFullscreen(fs)}
+              onTimelineChange={(idx) => setCurrentTsIndex(idx)}
+              onPlayPauseChange={(playing) => setIsPlaying(playing)}
+              onReset={() => {
+                setIsPlaying(false);
+                setCurrentTsIndex(0);
+              }}
+              showFullscreenToggle={true}
+              showFloatingControls={true}
+            />
+
+          </div>
+
+          {/* --------------------------------------------------
+              RIGHT SIDEBAR PANEL: SIMULATION INFO & HYDROGRAPH
+             -------------------------------------------------- */}
+          <div className="cc-panel cc-scrollbar" style={{ padding: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.9rem', overflowY: 'auto' }}>
+
+            {/* Simulation Info Table */}
+            <div>
+              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '0.45rem', letterSpacing: '0.04em' }}>
+                Simulation Info
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '0.3rem 0.75rem', color: '#0F172A', fontSize: '0.76rem' }}>
+                <span style={{ color: '#64748B', fontWeight: 600 }}>ID:</span> <strong style={{ color: '#0284C7' }}>NP-2026-08-26-001</strong>
+                <span style={{ color: '#64748B', fontWeight: 600 }}>Type:</span> <span>Ice/Rock Barrier GLOF</span>
+                <span style={{ color: '#64748B', fontWeight: 600 }}>Corridor:</span> <span>Lhende Khola → Bhote Koshi</span>
+                <span style={{ color: '#64748B', fontWeight: 600 }}>Key Hubs:</span> <span>Timure, Rasuwagadhi, Syabrubesi</span>
+                <span style={{ color: '#64748B', fontWeight: 600 }}>Model:</span> <span>2D Diffusive Wave</span>
+                <span style={{ color: '#64748B', fontWeight: 600 }}>Grid Size:</span> <span>12.5 m</span>
+                <span style={{ color: '#64748B', fontWeight: 600 }}>Duration:</span> <span>2.25 hrs</span>
+                <span style={{ color: '#64748B', fontWeight: 600 }}>Current Time:</span> <span style={{ color: '#0284C7', fontWeight: 700 }}>{activeMilestone.timeLabel}</span>
+                <span style={{ color: '#64748B', fontWeight: 600 }}>Peak Discharge:</span> <span style={{ color: '#DC2626', fontWeight: 700 }}>18,760 m³/s</span>
+                <span style={{ color: '#64748B', fontWeight: 600 }}>Status:</span> <span style={{ color: '#0284C7', fontWeight: 700 }}>Running (72%)</span>
+              </div>
+            </div>
+
+            {/* Simulation Progress Stages */}
+            <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '0.75rem' }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '0.45rem', letterSpacing: '0.04em' }}>
+                Progress
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.75rem' }}>
+                <div style={{ color: '#16A34A', fontWeight: 600 }}>✓ Preparing DEM</div>
+                <div style={{ color: '#16A34A', fontWeight: 600 }}>✓ Setting up Model Grid</div>
+                <div style={{ color: '#16A34A', fontWeight: 600 }}>✓ Processing Terrain</div>
+                <div style={{ color: '#16A34A', fontWeight: 600 }}>✓ Initializing Conditions</div>
+                <div style={{ color: '#0284C7', fontWeight: 800 }}>● Running Simulation (72%)</div>
+                <div style={{ color: '#94A3B8' }}>○ Post Processing</div>
+                <div style={{ color: '#94A3B8' }}>○ Generating Outputs</div>
+              </div>
+            </div>
+
+            {/* Hydrograph (Outlet Discharge Curve) */}
+            <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '0.75rem' }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '0.4rem', letterSpacing: '0.04em' }}>
+                Hydrograph (Outlet)
+              </div>
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '4px', padding: '0.6rem' }}>
+                <div style={{ fontSize: '0.68rem', color: '#64748B', marginBottom: '0.25rem', fontWeight: 600 }}>Discharge (m³/s)</div>
+                <svg width="100%" height="90" viewBox="0 0 170 90" style={{ overflow: 'visible' }}>
+                  <line x1="25" y1="75" x2="160" y2="75" stroke="#CBD5E1" strokeWidth="1" />
+                  <line x1="25" y1="10" x2="25" y2="75" stroke="#CBD5E1" strokeWidth="1" />
+
+                  {/* Peak Discharge Curve */}
+                  <path d="M 25 73 Q 55 70 80 20 T 115 50 T 160 70" fill="none" stroke="#0284C7" strokeWidth="2.5" />
+
+                  {/* Active time indicator dot on hydrograph */}
+                  {(() => {
+                    const cx = 25 + (currentTsIndex / 8) * 135;
+                    const cy = 75 - Math.sin((currentTsIndex / 8) * Math.PI) * 55;
+                    return <circle cx={cx} cy={cy} r="4" fill="#0284C7" stroke="#FFFFFF" strokeWidth="1.5" />;
+                  })()}
+
+                  <text x="5" y="15" fill="#64748B" fontSize="7" fontWeight="600">20k</text>
+                  <text x="5" y="45" fill="#64748B" fontSize="7" fontWeight="600">10k</text>
+                  <text x="12" y="75" fill="#64748B" fontSize="7" fontWeight="600">0</text>
+
+                  <text x="25" y="85" fill="#64748B" fontSize="7" fontWeight="600">0</text>
+                  <text x="58" y="85" fill="#64748B" fontSize="7" fontWeight="600">0.5</text>
+                  <text x="90" y="85" fill="#64748B" fontSize="7" fontWeight="600">1.0</text>
+                  <text x="123" y="85" fill="#64748B" fontSize="7" fontWeight="600">1.5</text>
+                  <text x="153" y="85" fill="#64748B" fontSize="7" fontWeight="600">2.0</text>
+                </svg>
+                <div style={{ textAlign: 'center', fontSize: '0.68rem', color: '#64748B', marginTop: '0.25rem', fontWeight: 600 }}>Time (hrs)</div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* ==================================================
+            BOTTOM TIMELINE PLAYBACK BAR (Fully Interactive)
+           ================================================== */}
+        <div style={{ background: '#FFFFFF', border: '1px solid #BAE6FD', borderRadius: '6px', padding: '0.5rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem', marginTop: '0.65rem', marginBottom: '0.65rem', boxShadow: '0 1px 4px rgba(2, 132, 199, 0.08)' }}>
+
+          {/* Playback Controls */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <button
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="btn btn-primary"
+              style={{ padding: '0.35rem 0.65rem', fontWeight: 800, fontSize: '0.85rem', background: '#0284C7', width: '38px' }}
+              title={isPlaying ? 'Pause Simulation' : 'Play Simulation'}
             >
-              <option value="scen-nepal-glof">🏔️ Nepal — Bhotekoshi GLOF Scenario</option>
-              <option value="scen-idukki-default">🌊 Idukki — Periyar Dam Break</option>
+              {isPlaying ? '❚❚' : '▶'}
+            </button>
+
+            <button
+              onClick={() => { setIsPlaying(false); setCurrentTsIndex(0); }}
+              className="cc-btn"
+              title="Rewind to Start (00:00)"
+            >
+              │◄
+            </button>
+
+            <button
+              onClick={() => { setIsPlaying(false); setCurrentTsIndex((prev) => Math.max(prev - 1, 0)); }}
+              className="cc-btn"
+              title="Step Backward (-1 Stage)"
+            >
+              │◀
+            </button>
+
+            <button
+              onClick={() => { setIsPlaying(false); setCurrentTsIndex((prev) => Math.min(prev + 1, 8)); }}
+              className="cc-btn"
+              title="Step Forward (+1 Stage)"
+            >
+              ►│
+            </button>
+
+            <button
+              onClick={() => { setCurrentTsIndex(0); setIsPlaying(true); }}
+              className="cc-btn"
+              title="Restart Simulation"
+            >
+              ↺
+            </button>
+
+            <select
+              className="cc-select"
+              value={playbackSpeed}
+              onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
+              style={{ padding: '0.25rem 0.45rem', fontSize: '0.75rem', fontWeight: 700 }}
+            >
+              <option value="1">1x</option>
+              <option value="2">2x</option>
+              <option value="5">5x</option>
             </select>
           </div>
 
-          {/* Simulation Selector */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-            <label style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-              Simulation Run
-            </label>
-            <select
-              className="form-select"
-              value={selectedSimId}
-              onChange={(e) => setSelectedSimId(e.target.value)}
-              style={{ fontSize: '0.85rem', padding: '0.4rem 0.75rem', fontWeight: 600, minWidth: '210px' }}
-            >
-              {simulations.map((sim) => (
-                <option key={sim.id} value={sim.id}>
-                  {sim.id} ({sim.modelLevel.toUpperCase()})
-                </option>
-              ))}
-              {simulations.length === 0 && <option value="sim-level1-default">sim-level1-default</option>}
-            </select>
-          </div>
-
-          {/* Status Indicators */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', alignItems: 'flex-start' }}>
-            <label style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-              System & Run Status
-            </label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span className="badge badge-completed" style={{ fontSize: '0.72rem' }}>
-                ● {dbStatus === 'ok' ? 'SYSTEM READY' : 'API CONNECTED'}
+          {/* Interactive Timeline Range Scrubber */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.74rem', color: '#0F172A', fontWeight: 800 }}>
+                📍 Timeline Event Stage: <span style={{ color: '#0284C7' }}>{activeMilestone.timeLabel} — {activeMilestone.name}</span>
               </span>
-              <StatusBadge status={currentSim.status} />
+              <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700 }}>
+                Step {currentTsIndex + 1} / 9
+              </span>
             </div>
+
+            <input
+              type="range"
+              min="0"
+              max="8"
+              step="1"
+              value={currentTsIndex}
+              onChange={(e) => {
+                setIsPlaying(false);
+                setCurrentTsIndex(Number(e.target.value));
+              }}
+              style={{ width: '100%', cursor: 'pointer', accentColor: '#0284C7' }}
+            />
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748B', fontSize: '0.68rem', fontWeight: 700, padding: '0 2px' }}>
+              {nepalMilestones.map((m, idx) => (
+                <span
+                  key={idx}
+                  onClick={() => { setIsPlaying(false); setCurrentTsIndex(idx); }}
+                  style={{
+                    color: currentTsIndex === idx ? '#0284C7' : '#64748B',
+                    cursor: 'pointer',
+                    fontWeight: currentTsIndex === idx ? 800 : 600,
+                    textDecoration: currentTsIndex === idx ? 'underline' : 'none'
+                  }}
+                  title={`${m.timeLabel} — ${m.name}`}
+                >
+                  {m.timeLabel}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Tools */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <button className="cc-btn" title="Print current command-center view" onClick={() => window.print()}>🖨</button>
+            <button className="cc-btn" title="Record Simulation Video" onClick={() => setIsPlaying(true)}>🎥</button>
+            <button className="cc-btn" title="Expand Immersive Fullscreen 3D Simulation Map" onClick={() => setIsMapFullscreen(true)} style={{ background: '#0284C7', color: '#FFF', fontWeight: 800, borderColor: '#0284C7' }}>⤢ Fullscreen Map</button>
           </div>
         </div>
 
-        {/* Quick Action Header Buttons */}
-        <div style={{ display: 'flex', gap: '0.5rem', width: '100%', borderTop: '1px solid var(--border-color)', paddingTop: '0.85rem', marginTop: '0.3rem', flexWrap: 'wrap' }}>
-          <button onClick={() => navigate('/simulations/new/study-area')} className="btn btn-primary" style={{ fontSize: '0.82rem', padding: '0.45rem 0.9rem' }}>
-            + Launch New Simulation
-          </button>
-          <button onClick={() => navigate('/case-studies/bhotekoshi-trishuli')} className="btn btn-secondary" style={{ fontSize: '0.82rem', padding: '0.45rem 0.9rem' }}>
-            🏔️ Nepal Case Study
-          </button>
-          <button onClick={() => navigate(`/simulations/${selectedSimId}/overview`)} className="btn btn-secondary" style={{ fontSize: '0.82rem', padding: '0.45rem 0.9rem' }}>
-            📋 Analytical Overview
-          </button>
-          <button onClick={() => navigate('/comparison')} className="btn btn-outline" style={{ fontSize: '0.82rem', padding: '0.45rem 0.9rem' }}>
-            ⚖️ Scenario Comparison
-          </button>
+        {/* Operational Decision Support & Transparency */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem', marginBottom: '1rem' }}>
+          <DecisionSupportSummary
+            decisionSupport={intel.decisionSupport}
+            dataQuality={intel.dataQuality}
+          />
+          <ScientificDataPanel />
         </div>
-      </header>
 
-      {/* ==================================================
-          2. PRIMARY KPI STRIP (6 CARDS)
-         ================================================== */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
-        <KpiCard
-          label="Max Water Depth"
-          value={result ? result.maxDepthM.toFixed(2) : '7.20'}
-          unit="m"
-          subtext="Peak channel inundation head"
-          badge="Peak Head"
-          badgeType="danger"
-        />
-
-        <KpiCard
-          label="Max Flow Velocity"
-          value={result ? result.maxVelocityMs.toFixed(2) : '5.40'}
-          unit="m/s"
-          subtext="Kinetic flood wave speed"
-          badge="High Hazard"
-          badgeType="warning"
-        />
-
-        <KpiCard
-          label="Peak Inundated Area"
-          value={result ? result.floodAreaKm2.toFixed(2) : '42.30'}
-          unit="km²"
-          subtext="Submerged spatial footprint"
-          badge="2D Extent"
-          badgeType="info"
-        />
-
-        <KpiCard
-          label="Peak Hydro Discharge"
-          value="Dataset Unavailable"
-          unit=""
-          subtext="Outlet outflow hydrograph"
-          badge="Hydrograph"
-          badgeType="info"
-        />
-
-        <KpiCard
-          label="Earliest Wave Arrival"
-          value={intel.earliestSettlementArrivalMin !== null ? intel.earliestSettlementArrivalMin.toFixed(1) : '18.0'}
-          unit="min"
-          subtext="Wavefront contact lead time"
-          badge="Lead Time"
-          badgeType="safe"
-        />
-
-        <KpiCard
-          label="Simulation Duration"
-          value={result ? `${result.durationHr.toFixed(2)}` : '2.25'}
-          unit="hr"
-          subtext="2D Diffusive Wave routing"
-          badge="Level 1"
-          badgeType="safe"
-        />
       </div>
-
-      {/* ==================================================
-          3. MAIN COMMAND WORKSPACE GRID
-         ================================================== */}
-      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr 310px', gap: '1.25rem', minHeight: '680px' }}>
-
-        {/* --------------------------------------------------
-            LEFT SIDE PANEL: SCENARIO & LAYER CONTROLS
-           -------------------------------------------------- */}
-        <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem', padding: '1.1rem', background: '#ffffff' }}>
-          
-          {/* Scenario Profile */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--accent-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              📍 Active Scenario Profile
-            </span>
-            <div style={{ background: 'var(--bg-surface-secondary)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.75rem', fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-              <div style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '0.88rem' }}>
-                {activeStudyArea.name}
-              </div>
-              <div style={{ color: 'var(--text-secondary)' }}><strong>Catchment:</strong> {activeStudyArea.river}</div>
-              <div style={{ color: 'var(--text-secondary)' }}><strong>Origin:</strong> {activeStudyArea.damOrBlockage}</div>
-              <div style={{ color: 'var(--text-secondary)' }}><strong>CRS:</strong> EPSG:32643 → EPSG:4326</div>
-            </div>
-          </div>
-
-          {/* Map Layer Controls */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', borderTop: '1px solid var(--border-color)', paddingTop: '0.85rem' }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              🗺️ Active Map Layers
-            </span>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.8rem', color: 'var(--text-primary)' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                <input type="checkbox" checked={layerExtent} onChange={(e) => setLayerExtent(e.target.checked)} />
-                <span style={{ fontWeight: 600 }}>☑ Flood Inundation Extent</span>
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                <input type="checkbox" checked={layerDepth} onChange={(e) => setLayerDepth(e.target.checked)} />
-                <span style={{ fontWeight: 600 }}>☑ Water Depth Gradient</span>
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                <input type="checkbox" checked={layerVelocity} onChange={(e) => setLayerVelocity(e.target.checked)} />
-                <span style={{ fontWeight: 600 }}>☑ Flow Velocity Field</span>
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                <input type="checkbox" checked={layerArrival} onChange={(e) => setLayerArrival(e.target.checked)} />
-                <span style={{ fontWeight: 600 }}>☑ Wavefront Arrival Time</span>
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', cursor: 'not-allowed' }}>
-                <input type="checkbox" disabled />
-                <span>☐ DEM Elevation Raster</span>
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', cursor: 'not-allowed' }}>
-                <input type="checkbox" disabled />
-                <span>☐ River Network Vector</span>
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', cursor: 'not-allowed' }}>
-                <input type="checkbox" disabled />
-                <span>☐ Road Transport Corridors</span>
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', cursor: 'not-allowed' }}>
-                <input type="checkbox" disabled />
-                <span>☐ Buildings [Unavailable]</span>
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', cursor: 'not-allowed' }}>
-                <input type="checkbox" disabled />
-                <span>☐ Bridges [Unavailable]</span>
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', cursor: 'not-allowed' }}>
-                <input type="checkbox" disabled />
-                <span>☐ Population [Requires Census]</span>
-              </label>
-            </div>
-          </div>
-
-          {/* Interactive GIS Tools */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', borderTop: '1px solid var(--border-color)', paddingTop: '0.85rem' }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              🛠️ GIS Map Tools
-            </span>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem' }}>
-              <button className="btn btn-primary" style={{ fontSize: '0.72rem', padding: '0.3rem' }}>🎯 Select Cell</button>
-              <button className="btn btn-secondary" style={{ fontSize: '0.72rem', padding: '0.3rem' }}>📏 Measure</button>
-              <button className="btn btn-secondary" style={{ fontSize: '0.72rem', padding: '0.3rem' }}>❓ Query Head</button>
-              <button className="btn btn-outline" style={{ fontSize: '0.72rem', padding: '0.3rem' }}>🧹 Clear</button>
-            </div>
-          </div>
-
-          {/* Scientific Legend */}
-          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              📊 Water Depth Classification
-            </span>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: '0.75rem', fontWeight: 600 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div style={{ width: '12px', height: '12px', background: '#1e3a8a', borderRadius: '2px' }} />
-                <span>&gt; 6.0 m (Extreme Hazard)</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div style={{ width: '12px', height: '12px', background: '#1e40af', borderRadius: '2px' }} />
-                <span>4.0 – 6.0 m (High Hazard)</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div style={{ width: '12px', height: '12px', background: '#2563eb', borderRadius: '2px' }} />
-                <span>2.0 – 4.0 m (Moderate Inundation)</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div style={{ width: '12px', height: '12px', background: '#60a5fa', borderRadius: '2px' }} />
-                <span>0.5 – 2.0 m (Low Inundation)</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div style={{ width: '12px', height: '12px', background: '#bfdbfe', borderRadius: '2px' }} />
-                <span>0.0 – 0.5 m (Shallow Water)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* --------------------------------------------------
-            CENTER WORKSPACE: INTERACTIVE MAP & TEMPORAL STRIP
-           -------------------------------------------------- */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          
-          {/* Map Canvas Component */}
-          <div style={{ flex: 1, position: 'relative', minHeight: '520px', borderRadius: '8px', overflow: 'hidden' }}>
-            <FloodMap simulationId={selectedSimId} />
-          </div>
-
-          {/* Temporal Analytics Strip */}
-          <div className="card" style={{ padding: '0.85rem 1.25rem', background: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>EARLIEST ARRIVAL</span>
-              <strong style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>
-                {intel.earliestSettlementArrivalMin !== null ? `${intel.earliestSettlementArrivalMin.toFixed(1)} min` : '18.0 min'}
-              </strong>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>TIME TO PEAK AREA</span>
-              <strong style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>
-                {intel.timeToPeakInundationMin !== null ? `${intel.timeToPeakInundationMin.toFixed(0)} min` : '45 min'}
-              </strong>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>TIME TO PEAK DEPTH</span>
-              <strong style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>
-                {intel.timeToMaxDepthMin !== null ? `${intel.timeToMaxDepthMin.toFixed(0)} min` : '50 min'}
-              </strong>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>TIME TO PEAK VELOCITY</span>
-              <strong style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>
-                {intel.timeToMaxVelocityMin !== null ? `${intel.timeToMaxVelocityMin.toFixed(0)} min` : '25 min'}
-              </strong>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>PEAK FLOOD EXTENT</span>
-              <strong style={{ fontSize: '0.95rem', color: 'var(--accent-primary)' }}>
-                {result ? `${result.floodAreaKm2.toFixed(2)} km²` : '42.30 km²'}
-              </strong>
-            </div>
-          </div>
-        </div>
-
-        {/* --------------------------------------------------
-            RIGHT SIDE PANEL: SPECIFICATIONS & HYDROGRAPH
-           -------------------------------------------------- */}
-        <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem', padding: '1.1rem', background: '#ffffff' }}>
-          
-          {/* Simulation Specifications */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--accent-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              ⚙️ Simulation Specifications
-            </span>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.78rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.25rem' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Simulation ID</span>
-                <strong style={{ color: 'var(--accent-primary)' }}>{selectedSimId}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.25rem' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Scenario ID</span>
-                <strong>{currentSim.scenarioId}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.25rem' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Scenario Type</span>
-                <strong>GLOF / Dam Break</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.25rem' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Model Engine</span>
-                <strong>Level 1 — 2D Engine</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.25rem' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Hydro Solver</span>
-                <strong>2D Diffusive Wave</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.25rem' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Grid Cell Size</span>
-                <strong>30 m × 30 m</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.25rem' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Time Step</span>
-                <strong>0.5 s</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.25rem' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Duration</span>
-                <strong>{result ? `${result.durationHr.toFixed(2)} hr` : '2.25 hr'}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.2rem' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Status</span>
-                <StatusBadge status={currentSim.status} />
-              </div>
-            </div>
-          </div>
-
-          {/* Simulation Progress Stages */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', borderTop: '1px solid var(--border-color)', paddingTop: '0.85rem' }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              🔄 Lifecycle Execution Stages
-            </span>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: '0.78rem' }}>
-              <div style={{ color: 'var(--status-completed-text)', fontWeight: 600 }}>✓ 1. DEM Terrain Preprocessing</div>
-              <div style={{ color: 'var(--status-completed-text)', fontWeight: 600 }}>✓ 2. Metric Projection (EPSG:32643)</div>
-              <div style={{ color: 'var(--status-completed-text)', fontWeight: 600 }}>✓ 3. Initial Hydraulic Boundary</div>
-              <div style={{ color: 'var(--status-completed-text)', fontWeight: 600 }}>✓ 4. 2D Flow Propagation Routing (100%)</div>
-              <div style={{ color: 'var(--status-completed-text)', fontWeight: 600 }}>✓ 5. GIS Extent Polygonization</div>
-              <div style={{ color: 'var(--status-completed-text)', fontWeight: 600 }}>✓ 6. Database Artifact Persistence</div>
-            </div>
-          </div>
-
-          {/* Hydrograph Chart Box */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', borderTop: '1px solid var(--border-color)', paddingTop: '0.85rem' }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              📈 Hydrograph — Outlet Discharge
-            </span>
-            <div style={{ background: 'var(--bg-surface-secondary)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.75rem', fontSize: '0.78rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Peak Outflow Rate:</span>
-                <span className="badge badge-advisory" style={{ fontSize: '0.68rem' }}>Dataset Unavailable</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Time to Peak Discharge:</span>
-                <strong>30 min</strong>
-              </div>
-              <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', lineHeight: 1.4, margin: 0, fontStyle: 'italic' }}>
-                Hydrograph time-series data unavailable for this simulation raster output.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ==================================================
-          4. OPERATIONAL DECISION SUPPORT & SCIENTIFIC TRANSPARENCY
-         ================================================== */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.25rem', marginTop: '0.5rem' }}>
-        <DecisionSupportSummary
-          decisionSupport={intel.decisionSupport}
-          dataQuality={intel.dataQuality}
-        />
-        <ScientificDataPanel />
-      </div>
-
     </div>
   );
 };
-

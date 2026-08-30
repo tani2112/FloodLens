@@ -29,7 +29,7 @@ export const ScientificDataPanel: React.FC<ScientificDataPanelProps> = ({ classN
           <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
             <div><strong>Model Level:</strong> Level 1 — 2D Diffusive Wave</div>
             <div><strong>Formulation:</strong> Cellular finite-volume shallow water approximation</div>
-            <div><strong>Spatial Resolution:</strong> 30m × 30m elevation grid (EPSG:32643 UTM)</div>
+            <div><strong>Spatial Resolution:</strong> 30m × 30m elevation grid (EPSG:32645 UTM)</div>
             <div><strong>Temporal Routing:</strong> Adaptive time-step explicit flux discretization</div>
           </div>
         </div>
@@ -40,10 +40,10 @@ export const ScientificDataPanel: React.FC<ScientificDataPanelProps> = ({ classN
             <span>🗺️</span> Ingested GIS Input Layers
           </h4>
           <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-            <div><strong>Digital Elevation Model:</strong> Copernicus / SRTM 30m Grid</div>
-            <div><strong>Catchment Hydrography:</strong> Periyar River vector network</div>
-            <div><strong>Settlement Locations:</strong> Idukki District canonical village centroids</div>
-            <div><strong>Transport Infrastructure:</strong> Regional road corridor vectors</div>
+            <div><strong>Digital Elevation Model:</strong> ALOS PALSAR 12.5m / Copernicus DEM</div>
+            <div><strong>Catchment Hydrography:</strong> Lhende Khola → Bhote Koshi / Trishuli River network</div>
+            <div><strong>Settlement Locations:</strong> Rasuwa & Nuwakot District village centroids</div>
+            <div><strong>Transport Infrastructure:</strong> Pasang Lhamu Highway (NH-34) & feeder road vectors</div>
           </div>
         </div>
 

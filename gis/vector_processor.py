@@ -17,12 +17,12 @@ def generate_canonical_vectors(
     
     # Load canonical AOI config if available
     villages_data = [
-        {"name": "Cheruthoni", "lat": 10.0510, "lon": 76.9740, "district": "Idukki", "population": 8450},
-        {"name": "Painavu", "lat": 10.0380, "lon": 76.9810, "district": "Idukki", "population": 4200},
-        {"name": "Vazhathope", "lat": 10.0290, "lon": 76.9620, "district": "Idukki", "population": 6100},
-        {"name": "Chelachuvadu", "lat": 10.0750, "lon": 76.9200, "district": "Idukki", "population": 5300},
-        {"name": "Lower Periyar", "lat": 10.0910, "lon": 76.8850, "district": "Idukki", "population": 3800},
-        {"name": "Adimali", "lat": 10.1040, "lon": 76.9530, "district": "Idukki", "population": 15800}
+        {"name": "Rasuwagadhi Border Compound", "lat": 28.2670, "lon": 85.3780, "district": "Rasuwa", "population": 350},
+        {"name": "Timure Freight Hub & Dry Port", "lat": 28.2430, "lon": 85.3750, "district": "Rasuwa", "population": 1250},
+        {"name": "Syabrubesi Township", "lat": 28.1610, "lon": 85.3370, "district": "Rasuwa", "population": 2800},
+        {"name": "Goljung Valley Village", "lat": 28.1400, "lon": 85.3200, "district": "Rasuwa", "population": 950},
+        {"name": "Dhunche District Center", "lat": 28.1100, "lon": 85.3000, "district": "Rasuwa", "population": 3400},
+        {"name": "Betrawati Basin Settlement", "lat": 28.0700, "lon": 85.2800, "district": "Nuwakot", "population": 1850}
     ]
     
     # 1. Villages GeoJSON
@@ -34,7 +34,7 @@ def generate_canonical_vectors(
             {
                 "type": "Feature",
                 "properties": {
-                    "id": f"v-{idx+1:03d}",
+                    "id": f"v-np-{idx+1:03d}",
                     "name": v["name"],
                     "district": v["district"],
                     "population": v["population"],
@@ -61,19 +61,23 @@ def generate_canonical_vectors(
             {
                 "type": "Feature",
                 "properties": {
-                    "id": "r-001",
-                    "name": "Periyar River",
+                    "id": "r-np-001",
+                    "name": "Lhende Khola → Bhote Koshi / Trishuli River",
                     "waterway": "river"
                 },
                 "geometry": {
                     "type": "LineString",
                     "coordinates": [
-                        [76.9820, 10.0520],
-                        [76.9740, 10.0510],
-                        [76.9500, 10.0600],
-                        [76.9200, 10.0750],
-                        [76.8850, 10.0910],
-                        [76.8400, 10.1150]
+                        [85.405, 28.305],
+                        [85.392, 28.285],
+                        [85.385, 28.275],
+                        [85.378, 28.263],
+                        [85.373, 28.243],
+                        [85.355, 28.210],
+                        [85.335, 28.162],
+                        [85.320, 28.140],
+                        [85.300, 28.110],
+                        [85.280, 28.070]
                     ]
                 }
             }
@@ -92,16 +96,18 @@ def generate_canonical_vectors(
             {
                 "type": "Feature",
                 "properties": {
-                    "id": "rd-001",
-                    "name": "NH 185 (Kattappana - Adimali Road)",
-                    "highway": "primary"
+                    "id": "rd-np-001",
+                    "name": "Pasang Lhamu Highway (NH-34 Corridor)",
+                    "highway": "trunk_highway"
                 },
                 "geometry": {
                     "type": "LineString",
                     "coordinates": [
-                        [76.9810, 10.0380],
-                        [76.9740, 10.0510],
-                        [76.9530, 10.1040]
+                        [85.3780, 28.2670],
+                        [85.3750, 28.2430],
+                        [85.3370, 28.1610],
+                        [85.3000, 28.1100],
+                        [85.2800, 28.0700]
                     ]
                 }
             }
@@ -120,17 +126,17 @@ def generate_canonical_vectors(
             {
                 "type": "Feature",
                 "properties": {
-                    "id": "dam-idukki-001",
-                    "name": "Idukki Arch Dam & Cheruthoni Dam",
-                    "river": "Periyar River",
-                    "dam_type": "Concrete Double Curvature Arch",
-                    "height_m": 168.91,
-                    "length_m": 365.85,
-                    "storage_capacity_mm3": 1996.0
+                    "id": "dam-rasuwagadhi-001",
+                    "name": "Rasuwagadhi Dam & Lhende Khola Barrier Lake",
+                    "river": "Bhote Koshi / Trishuli River",
+                    "dam_type": "Run-of-River Hydro & Landslide Barrier Lake",
+                    "height_m": 45.0,
+                    "length_m": 120.0,
+                    "storage_capacity_mm3": 24.5
                 },
                 "geometry": {
                     "type": "Point",
-                    "coordinates": [76.9790, 10.0526]
+                    "coordinates": [85.385, 28.275]
                 }
             }
         ]

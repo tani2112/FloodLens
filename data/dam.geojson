@@ -11,19 +11,19 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "dam-idukki-001",
-        "name": "Idukki Arch Dam & Cheruthoni Dam",
-        "river": "Periyar River",
-        "dam_type": "Concrete Double Curvature Arch",
-        "height_m": 168.91,
-        "length_m": 365.85,
-        "storage_capacity_mm3": 1996.0
+        "id": "dam-rasuwagadhi-001",
+        "name": "Rasuwagadhi Dam & Lhende Khola Barrier Lake",
+        "river": "Bhote Koshi / Trishuli River",
+        "dam_type": "Run-of-River Hydro & Landslide Barrier Lake",
+        "height_m": 45.0,
+        "length_m": 120.0,
+        "storage_capacity_mm3": 24.5
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          76.979,
-          10.0526
+          85.385,
+          28.275
         ]
       }
     }
