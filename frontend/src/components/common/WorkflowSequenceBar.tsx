@@ -60,6 +60,15 @@ export const WorkflowSequenceBar: React.FC<WorkflowSequenceBarProps> = ({
     }
   ];
 
+  const getScenarioLabel = (id: string) => {
+    const s = (id || '').toLowerCase();
+    if (s.includes('rishi') || s.includes('uk-') || s.includes('chamoli') || s.includes('uttarakhand')) return 'Rishi Ganga Flash Flood (UK-2021-02-07-001)';
+    if (s.includes('phuktal') || s.includes('ld-') || s.includes('zanskar') || s.includes('ladakh')) return 'Phuktal River Landslide Dam (LD-2015-03-15-001)';
+    if (s.includes('wapriyang') || s.includes('wp-') || s.includes('siang')) return 'Wapriyang Landslide Outburst (WP-2021-11-12-001)';
+    if (s.includes('kosi') || s.includes('ks-') || s.includes('kushaha') || s.includes('bihar')) return 'Kosi Kushaha Embankment Breach (KS-2008-08-18-001)';
+    return 'Nepal Demonstration Baseline (NP-2026-08-26-001)';
+  };
+
   return (
     <div
       style={{
@@ -77,7 +86,7 @@ export const WorkflowSequenceBar: React.FC<WorkflowSequenceBarProps> = ({
             OPERATIONAL WORKFLOW SEQUENCE
           </span>
           <span style={{ fontSize: '0.7rem', fontWeight: 600, background: '#E2ECE5', color: '#13382B', border: '1px solid #8EAE9D', padding: '0.1rem 0.45rem', borderRadius: '4px' }}>
-            Nepal Demonstration Baseline (NP-2026-08-26-001)
+            {getScenarioLabel(activeSimulationId)}
           </span>
         </div>
 

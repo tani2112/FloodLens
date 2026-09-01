@@ -597,6 +597,7 @@ export const FloodMap: React.FC<FloodMapProps> = ({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
+  const markersRef = useRef<maplibregl.Marker[]>([]);
 
   // Active Incident Data
   const activeScenarioData = resolveScenarioData(simulationId);
@@ -932,6 +933,9 @@ export const FloodMap: React.FC<FloodMapProps> = ({
           })) as any
         });
 
+        markersRef.current.forEach((m) => m.remove());
+        markersRef.current = [];
+
         activeScenarioData.markers.forEach((item) => {
           const el = document.createElement('div');
           el.innerHTML = `
@@ -940,9 +944,10 @@ export const FloodMap: React.FC<FloodMapProps> = ({
               <span>${item.label}</span>
             </div>
           `;
-          new maplibregl.Marker({ element: el })
+          const m = new maplibregl.Marker({ element: el })
             .setLngLat(item.labelCoords as Coordinate)
             .addTo(map);
+          markersRef.current.push(m);
         });
       }
 
@@ -951,8 +956,84 @@ export const FloodMap: React.FC<FloodMapProps> = ({
     });
 
     return () => {
+      markersRef.current.forEach((m) => m.remove());
+      markersRef.current = [];
       map.remove();
     };
+  }, []);
+
+  // Re-sync, fly camera, and switch datasets whenever simulationId or scenario changes
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !map.isStyleLoaded()) return;
+
+    // Smooth camera fly to the new scenario's geographic coordinates & zoom
+    map.flyTo({
+      center: activeScenarioData.center,
+      zoom: activeScenarioData.zoom,
+      pitch: viewMode === '3d' ? 55 : 0,
+      bearing: viewMode === '3d' ? -20 : 0,
+      duration: 1600,
+      essential: true
+    });
+
+    // Update GeoJSON source vectors
+    const blueSrc = map.getSource('satellite-blue-network-src') as maplibregl.GeoJSONSource | undefined;
+    blueSrc?.setData(activeScenarioData.satelliteBlueNetwork);
+
+    const redSrc = map.getSource('satellite-red-routes-src') as maplibregl.GeoJSONSource | undefined;
+    redSrc?.setData(activeScenarioData.satelliteRedRoutes);
+
+    const magSrc = map.getSource('satellite-magenta-zones-src') as maplibregl.GeoJSONSource | undefined;
+    magSrc?.setData(activeScenarioData.satelliteMagentaZones);
+
+    const bldSrc = map.getSource('satellite-buildings-src') as maplibregl.GeoJSONSource | undefined;
+    bldSrc?.setData(activeScenarioData.satelliteBuildings);
+
+    const ctxSrc = map.getSource('nepal-context-src') as maplibregl.GeoJSONSource | undefined;
+    ctxSrc?.setData(activeScenarioData.contextFeatures);
+
+    // Update leader lines & origin points
+    const leaderSource = map.getSource('label-leaders-src') as maplibregl.GeoJSONSource | undefined;
+    leaderSource?.setData({
+      type: 'FeatureCollection',
+      features: (activeScenarioData.markers || []).map((item) => ({
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'LineString', coordinates: [item.coords, item.labelCoords] }
+      })) as any
+    });
+
+    const locationSource = map.getSource('location-marker-src') as maplibregl.GeoJSONSource | undefined;
+    locationSource?.setData({
+      type: 'FeatureCollection',
+      features: (activeScenarioData.markers || []).map((item) => ({
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'Point', coordinates: item.coords }
+      })) as any
+    });
+
+    // Remove old marker pills and spawn new ones
+    markersRef.current.forEach((m) => m.remove());
+    markersRef.current = [];
+
+    (activeScenarioData.markers || []).forEach((item) => {
+      const el = document.createElement('div');
+      el.innerHTML = `
+        <div style="background: rgba(15, 45, 37, 0.96); color: #ffffff; font-weight: 800; padding: 5px 12px; border-radius: 20px; border: 2px solid ${item.border}; box-shadow: 0 4px 16px rgba(0,0,0,0.9), 0 0 10px ${item.border}; display: flex; align-items: center; gap: 6px; font-size: 12px; font-family: Inter, sans-serif; letter-spacing: 0.02em; white-space: nowrap; cursor: pointer; text-shadow: 0 1px 3px rgba(0,0,0,0.9);">
+          <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: ${item.border}; box-shadow: 0 0 6px ${item.border}; flex-shrink: 0;"></span>
+          <span>${item.label}</span>
+        </div>
+      `;
+      const m = new maplibregl.Marker({ element: el })
+        .setLngLat(item.labelCoords as Coordinate)
+        .addTo(map);
+      markersRef.current.push(m);
+    });
+
+    loadTimestepGeoJSON(activeTsIndex);
+    updateLayerVisibilities();
   }, [simulationId, activeScenarioData]);
 
   // Update dynamic flood hydrodynamics
