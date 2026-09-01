@@ -427,4 +427,36 @@ table.data-table tr:hover td {
   background: #5e8573;
 }
 
+/* ==================================================
+   MapLibre Navigation Controls Dark Forest Glass Theme
+   ================================================== */
+.maplibregl-ctrl-group {
+  background: rgba(15, 45, 37, 0.94) !important;
+  border: 1px solid rgba(0, 163, 122, 0.45) !important;
+  border-radius: 6px !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+  overflow: hidden !important;
+}
+
+.maplibregl-ctrl-group button {
+  width: 32px !important;
+  height: 32px !important;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(0, 163, 122, 0.25) !important;
+  transition: background 0.15s ease !important;
+}
+
+.maplibregl-ctrl-group button:last-child {
+  border-bottom: none !important;
+}
+
+.maplibregl-ctrl-group button:hover {
+  background: rgba(0, 128, 96, 0.35) !important;
+}
+
+.maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+  filter: invert(1) brightness(2) !important;
+}
+
 

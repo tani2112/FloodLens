@@ -1530,7 +1530,7 @@ export const FloodMap: React.FC<FloodMapProps> = ({
       {/* ==================================================
           TOP-RIGHT MAP VIEW MODE TOGGLE: [ 3D Terrain ] [ 2D Satellite ]
          ================================================== */}
-      <div style={{ position: 'absolute', top: isFullscreen ? '4.8rem' : '0.85rem', right: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem', zIndex: 90 }}>
+      <div style={{ position: 'absolute', top: isFullscreen ? '4.8rem' : '0.85rem', right: '3.6rem', display: 'flex', alignItems: 'center', gap: '0.5rem', zIndex: 90 }}>
         <div style={{ display: 'flex', background: 'rgba(15, 45, 37, 0.94)', border: '1px solid rgba(0, 163, 122, 0.45)', borderRadius: '6px', padding: '2.5px', backdropFilter: 'blur(8px)', gap: '3px' }}>
           <button
             id="map-toggle-3d"
@@ -1579,6 +1579,7 @@ export const FloodMap: React.FC<FloodMapProps> = ({
           {showFullscreenToggle && (
             <button
               onClick={handleToggleFullscreen}
+              title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen Map"}
               style={{ width: '32px', height: '32px', borderRadius: '6px', background: isFullscreen ? '#008060' : 'rgba(15, 45, 37, 0.94)', color: '#FFFFFF', border: '1px solid rgba(0, 163, 122, 0.45)', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               {isFullscreen ? '⤓' : '⤢'}
@@ -1586,14 +1587,8 @@ export const FloodMap: React.FC<FloodMapProps> = ({
           )}
 
           <button
-            onClick={toggle3DPitch}
-            style={{ width: '32px', height: '32px', borderRadius: '6px', background: viewMode === '3d' ? '#008060' : 'rgba(15, 45, 37, 0.94)', color: '#FFFFFF', border: '1px solid rgba(0, 163, 122, 0.45)', fontWeight: 800, fontSize: '0.72rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          >
-            3D
-          </button>
-
-          <button
             onClick={handleResetSimulation}
+            title="Reset Camera & Map View"
             style={{ width: '32px', height: '32px', borderRadius: '6px', background: 'rgba(15, 45, 37, 0.94)', color: '#FFFFFF', border: '1px solid rgba(0, 163, 122, 0.45)', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             ↺
