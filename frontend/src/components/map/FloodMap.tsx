@@ -1396,9 +1396,9 @@ export const FloodMap: React.FC<FloodMapProps> = ({
             maxWidth: 'calc(100% - 240px)'
           }}
         >
-          <div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#38BDF8', boxShadow: '0 0 10px #38BDF8', flexShrink: 0 }}></div>
+          <div style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#00A37A', boxShadow: '0 0 10px #00A37A', flexShrink: 0 }}></div>
           <div>
-            <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#38BDF8', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+            <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#00A37A', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
               INCIDENT & CATCHMENT OVERVIEW
             </div>
             <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -1413,10 +1413,10 @@ export const FloodMap: React.FC<FloodMapProps> = ({
          ================================================== */}
       {isFullscreen && (
         <div style={{ position: 'absolute', top: '0.85rem', left: '1rem', right: '1rem', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', pointerEvents: 'none' }}>
-          <div style={{ pointerEvents: 'auto', background: 'rgba(15, 23, 42, 0.92)', border: '1px solid rgba(56, 189, 248, 0.4)', borderRadius: '8px', padding: '0.45rem 0.9rem', color: '#F8FAFC', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#38BDF8', boxShadow: '0 0 10px #38BDF8' }}></div>
+          <div style={{ pointerEvents: 'auto', background: 'rgba(15, 45, 37, 0.94)', border: '1px solid rgba(0, 163, 122, 0.45)', borderRadius: '8px', padding: '0.45rem 0.9rem', color: '#F8FAFC', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#00A37A', boxShadow: '0 0 10px #00A37A' }}></div>
             <div>
-              <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#38BDF8', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+              <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#00A37A', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                 FLOODLENS {viewMode === '3d' ? '3D HYDRODYNAMIC MODEL' : '2D SATELLITE NETWORK ASSESSMENT'}
               </div>
               <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#FFFFFF' }}>
@@ -1425,20 +1425,20 @@ export const FloodMap: React.FC<FloodMapProps> = ({
             </div>
           </div>
 
-          <div style={{ pointerEvents: 'auto', display: 'flex', alignItems: 'center', gap: '0.6rem', background: 'rgba(15, 23, 42, 0.92)', border: '1px solid rgba(56, 189, 248, 0.4)', borderRadius: '8px', padding: '0.4rem 0.85rem', backdropFilter: 'blur(8px)' }}>
+          <div style={{ pointerEvents: 'auto', display: 'flex', alignItems: 'center', gap: '0.6rem', background: 'rgba(15, 45, 37, 0.94)', border: '1px solid rgba(0, 163, 122, 0.45)', borderRadius: '8px', padding: '0.4rem 0.85rem', backdropFilter: 'blur(8px)' }}>
             <div style={{ display: 'flex', flexDirection: 'column', paddingRight: '0.6rem', borderRight: '1px solid rgba(255,255,255,0.12)' }}>
-              <span style={{ fontSize: '0.6rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>Max Depth</span>
-              <strong style={{ fontSize: '0.92rem', fontWeight: 800, color: '#38BDF8' }}>{activeMilestone.depth.toFixed(1)} m</strong>
+              <span style={{ fontSize: '0.6rem', fontWeight: 700, color: '#96B8AC', textTransform: 'uppercase' }}>Max Depth</span>
+              <strong style={{ fontSize: '0.92rem', fontWeight: 800, color: '#00A37A' }}>{activeMilestone.depth.toFixed(1)} m</strong>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', paddingRight: '0.6rem', borderRight: '1px solid rgba(255,255,255,0.12)' }}>
-              <span style={{ fontSize: '0.6rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>Velocity</span>
+              <span style={{ fontSize: '0.6rem', fontWeight: 700, color: '#96B8AC', textTransform: 'uppercase' }}>Velocity</span>
               <strong style={{ fontSize: '0.92rem', fontWeight: 800, color: '#FBBF24' }}>{activeMilestone.velocity.toFixed(1)} m/s</strong>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', paddingRight: '0.6rem', borderRight: '1px solid rgba(255,255,255,0.12)' }}>
-              <span style={{ fontSize: '0.6rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>Inundated Area</span>
+              <span style={{ fontSize: '0.6rem', fontWeight: 700, color: '#96B8AC', textTransform: 'uppercase' }}>Inundated Area</span>
               <strong style={{ fontSize: '0.92rem', fontWeight: 800, color: '#4ADE80' }}>{activeMilestone.area.toFixed(1)} km²</strong>
             </div>
-            <button onClick={handleToggleFullscreen} style={{ background: '#0284C7', color: '#FFFFFF', border: 'none', borderRadius: '6px', padding: '0.4rem 0.75rem', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer' }}>
+            <button onClick={handleToggleFullscreen} style={{ background: '#008060', color: '#FFFFFF', border: 'none', borderRadius: '6px', padding: '0.4rem 0.75rem', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer' }}>
               ⤓ Exit Fullscreen
             </button>
           </div>
@@ -1449,7 +1449,7 @@ export const FloodMap: React.FC<FloodMapProps> = ({
           TOP-RIGHT MAP VIEW MODE TOGGLE: [ 3D Terrain ] [ 2D Satellite ]
          ================================================== */}
       <div style={{ position: 'absolute', top: isFullscreen ? '4.8rem' : '0.85rem', right: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem', zIndex: 90 }}>
-        <div style={{ display: 'flex', background: 'rgba(15, 23, 42, 0.94)', border: '1px solid rgba(56, 189, 248, 0.45)', borderRadius: '6px', padding: '2.5px', backdropFilter: 'blur(8px)', gap: '3px' }}>
+        <div style={{ display: 'flex', background: 'rgba(15, 45, 37, 0.94)', border: '1px solid rgba(0, 163, 122, 0.45)', borderRadius: '6px', padding: '2.5px', backdropFilter: 'blur(8px)', gap: '3px' }}>
           <button
             id="map-toggle-3d"
             onClick={() => handleViewModeChange('3d')}
@@ -1463,8 +1463,8 @@ export const FloodMap: React.FC<FloodMapProps> = ({
               display: 'flex',
               alignItems: 'center',
               gap: '0.35rem',
-              background: viewMode === '3d' ? '#0284C7' : 'transparent',
-              color: viewMode === '3d' ? '#FFFFFF' : '#94A3B8'
+              background: viewMode === '3d' ? '#008060' : 'transparent',
+              color: viewMode === '3d' ? '#FFFFFF' : '#96B8AC'
             }}
           >
             <span>🏔️</span>
@@ -1484,8 +1484,8 @@ export const FloodMap: React.FC<FloodMapProps> = ({
               display: 'flex',
               alignItems: 'center',
               gap: '0.35rem',
-              background: viewMode === '2d' ? '#0284C7' : 'transparent',
-              color: viewMode === '2d' ? '#FFFFFF' : '#94A3B8'
+              background: viewMode === '2d' ? '#008060' : 'transparent',
+              color: viewMode === '2d' ? '#FFFFFF' : '#96B8AC'
             }}
           >
             <span>🛰️</span>
@@ -1497,7 +1497,7 @@ export const FloodMap: React.FC<FloodMapProps> = ({
           {showFullscreenToggle && (
             <button
               onClick={handleToggleFullscreen}
-              style={{ width: '32px', height: '32px', borderRadius: '6px', background: isFullscreen ? '#0284C7' : 'rgba(15, 23, 42, 0.92)', color: '#FFFFFF', border: '1px solid rgba(56, 189, 248, 0.4)', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{ width: '32px', height: '32px', borderRadius: '6px', background: isFullscreen ? '#008060' : 'rgba(15, 45, 37, 0.94)', color: '#FFFFFF', border: '1px solid rgba(0, 163, 122, 0.45)', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               {isFullscreen ? '⤓' : '⤢'}
             </button>
@@ -1505,14 +1505,14 @@ export const FloodMap: React.FC<FloodMapProps> = ({
 
           <button
             onClick={toggle3DPitch}
-            style={{ width: '32px', height: '32px', borderRadius: '6px', background: viewMode === '3d' ? '#0284C7' : 'rgba(15, 23, 42, 0.92)', color: '#FFFFFF', border: '1px solid rgba(56, 189, 248, 0.4)', fontWeight: 800, fontSize: '0.72rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: '32px', height: '32px', borderRadius: '6px', background: viewMode === '3d' ? '#008060' : 'rgba(15, 45, 37, 0.94)', color: '#FFFFFF', border: '1px solid rgba(0, 163, 122, 0.45)', fontWeight: 800, fontSize: '0.72rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             3D
           </button>
 
           <button
             onClick={handleResetSimulation}
-            style={{ width: '32px', height: '32px', borderRadius: '6px', background: 'rgba(15, 23, 42, 0.92)', color: '#FFFFFF', border: '1px solid rgba(56, 189, 248, 0.4)', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: '32px', height: '32px', borderRadius: '6px', background: 'rgba(15, 45, 37, 0.94)', color: '#FFFFFF', border: '1px solid rgba(0, 163, 122, 0.45)', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             ↺
           </button>

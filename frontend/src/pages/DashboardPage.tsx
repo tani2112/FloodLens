@@ -119,7 +119,7 @@ export const DashboardPage: React.FC = () => {
   };
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#F0F9FF', color: '#0F172A', width: '100%', overflowX: 'hidden' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#EBF3EE', color: '#0D261E', width: '100%', overflowX: 'hidden' }}>
 
       {/* ==================================================
           MAIN CONTENT WORKSPACE (KPI Strip + 3-Column Grid + Timeline)
@@ -129,19 +129,19 @@ export const DashboardPage: React.FC = () => {
         {/* 5-Step Operational Workflow Sequence Bar */}
         <WorkflowSequenceBar currentStep={4} activeSimulationId={selectedSimId} />
 
-        {/* TOP KPI CARDS STRIP (5 White & Blue Cards) */}
+        {/* TOP KPI CARDS STRIP (5 Mint & Emerald Cards) */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.75rem', marginBottom: '0.65rem' }}>
 
           {/* KPI 1: Max Water Depth */}
           <div className="cc-kpi-card" onClick={() => navigate('/simulations/NP-2026-08-26-001/map?var=depth')} style={{ cursor: 'pointer' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '6px', background: '#E0F2FE', border: '1px solid #BAE6FD', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: '#0284C7' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '6px', background: '#DEF2EA', border: '1px solid #B2D4C3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: '#008060' }}>
               💧
             </div>
             <div>
-              <div style={{ fontSize: '0.64rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <div style={{ fontSize: '0.64rem', fontWeight: 700, color: '#4D7568', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Max Water Depth
               </div>
-              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', lineHeight: 1.1 }}>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0D261E', lineHeight: 1.1 }}>
                 {activeMilestone.depth.toFixed(1)} m
               </div>
             </div>
@@ -149,14 +149,14 @@ export const DashboardPage: React.FC = () => {
 
           {/* KPI 2: Max Velocity */}
           <div className="cc-kpi-card" onClick={() => navigate('/simulations/NP-2026-08-26-001/map?var=velocity')} style={{ cursor: 'pointer' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '6px', background: '#E0F2FE', border: '1px solid #BAE6FD', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: '#0284C7' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '6px', background: '#DEF2EA', border: '1px solid #B2D4C3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: '#008060' }}>
               ⏱️
             </div>
             <div>
-              <div style={{ fontSize: '0.64rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <div style={{ fontSize: '0.64rem', fontWeight: 700, color: '#4D7568', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Max Velocity
               </div>
-              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', lineHeight: 1.1 }}>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0D261E', lineHeight: 1.1 }}>
                 {activeMilestone.velocity.toFixed(1)} m/s
               </div>
             </div>
@@ -164,14 +164,14 @@ export const DashboardPage: React.FC = () => {
 
           {/* KPI 3: Flooded Area */}
           <div className="cc-kpi-card" onClick={() => navigate('/simulations/NP-2026-08-26-001/results')} style={{ cursor: 'pointer' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '6px', background: '#E0F2FE', border: '1px solid #BAE6FD', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: '#0284C7' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '6px', background: '#DEF2EA', border: '1px solid #B2D4C3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: '#008060' }}>
               🗺️
             </div>
             <div>
-              <div style={{ fontSize: '0.64rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <div style={{ fontSize: '0.64rem', fontWeight: 700, color: '#4D7568', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Flooded Area
               </div>
-              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', lineHeight: 1.1 }}>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0D261E', lineHeight: 1.1 }}>
                 {activeMilestone.area.toFixed(1)} km²
               </div>
             </div>
@@ -179,14 +179,14 @@ export const DashboardPage: React.FC = () => {
 
           {/* KPI 4: Discharge (Peak) */}
           <div className="cc-kpi-card" onClick={() => navigate('/simulations/NP-2026-08-26-001/results')} style={{ cursor: 'pointer' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '6px', background: '#E0F2FE', border: '1px solid #BAE6FD', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: '#0284C7' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '6px', background: '#DEF2EA', border: '1px solid #B2D4C3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: '#008060' }}>
               ⚡
             </div>
             <div>
-              <div style={{ fontSize: '0.64rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <div style={{ fontSize: '0.64rem', fontWeight: 700, color: '#4D7568', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Discharge (Peak)
               </div>
-              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', lineHeight: 1.1 }}>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0D261E', lineHeight: 1.1 }}>
                 {activeMilestone.discharge.toLocaleString()} m³/s
               </div>
             </div>
@@ -194,14 +194,14 @@ export const DashboardPage: React.FC = () => {
 
           {/* KPI 5: Arrival Time (Min) */}
           <div className="cc-kpi-card" onClick={() => navigate('/simulations/NP-2026-08-26-001/map?var=arrival')} style={{ cursor: 'pointer' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '6px', background: '#E0F2FE', border: '1px solid #BAE6FD', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: '#0284C7' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '6px', background: '#DEF2EA', border: '1px solid #B2D4C3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', color: '#008060' }}>
               🕒
             </div>
             <div>
-              <div style={{ fontSize: '0.64rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <div style={{ fontSize: '0.64rem', fontWeight: 700, color: '#4D7568', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Arrival Time (Min)
               </div>
-              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', lineHeight: 1.1 }}>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0D261E', lineHeight: 1.1 }}>
                 {activeMilestone.arrival}
               </div>
             </div>
@@ -219,14 +219,14 @@ export const DashboardPage: React.FC = () => {
 
             {/* Scenario Selection Box */}
             <div>
-              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '0.4rem', letterSpacing: '0.04em' }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#4D7568', textTransform: 'uppercase', marginBottom: '0.4rem', letterSpacing: '0.04em' }}>
                 Scenario
               </div>
               <select
                 className="cc-select"
                 value={selectedScenarioId}
                 onChange={(e) => handleScenarioChange(e.target.value)}
-                style={{ width: '100%', fontSize: '0.82rem', fontWeight: 700, color: '#0F172A' }}
+                style={{ width: '100%', fontSize: '0.82rem', fontWeight: 700, color: '#0D261E' }}
               >
                 <option value="scen-nepal-glof">NP-2026-08-26-001 — Nepal GLOF (Lhende Khola → Bhote Koshi)</option>
                 <option value="rishiganga-uttarakhand-2021">UK-2021-02-07-001 — Rishi Ganga Chamoli Flash Flood (Feb 2021)</option>
@@ -235,20 +235,20 @@ export const DashboardPage: React.FC = () => {
                 <option value="kosi-2008">KS-2008-08-18-001 — Kosi River Kushaha Embankment Breach (2008)</option>
               </select>
 
-              <div style={{ marginTop: '0.6rem', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '4px', padding: '0.5rem 0.65rem', fontSize: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+              <div style={{ marginTop: '0.6rem', background: '#F7FAF8', border: '1px solid #B2D4C3', borderRadius: '4px', padding: '0.5rem 0.65rem', fontSize: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#16A34A' }}></span>
-                  <strong style={{ color: '#16A34A' }}>Running</strong>
+                  <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#1E5C3A' }}></span>
+                  <strong style={{ color: '#1E5C3A' }}>Running</strong>
                 </div>
-                <div style={{ color: '#64748B', marginTop: '0.15rem' }}>
+                <div style={{ color: '#4D7568', marginTop: '0.15rem' }}>
                   Started: <strong>10:42 AM, 26 Aug 2026</strong>
                 </div>
               </div>
             </div>
 
             {/* Tabs: Layers / Legends */}
-            <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '0.65rem' }}>
-              <div style={{ display: 'flex', borderBottom: '1px solid #E2E8F0', marginBottom: '0.65rem' }}>
+            <div style={{ borderTop: '1px solid #B2D4C3', paddingTop: '0.65rem' }}>
+              <div style={{ display: 'flex', borderBottom: '1px solid #B2D4C3', marginBottom: '0.65rem' }}>
                 <button
                   onClick={() => setLeftTab('layers')}
                   style={{
@@ -256,10 +256,10 @@ export const DashboardPage: React.FC = () => {
                     padding: '0.35rem',
                     fontSize: '0.78rem',
                     fontWeight: 700,
-                    color: leftTab === 'layers' ? '#0284C7' : '#64748B',
+                    color: leftTab === 'layers' ? '#008060' : '#4D7568',
                     background: 'transparent',
                     border: 'none',
-                    borderBottom: leftTab === 'layers' ? '2px solid #0284C7' : 'none',
+                    borderBottom: leftTab === 'layers' ? '2px solid #008060' : 'none',
                     cursor: 'pointer'
                   }}
                 >
@@ -272,10 +272,10 @@ export const DashboardPage: React.FC = () => {
                     padding: '0.35rem',
                     fontSize: '0.78rem',
                     fontWeight: 700,
-                    color: leftTab === 'legends' ? '#0284C7' : '#64748B',
+                    color: leftTab === 'legends' ? '#008060' : '#4D7568',
                     background: 'transparent',
                     border: 'none',
-                    borderBottom: leftTab === 'legends' ? '2px solid #0284C7' : 'none',
+                    borderBottom: leftTab === 'legends' ? '2px solid #008060' : 'none',
                     cursor: 'pointer'
                   }}
                 >
@@ -298,9 +298,9 @@ export const DashboardPage: React.FC = () => {
                     { label: 'Population / Settlements', checked: layerSettlements, toggle: () => setLayerSettlements(!layerSettlements) },
                     { label: 'Critical Infrastructure', checked: layerInfrastructure, toggle: () => setLayerInfrastructure(!layerInfrastructure) }
                   ].map((item, idx) => (
-                    <label key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: item.checked ? '#0F172A' : '#64748B', fontWeight: item.checked ? 600 : 500, cursor: 'pointer' }}>
+                    <label key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: item.checked ? '#0D261E' : '#4D7568', fontWeight: item.checked ? 600 : 500, cursor: 'pointer' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                        <input type="checkbox" checked={item.checked} onChange={item.toggle} style={{ accentColor: '#0284C7' }} />
+                        <input type="checkbox" checked={item.checked} onChange={item.toggle} style={{ accentColor: '#008060' }} />
                         <span>{item.label}</span>
                       </div>
                       <div style={{ display: 'flex', gap: '0.35rem', opacity: 0.5, fontSize: '0.72rem' }}>
@@ -310,11 +310,11 @@ export const DashboardPage: React.FC = () => {
                   ))}
                 </div>
               ) : (
-                <div style={{ fontSize: '0.75rem', color: '#64748B', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#0284C7', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div style={{ fontSize: '0.75rem', color: '#4D7568', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#008060', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Event Sequence Steps
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.72rem', color: '#0F172A' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.72rem', color: '#0D261E' }}>
                     <div>❄️ 1. Ice/Rock Avalanche</div>
                     <div>🪨 2. Avalanche Debris Path</div>
                     <div>🏞️ 3. Landslide Barrier Lake</div>
@@ -324,7 +324,7 @@ export const DashboardPage: React.FC = () => {
                   </div>
 
                   <div style={{ marginTop: '0.4rem' }}>Water Depth Ramp (shallow to high hazard)</div>
-                  <div style={{ height: '8px', borderRadius: '4px', background: 'linear-gradient(to right, #075985, #0EA5E9, #22D3EE, #FDE047, #FB923C, #F97316, #DC2626)' }}></div>
+                  <div style={{ height: '8px', borderRadius: '4px', background: 'linear-gradient(to right, #004D36, #008060, #00A37A, #FDE047, #FB923C, #F97316, #DC2626)' }}></div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem' }}>
                     <span>0.0m</span>
                     <span>3.0m</span>
@@ -335,8 +335,8 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             {/* Map Tools */}
-            <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '0.75rem' }}>
-              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '0.4rem', letterSpacing: '0.04em' }}>
+            <div style={{ borderTop: '1px solid #B2D4C3', paddingTop: '0.75rem' }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#4D7568', textTransform: 'uppercase', marginBottom: '0.4rem', letterSpacing: '0.04em' }}>
                 Map Tools
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.25rem', textAlign: 'center' }}>
@@ -347,18 +347,18 @@ export const DashboardPage: React.FC = () => {
                   { icon: '🔍', label: 'Query' },
                   { icon: '🧹', label: 'Clear' }
                 ].map((t, idx) => (
-                  <button key={idx} onClick={() => setActiveMapTool(t.label)} className="cc-btn" style={{ flexDirection: 'column', padding: '0.35rem 0.15rem', fontSize: '0.62rem', gap: '0.15rem', borderRadius: '4px', borderColor: activeMapTool === t.label ? '#0284C7' : undefined, background: activeMapTool === t.label ? '#E0F2FE' : undefined }}>
+                  <button key={idx} onClick={() => setActiveMapTool(t.label)} className="cc-btn" style={{ flexDirection: 'column', padding: '0.35rem 0.15rem', fontSize: '0.62rem', gap: '0.15rem', borderRadius: '4px', borderColor: activeMapTool === t.label ? '#008060' : undefined, background: activeMapTool === t.label ? '#DEF2EA' : undefined, color: activeMapTool === t.label ? '#008060' : undefined }}>
                     <span style={{ fontSize: '0.85rem' }}>{t.icon}</span>
                     <span>{t.label}</span>
                   </button>
                 ))}
               </div>
-              <div style={{ marginTop: '0.45rem', color: '#0284C7', fontSize: '0.68rem', fontWeight: 700 }}>Active GIS tool: {activeMapTool}</div>
+              <div style={{ marginTop: '0.45rem', color: '#008060', fontSize: '0.68rem', fontWeight: 700 }}>Active GIS tool: {activeMapTool}</div>
             </div>
 
             {/* Basemap Selector */}
-            <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '0.75rem' }}>
-              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '0.35rem', letterSpacing: '0.04em' }}>
+            <div style={{ borderTop: '1px solid #B2D4C3', paddingTop: '0.75rem' }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#4D7568', textTransform: 'uppercase', marginBottom: '0.35rem', letterSpacing: '0.04em' }}>
                 Basemap
               </div>
               <select className="cc-select" value={basemap} onChange={(e) => setBasemap(e.target.value as typeof basemap)} style={{ width: '100%', fontSize: '0.8rem', fontWeight: 600 }}>
@@ -375,7 +375,7 @@ export const DashboardPage: React.FC = () => {
           {/* --------------------------------------------------
               CENTER MAP WORKSPACE (Controlled Map & Animation)
              -------------------------------------------------- */}
-          <div style={{ position: 'relative', width: '100%', height: '100%', borderRadius: '6px', overflow: 'hidden', border: '1px solid #BAE6FD', background: '#FFFFFF' }}>
+          <div style={{ position: 'relative', width: '100%', height: '100%', borderRadius: '6px', overflow: 'hidden', border: '1px solid #B2D4C3', background: '#F7FAF8' }}>
 
             <FloodMap
               simulationId={selectedSimId}
@@ -422,71 +422,71 @@ export const DashboardPage: React.FC = () => {
 
             {/* Simulation Info Table */}
             <div>
-              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '0.45rem', letterSpacing: '0.04em' }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#4D7568', textTransform: 'uppercase', marginBottom: '0.45rem', letterSpacing: '0.04em' }}>
                 Simulation Info
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '0.3rem 0.75rem', color: '#0F172A', fontSize: '0.76rem' }}>
-                <span style={{ color: '#64748B', fontWeight: 600 }}>ID:</span> <strong style={{ color: '#0284C7' }}>NP-2026-08-26-001</strong>
-                <span style={{ color: '#64748B', fontWeight: 600 }}>Type:</span> <span>Ice/Rock Barrier GLOF</span>
-                <span style={{ color: '#64748B', fontWeight: 600 }}>Corridor:</span> <span>Lhende Khola → Bhote Koshi</span>
-                <span style={{ color: '#64748B', fontWeight: 600 }}>Key Hubs:</span> <span>Timure, Rasuwagadhi, Syabrubesi</span>
-                <span style={{ color: '#64748B', fontWeight: 600 }}>Model:</span> <span>2D Diffusive Wave</span>
-                <span style={{ color: '#64748B', fontWeight: 600 }}>Grid Size:</span> <span>12.5 m</span>
-                <span style={{ color: '#64748B', fontWeight: 600 }}>Duration:</span> <span>2.25 hrs</span>
-                <span style={{ color: '#64748B', fontWeight: 600 }}>Current Time:</span> <span style={{ color: '#0284C7', fontWeight: 700 }}>{activeMilestone.timeLabel}</span>
-                <span style={{ color: '#64748B', fontWeight: 600 }}>Peak Discharge:</span> <span style={{ color: '#DC2626', fontWeight: 700 }}>18,760 m³/s</span>
-                <span style={{ color: '#64748B', fontWeight: 600 }}>Status:</span> <span style={{ color: '#0284C7', fontWeight: 700 }}>Running (72%)</span>
+              <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '0.3rem 0.75rem', color: '#0D261E', fontSize: '0.76rem' }}>
+                <span style={{ color: '#4D7568', fontWeight: 600 }}>ID:</span> <strong style={{ color: '#008060' }}>NP-2026-08-26-001</strong>
+                <span style={{ color: '#4D7568', fontWeight: 600 }}>Type:</span> <span>Ice/Rock Barrier GLOF</span>
+                <span style={{ color: '#4D7568', fontWeight: 600 }}>Corridor:</span> <span>Lhende Khola → Bhote Koshi</span>
+                <span style={{ color: '#4D7568', fontWeight: 600 }}>Key Hubs:</span> <span>Timure, Rasuwagadhi, Syabrubesi</span>
+                <span style={{ color: '#4D7568', fontWeight: 600 }}>Model:</span> <span>2D Diffusive Wave</span>
+                <span style={{ color: '#4D7568', fontWeight: 600 }}>Grid Size:</span> <span>12.5 m</span>
+                <span style={{ color: '#4D7568', fontWeight: 600 }}>Duration:</span> <span>2.25 hrs</span>
+                <span style={{ color: '#4D7568', fontWeight: 600 }}>Current Time:</span> <span style={{ color: '#008060', fontWeight: 700 }}>{activeMilestone.timeLabel}</span>
+                <span style={{ color: '#4D7568', fontWeight: 600 }}>Peak Discharge:</span> <span style={{ color: '#DC2626', fontWeight: 700 }}>18,760 m³/s</span>
+                <span style={{ color: '#4D7568', fontWeight: 600 }}>Status:</span> <span style={{ color: '#008060', fontWeight: 700 }}>Running (72%)</span>
               </div>
             </div>
 
             {/* Simulation Progress Stages */}
-            <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '0.75rem' }}>
-              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '0.45rem', letterSpacing: '0.04em' }}>
+            <div style={{ borderTop: '1px solid #B2D4C3', paddingTop: '0.75rem' }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#4D7568', textTransform: 'uppercase', marginBottom: '0.45rem', letterSpacing: '0.04em' }}>
                 Progress
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.75rem' }}>
-                <div style={{ color: '#16A34A', fontWeight: 600 }}>✓ Preparing DEM</div>
-                <div style={{ color: '#16A34A', fontWeight: 600 }}>✓ Setting up Model Grid</div>
-                <div style={{ color: '#16A34A', fontWeight: 600 }}>✓ Processing Terrain</div>
-                <div style={{ color: '#16A34A', fontWeight: 600 }}>✓ Initializing Conditions</div>
-                <div style={{ color: '#0284C7', fontWeight: 800 }}>● Running Simulation (72%)</div>
-                <div style={{ color: '#94A3B8' }}>○ Post Processing</div>
-                <div style={{ color: '#94A3B8' }}>○ Generating Outputs</div>
+                <div style={{ color: '#1E5C3A', fontWeight: 600 }}>✓ Preparing DEM</div>
+                <div style={{ color: '#1E5C3A', fontWeight: 600 }}>✓ Setting up Model Grid</div>
+                <div style={{ color: '#1E5C3A', fontWeight: 600 }}>✓ Processing Terrain</div>
+                <div style={{ color: '#1E5C3A', fontWeight: 600 }}>✓ Initializing Conditions</div>
+                <div style={{ color: '#008060', fontWeight: 800 }}>● Running Simulation (72%)</div>
+                <div style={{ color: '#8AA499' }}>○ Post Processing</div>
+                <div style={{ color: '#8AA499' }}>○ Generating Outputs</div>
               </div>
             </div>
 
             {/* Hydrograph (Outlet Discharge Curve) */}
-            <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '0.75rem' }}>
-              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', marginBottom: '0.4rem', letterSpacing: '0.04em' }}>
+            <div style={{ borderTop: '1px solid #B2D4C3', paddingTop: '0.75rem' }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#4D7568', textTransform: 'uppercase', marginBottom: '0.4rem', letterSpacing: '0.04em' }}>
                 Hydrograph (Outlet)
               </div>
-              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '4px', padding: '0.6rem' }}>
-                <div style={{ fontSize: '0.68rem', color: '#64748B', marginBottom: '0.25rem', fontWeight: 600 }}>Discharge (m³/s)</div>
+              <div style={{ background: '#F7FAF8', border: '1px solid #B2D4C3', borderRadius: '4px', padding: '0.6rem' }}>
+                <div style={{ fontSize: '0.68rem', color: '#4D7568', marginBottom: '0.25rem', fontWeight: 600 }}>Discharge (m³/s)</div>
                 <svg width="100%" height="90" viewBox="0 0 170 90" style={{ overflow: 'visible' }}>
-                  <line x1="25" y1="75" x2="160" y2="75" stroke="#CBD5E1" strokeWidth="1" />
-                  <line x1="25" y1="10" x2="25" y2="75" stroke="#CBD5E1" strokeWidth="1" />
+                  <line x1="25" y1="75" x2="160" y2="75" stroke="#B2D4C3" strokeWidth="1" />
+                  <line x1="25" y1="10" x2="25" y2="75" stroke="#B2D4C3" strokeWidth="1" />
 
                   {/* Peak Discharge Curve */}
-                  <path d="M 25 73 Q 55 70 80 20 T 115 50 T 160 70" fill="none" stroke="#0284C7" strokeWidth="2.5" />
+                  <path d="M 25 73 Q 55 70 80 20 T 115 50 T 160 70" fill="none" stroke="#008060" strokeWidth="2.5" />
 
                   {/* Active time indicator dot on hydrograph */}
                   {(() => {
                     const cx = 25 + (currentTsIndex / 8) * 135;
                     const cy = 75 - Math.sin((currentTsIndex / 8) * Math.PI) * 55;
-                    return <circle cx={cx} cy={cy} r="4" fill="#0284C7" stroke="#FFFFFF" strokeWidth="1.5" />;
+                    return <circle cx={cx} cy={cy} r="4" fill="#008060" stroke="#FFFFFF" strokeWidth="1.5" />;
                   })()}
 
-                  <text x="5" y="15" fill="#64748B" fontSize="7" fontWeight="600">20k</text>
-                  <text x="5" y="45" fill="#64748B" fontSize="7" fontWeight="600">10k</text>
-                  <text x="12" y="75" fill="#64748B" fontSize="7" fontWeight="600">0</text>
+                  <text x="5" y="15" fill="#4D7568" fontSize="7" fontWeight="600">20k</text>
+                  <text x="5" y="45" fill="#4D7568" fontSize="7" fontWeight="600">10k</text>
+                  <text x="12" y="75" fill="#4D7568" fontSize="7" fontWeight="600">0</text>
 
-                  <text x="25" y="85" fill="#64748B" fontSize="7" fontWeight="600">0</text>
-                  <text x="58" y="85" fill="#64748B" fontSize="7" fontWeight="600">0.5</text>
-                  <text x="90" y="85" fill="#64748B" fontSize="7" fontWeight="600">1.0</text>
-                  <text x="123" y="85" fill="#64748B" fontSize="7" fontWeight="600">1.5</text>
-                  <text x="153" y="85" fill="#64748B" fontSize="7" fontWeight="600">2.0</text>
+                  <text x="25" y="85" fill="#4D7568" fontSize="7" fontWeight="600">0</text>
+                  <text x="58" y="85" fill="#4D7568" fontSize="7" fontWeight="600">0.5</text>
+                  <text x="90" y="85" fill="#4D7568" fontSize="7" fontWeight="600">1.0</text>
+                  <text x="123" y="85" fill="#4D7568" fontSize="7" fontWeight="600">1.5</text>
+                  <text x="153" y="85" fill="#4D7568" fontSize="7" fontWeight="600">2.0</text>
                 </svg>
-                <div style={{ textAlign: 'center', fontSize: '0.68rem', color: '#64748B', marginTop: '0.25rem', fontWeight: 600 }}>Time (hrs)</div>
+                <div style={{ textAlign: 'center', fontSize: '0.68rem', color: '#4D7568', marginTop: '0.25rem', fontWeight: 600 }}>Time (hrs)</div>
               </div>
             </div>
 
@@ -497,14 +497,14 @@ export const DashboardPage: React.FC = () => {
         {/* ==================================================
             BOTTOM TIMELINE PLAYBACK BAR (Fully Interactive)
            ================================================== */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #BAE6FD', borderRadius: '6px', padding: '0.5rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem', marginTop: '0.65rem', marginBottom: '0.65rem', boxShadow: '0 1px 4px rgba(2, 132, 199, 0.08)' }}>
+        <div style={{ background: '#DEECE4', border: '1px solid #B2D4C3', borderRadius: '6px', padding: '0.5rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem', marginTop: '0.65rem', marginBottom: '0.65rem', boxShadow: '0 1px 4px rgba(13, 38, 30, 0.06)' }}>
 
           {/* Playback Controls */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <button
               onClick={() => setIsPlaying(!isPlaying)}
               className="btn btn-primary"
-              style={{ padding: '0.35rem 0.65rem', fontWeight: 800, fontSize: '0.85rem', background: '#0284C7', width: '38px' }}
+              style={{ padding: '0.35rem 0.65rem', fontWeight: 800, fontSize: '0.85rem', background: '#008060', borderColor: '#008060', width: '38px' }}
               title={isPlaying ? 'Pause Simulation' : 'Play Simulation'}
             >
               {isPlaying ? '❚❚' : '▶'}
@@ -557,10 +557,10 @@ export const DashboardPage: React.FC = () => {
           {/* Interactive Timeline Range Scrubber */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.74rem', color: '#0F172A', fontWeight: 800 }}>
-                📍 Timeline Event Stage: <span style={{ color: '#0284C7' }}>{activeMilestone.timeLabel} — {activeMilestone.name}</span>
+              <span style={{ fontSize: '0.74rem', color: '#0D261E', fontWeight: 800 }}>
+                📍 Timeline Event Stage: <span style={{ color: '#008060' }}>{activeMilestone.timeLabel} — {activeMilestone.name}</span>
               </span>
-              <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700 }}>
+              <span style={{ fontSize: '0.72rem', color: '#4D7568', fontWeight: 700 }}>
                 Step {currentTsIndex + 1} / 9
               </span>
             </div>
@@ -575,16 +575,16 @@ export const DashboardPage: React.FC = () => {
                 setIsPlaying(false);
                 setCurrentTsIndex(Number(e.target.value));
               }}
-              style={{ width: '100%', cursor: 'pointer', accentColor: '#0284C7' }}
+              style={{ width: '100%', cursor: 'pointer', accentColor: '#008060' }}
             />
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748B', fontSize: '0.68rem', fontWeight: 700, padding: '0 2px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#4D7568', fontSize: '0.68rem', fontWeight: 700, padding: '0 2px' }}>
               {nepalMilestones.map((m, idx) => (
                 <span
                   key={idx}
                   onClick={() => { setIsPlaying(false); setCurrentTsIndex(idx); }}
                   style={{
-                    color: currentTsIndex === idx ? '#0284C7' : '#64748B',
+                    color: currentTsIndex === idx ? '#008060' : '#4D7568',
                     cursor: 'pointer',
                     fontWeight: currentTsIndex === idx ? 800 : 600,
                     textDecoration: currentTsIndex === idx ? 'underline' : 'none'
@@ -601,7 +601,7 @@ export const DashboardPage: React.FC = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <button className="cc-btn" title="Print current command-center view" onClick={() => window.print()}>🖨</button>
             <button className="cc-btn" title="Record Simulation Video" onClick={() => setIsPlaying(true)}>🎥</button>
-            <button className="cc-btn" title="Expand Immersive Fullscreen 3D Simulation Map" onClick={() => setIsMapFullscreen(true)} style={{ background: '#0284C7', color: '#FFF', fontWeight: 800, borderColor: '#0284C7' }}>⤢ Fullscreen Map</button>
+            <button className="cc-btn" title="Expand Immersive Fullscreen 3D Simulation Map" onClick={() => setIsMapFullscreen(true)} style={{ background: '#008060', color: '#FFF', fontWeight: 800, borderColor: '#008060' }}>⤢ Fullscreen Map</button>
           </div>
         </div>
 
