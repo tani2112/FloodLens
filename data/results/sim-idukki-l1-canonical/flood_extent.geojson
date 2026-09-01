@@ -1,0 +1,57 @@
+{
+  "type": "FeatureCollection",
+  "name": "flood_extent_sim-idukki-l1-canonical",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "simulation_id": "sim-idukki-l1-canonical",
+        "timestep_index": 6,
+        "timestep_min": 30.0,
+        "depth_threshold_m": 0.1,
+        "inundated_cell_count": 2952,
+        "area_km2": 2.6568,
+        "max_depth_m": 37.64,
+        "solver_level": "level1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              76.814727,
+              10.046538
+            ],
+            [
+              76.875818,
+              10.046538
+            ],
+            [
+              76.875818,
+              10.033077
+            ],
+            [
+              76.814727,
+              10.033077
+            ],
+            [
+              76.814727,
+              10.046538
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "properties": {
+    "simulation_id": "sim-idukki-l1-canonical",
+    "depth_threshold_m": 0.1,
+    "total_area_km2": 2.6568
+  }
+}

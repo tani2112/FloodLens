@@ -1,0 +1,57 @@
+{
+  "type": "FeatureCollection",
+  "name": "flood_extent_sim-level1-25e465",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "simulation_id": "sim-level1-25e465",
+        "timestep_index": 12,
+        "timestep_min": 60.0,
+        "depth_threshold_m": 0.1,
+        "inundated_cell_count": 5837,
+        "area_km2": 5.2533,
+        "max_depth_m": 6.2,
+        "solver_level": "level1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              76.808182,
+              10.047077
+            ],
+            [
+              76.928727,
+              10.047077
+            ],
+            [
+              76.928727,
+              10.026885
+            ],
+            [
+              76.808182,
+              10.026885
+            ],
+            [
+              76.808182,
+              10.047077
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "properties": {
+    "simulation_id": "sim-level1-25e465",
+    "depth_threshold_m": 0.1,
+    "total_area_km2": 5.2533
+  }
+}
