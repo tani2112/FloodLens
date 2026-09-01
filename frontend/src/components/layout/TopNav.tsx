@@ -59,23 +59,23 @@ export const TopNav: React.FC = () => {
             style={{
               width: '32px',
               height: '32px',
-              borderRadius: '4px',
-              background: '#008060',
-              border: '1px solid #00A37A',
+              borderRadius: '6px',
+              background: 'linear-gradient(135deg, #0284C7, #0369A1)',
+              border: '1px solid #38BDF8',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               color: '#FFFFFF',
-              fontWeight: 800,
-              fontSize: '1.1rem',
-              boxShadow: '0 2px 6px rgba(0, 128, 96, 0.35)'
+              fontWeight: 900,
+              fontSize: '1.2rem',
+              boxShadow: '0 2px 8px rgba(2, 132, 199, 0.45)'
             }}
           >
             ≈
           </div>
           <div>
             <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-              FLOODLENS
+              FLOOD<span style={{ color: '#38BDF8' }}>LENS</span>
             </div>
             <div style={{ fontSize: '0.66rem', color: '#96B8AC', fontWeight: 600, letterSpacing: '0.01em' }}>
               Flood Simulation & Analysis Platform

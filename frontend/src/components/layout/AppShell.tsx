@@ -21,7 +21,7 @@ export const AppShell: React.FC = () => {
       <footer style={{ padding: '0.75rem 1.5rem', background: '#0F2D25', borderTop: '1px solid #1A4237', fontSize: '0.8rem', color: '#96B8AC' }}>
         <div style={{ maxWidth: '1600px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <strong style={{ color: '#FFFFFF' }}>FloodLens</strong> — Flash Flood Simulation & Geospatial Decision Support Platform
+            <strong style={{ color: '#FFFFFF' }}>FLOOD<span style={{ color: '#38BDF8' }}>LENS</span></strong> — Flash Flood Simulation & Geospatial Decision Support Platform
           </div>
           <div style={{ fontSize: '0.75rem', color: '#7AA394' }}>
             Operational Geospatial Intelligence System
