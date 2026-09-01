@@ -5,74 +5,74 @@
    (Light Scientific Command Center Visual Language)
    ================================================== */
 :root {
-  /* Light Command Center Core Tokens */
-  --bg-app: #f0f9ff;
-  --bg-canvas: #f0f9ff;
-  --bg-surface: #ffffff;
-  --bg-surface-secondary: #f8fafc;
-  --bg-surface-muted: #e0f2fe;
-  --bg-surface-hover: #bae6fd;
-  --bg-surface-active: #0284c7;
+  /* Warm Sand-Terracotta Palette (Sampled from Uploaded Texture) */
+  --bg-app: #dfb096;
+  --bg-canvas: #dfb096;
+  --bg-surface: #faf2ec;
+  --bg-surface-secondary: #f2dbce;
+  --bg-surface-muted: #e7c6b5;
+  --bg-surface-hover: #dac0af;
+  --bg-surface-active: #8a3f25;
 
   /* Borders & Dividers */
-  --border-color: #cbd5e1;
-  --border-subtle: #e2e8f0;
-  --border-strong: #93c5fd;
-  --border-focus: #0284c7;
+  --border-color: #c99981;
+  --border-subtle: #dbb4a1;
+  --border-strong: #b37e67;
+  --border-focus: #8a3f25;
 
   /* Text & Typography Tokens */
-  --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
+  --text-primary: #1f120c;
+  --text-secondary: #3d2419;
+  --text-muted: #6e4939;
   --text-inverse: #ffffff;
 
-  /* Brand Accents */
-  --accent-primary: #0284c7;
-  --accent-hover: #0369a1;
-  --accent-bright: #0284c7;
-  --accent-soft: #e0f2fe;
+  /* Terracotta & Warm Mahogany Accents */
+  --accent-primary: #8a3f25;
+  --accent-hover: #692c17;
+  --accent-bright: #ad4f2f;
+  --accent-soft: #f4dbce;
 
   /* Status Colors */
-  --success: #16a34a;
-  --warning: #d97706;
-  --critical: #dc2626;
+  --success: #2d6a4f;
+  --warning: #b05719;
+  --critical: #a42424;
 
-  /* Severity Badges (Light Scientific Mode) */
-  --severity-safe-bg: #f0fdf4;
-  --severity-safe-text: #166534;
-  --severity-safe-border: #bbf7d0;
+  /* Severity Badges */
+  --severity-safe-bg: #eaf4ed;
+  --severity-safe-text: #1b4d2e;
+  --severity-safe-border: #c3e2cc;
 
-  --severity-advisory-bg: #e0f2fe;
-  --severity-advisory-text: #075985;
-  --severity-advisory-border: #bae6fd;
+  --severity-advisory-bg: #f2dbce;
+  --severity-advisory-text: #3d2419;
+  --severity-advisory-border: #c99981;
 
-  --severity-watch-bg: #fef3c7;
-  --severity-watch-text: #92400e;
-  --severity-watch-border: #fde68a;
+  --severity-watch-bg: #fef7e6;
+  --severity-watch-text: #8f5400;
+  --severity-watch-border: #fde2a7;
 
-  --severity-warning-bg: #ffedd5;
-  --severity-warning-text: #9a3412;
-  --severity-warning-border: #fed7aa;
+  --severity-warning-bg: #fef0eb;
+  --severity-warning-text: #a3360d;
+  --severity-warning-border: #fdc7b8;
 
-  --severity-critical-bg: #fef2f2;
-  --severity-critical-text: #991b1b;
+  --severity-critical-bg: #fdebe7;
+  --severity-critical-text: #b91c1c;
   --severity-critical-border: #fca5a5;
 
   /* Simulation Status Badges */
-  --status-completed-bg: #f0fdf4;
-  --status-completed-text: #166534;
-  --status-completed-border: #bbf7d0;
+  --status-completed-bg: #eaf4ed;
+  --status-completed-text: #1b4d2e;
+  --status-completed-border: #c3e2cc;
 
-  --status-running-bg: #e0f2fe;
-  --status-running-text: #075985;
-  --status-running-border: #bae6fd;
+  --status-running-bg: #f2dbce;
+  --status-running-text: #3d2419;
+  --status-running-border: #c99981;
 
-  --status-pending-bg: #f1f5f9;
-  --status-pending-text: #475569;
-  --status-pending-border: #cbd5e1;
+  --status-pending-bg: #e7c6b5;
+  --status-pending-text: #6e4939;
+  --status-pending-border: #c99981;
 
-  --status-failed-bg: #fef2f2;
-  --status-failed-text: #991b1b;
+  --status-failed-bg: #fdebe7;
+  --status-failed-text: #b91c1c;
   --status-failed-border: #fca5a5;
 
   /* Fonts */
@@ -116,7 +116,7 @@ code, pre {
   border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 1.25rem;
-  box-shadow: 0 1px 4px rgba(2, 132, 199, 0.08);
+  box-shadow: 0 1px 4px rgba(31, 18, 12, 0.06);
   color: var(--text-primary);
 }
 
@@ -129,8 +129,8 @@ code, pre {
 }
 
 .card-accent {
-  background: var(--bg-surface-muted);
-  border: 1px solid var(--border-strong);
+  background: #f7e6dc;
+  border: 1px solid #c99981;
   border-radius: 6px;
   padding: 1.25rem;
   color: var(--text-primary);
@@ -178,38 +178,40 @@ code, pre {
 }
 
 .btn-primary {
-  background: var(--accent-primary);
+  background: #8a3f25;
   color: #ffffff;
-  border-color: var(--accent-primary);
+  border-color: #8a3f25;
+  box-shadow: 0 2px 6px rgba(138, 63, 37, 0.25);
 }
 
 .btn-primary:hover {
-  background: var(--accent-hover);
+  background: #692c17;
+  border-color: #692c17;
   color: #ffffff;
   text-decoration: none;
 }
 
 .btn-secondary {
-  background: var(--bg-surface-muted);
-  color: #0369a1;
-  border: 1px solid var(--border-strong);
+  background: var(--bg-surface-secondary);
+  color: #1f120c;
+  border: 1px solid var(--border-color);
 }
 
 .btn-secondary:hover {
-  background: var(--bg-surface-hover);
-  color: #0284c7;
+  background: var(--bg-surface-muted);
+  color: #1f120c;
   text-decoration: none;
 }
 
 .btn-outline {
-  background: #ffffff;
-  color: var(--accent-primary);
-  border: 1px solid var(--border-strong);
+  background: var(--bg-surface);
+  color: #8a3f25;
+  border: 1px solid #8a3f25;
 }
 
 .btn-outline:hover {
-  background: var(--bg-surface-muted);
-  border-color: var(--accent-primary);
+  background: #f4dbce;
+  color: #692c17;
   text-decoration: none;
 }
 
@@ -241,7 +243,7 @@ code, pre {
 .form-input, .form-select {
   width: 100%;
   padding: 0.5rem 0.75rem;
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: 4px;
   color: var(--text-primary);
@@ -252,7 +254,7 @@ code, pre {
 .form-input:focus, .form-select:focus {
   outline: none;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18);
+  box-shadow: 0 0 0 2px rgba(138, 63, 37, 0.2);
 }
 
 /* Data Tables */
@@ -262,7 +264,7 @@ code, pre {
   border: 1px solid var(--border-color);
   border-radius: 6px;
   background: var(--bg-surface);
-  box-shadow: 0 1px 3px rgba(2, 132, 199, 0.06);
+  box-shadow: 0 1px 4px rgba(31, 18, 12, 0.05);
 }
 
 table.data-table {
@@ -279,7 +281,7 @@ table.data-table th, table.data-table td {
 }
 
 table.data-table th {
-  background: #f1f5f9;
+  background: var(--bg-surface-secondary);
   color: var(--text-secondary);
   font-weight: 700;
   font-size: 0.78rem;
@@ -292,21 +294,21 @@ table.data-table tr:last-child td {
 }
 
 table.data-table tr:hover td {
-  background: #f0f9ff;
+  background: #f2dcd0;
 }
 
 /* MapLibre GL Popup Styling */
 .maplibregl-popup-content {
-  background: #ffffff !important;
-  color: #0f172a !important;
+  background: var(--bg-surface) !important;
+  color: #1f120c !important;
   border-radius: 6px !important;
-  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.15) !important;
+  box-shadow: 0 4px 16px rgba(31, 18, 12, 0.15) !important;
   padding: 12px 16px !important;
   font-family: var(--font-sans) !important;
-  border: 1px solid #bae6fd !important;
+  border: 1px solid var(--border-color) !important;
 }
 .maplibregl-popup-close-button {
-  color: #64748b !important;
+  color: #6e4939 !important;
   font-size: 16px !important;
   padding: 4px 8px !important;
 }
@@ -318,11 +320,11 @@ table.data-table tr:hover td {
 }
 
 /* ==================================================
-   COMMAND CENTER BLUE + WHITE LIGHT THEME
+   COMMAND CENTER WARM TERRACOTTA THEME
    ================================================== */
 .command-center-dark, .command-center-light {
-  background-color: #f0f9ff !important;
-  color: #0f172a !important;
+  background-color: #dfb096 !important;
+  color: #1f120c !important;
   font-family: var(--font-sans);
   min-height: 100vh;
   display: flex;
@@ -330,8 +332,8 @@ table.data-table tr:hover td {
 }
 
 .cc-header {
-  background: #0b192c;
-  border-bottom: 1px solid #1e293b;
+  background: #0f2d25;
+  border-bottom: 1px solid #1a4237;
   padding: 0.65rem 1.25rem;
   display: flex;
   align-items: center;
@@ -339,51 +341,51 @@ table.data-table tr:hover td {
 }
 
 .cc-panel {
-  background: #ffffff;
-  border: 1px solid #bae6fd;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
-  color: #0f172a;
-  box-shadow: 0 1px 4px rgba(2, 132, 199, 0.06);
+  color: #1f120c;
+  box-shadow: 0 1px 4px rgba(31, 18, 12, 0.05);
 }
 
 .cc-panel-sub {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  color: #0f172a;
+  background: var(--bg-surface-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: #1f120c;
 }
 
 .cc-kpi-card {
-  background: #ffffff;
-  border: 1px solid #bae6fd;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
-  padding: 0.65rem 0.85rem;
+  padding: 0.75rem 1rem;
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  box-shadow: 0 1px 3px rgba(2, 132, 199, 0.08);
+  box-shadow: 0 1px 3px rgba(31, 18, 12, 0.04);
 }
 
 .cc-input, .cc-select {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  color: #0f172a;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: #1f120c;
   border-radius: 4px;
-  padding: 0.35rem 0.65rem;
+  padding: 0.4rem 0.65rem;
   font-size: 0.82rem;
   font-family: var(--font-sans);
 }
 
 .cc-input:focus, .cc-select:focus {
   outline: none;
-  border-color: #0284c7;
-  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+  border-color: #8a3f25;
+  box-shadow: 0 0 0 2px rgba(138, 63, 37, 0.2);
 }
 
 .cc-btn {
-  background: #e0f2fe;
-  border: 1px solid #bae6fd;
-  color: #0369a1;
+  background: var(--bg-surface-secondary);
+  border: 1px solid var(--border-color);
+  color: #3d2419;
   border-radius: 4px;
   padding: 0.35rem 0.65rem;
   font-size: 0.78rem;
@@ -396,14 +398,14 @@ table.data-table tr:hover td {
 }
 
 .cc-btn:hover {
-  background: #bae6fd;
-  color: #0284c7;
+  background: var(--bg-surface-muted);
+  color: #1f120c;
 }
 
 .cc-btn-active {
-  background: #0284c7;
+  background: #8a3f25;
   color: #ffffff;
-  border-color: #0284c7;
+  border-color: #8a3f25;
 }
 
 .cc-scrollbar::-webkit-scrollbar {
@@ -412,14 +414,16 @@ table.data-table tr:hover td {
 }
 
 .cc-scrollbar::-webkit-scrollbar-track {
-  background: #f8fafc;
+  background: #f2dbce;
 }
 
 .cc-scrollbar::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #c99981;
   border-radius: 3px;
 }
 
 .cc-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #b37e67;
 }
+
+

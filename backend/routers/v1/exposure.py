@@ -19,6 +19,7 @@ def get_simulation_exposure_endpoint(simulation_id: str, db: Session = Depends(g
         )
     return exp
 
+@router.get("/{simulation_id}/impact", response_model=ImpactSummarySchema)
 @router.get("/{simulation_id}/impact-summary", response_model=ImpactSummarySchema)
 def get_simulation_impact_summary_endpoint(simulation_id: str, db: Session = Depends(get_db)):
     """Retrieves consolidated settlement, road, infrastructure, and temporal impact analytics summary."""
@@ -30,6 +31,7 @@ def get_simulation_impact_summary_endpoint(simulation_id: str, db: Session = Dep
         )
     return summary
 
+@router.get("/{simulation_id}/impact/timeline", response_model=ImpactTimelineSchema)
 @router.get("/{simulation_id}/impact-timeline", response_model=ImpactTimelineSchema)
 def get_simulation_impact_timeline_endpoint(simulation_id: str, db: Session = Depends(get_db)):
     """Retrieves detailed temporal milestone progression of flood onset, settlement exposure, and road impacts."""
@@ -40,3 +42,4 @@ def get_simulation_impact_timeline_endpoint(simulation_id: str, db: Session = De
             detail=f"Simulation '{simulation_id}' not found or impact timeline not available."
         )
     return timeline
+

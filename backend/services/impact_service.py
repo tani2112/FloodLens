@@ -391,8 +391,8 @@ def get_impact_summary(simulation_id: str, db: Optional[Session] = None) -> Opti
 
     summary_bundle = {
         "simulationId": simulation_id,
-        "scenarioType": sim.scenarioType if sim else "dam_break",
-        "modelLevel": sim.modelLevel if sim else "level1",
+        "scenarioType": getattr(sim, "scenarioType", "dam_break") if sim else "dam_break",
+        "modelLevel": getattr(sim, "modelLevel", "level1") if sim else "level1",
         "floodMetrics": {
             "floodAreaKm2": res.floodAreaKm2,
             "maxDepthM": res.maxDepthM,

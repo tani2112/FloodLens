@@ -41,7 +41,7 @@ export const DashboardPage: React.FC = () => {
   const [layerSettlements, setLayerSettlements] = useState<boolean>(true);
   const [layerInfrastructure, setLayerInfrastructure] = useState<boolean>(true);
   const [activeMapVariable, setActiveMapVariable] = useState<'depth' | 'velocity' | 'arrivalTime'>('depth');
-  const [basemap, setBasemap] = useState<'satellite' | 'terrain' | 'osm' | 'dark'>('satellite');
+  const [basemap, setBasemap] = useState<'satellite' | 'terrain' | 'osm' | 'dark' | 'light'>('satellite');
   const [activeMapTool, setActiveMapTool] = useState<string>('Select');
 
   // Active Left Panel Tab & Fullscreen Controls
@@ -228,7 +228,11 @@ export const DashboardPage: React.FC = () => {
                 onChange={(e) => handleScenarioChange(e.target.value)}
                 style={{ width: '100%', fontSize: '0.82rem', fontWeight: 700, color: '#0F172A' }}
               >
-                <option value="scen-nepal-glof">NP-2026-08-26-001 — Nepal Himalayan GLOF (Lhende Khola → Bhote Koshi)</option>
+                <option value="scen-nepal-glof">NP-2026-08-26-001 — Nepal GLOF (Lhende Khola → Bhote Koshi)</option>
+                <option value="rishiganga-uttarakhand-2021">UK-2021-02-07-001 — Rishi Ganga Chamoli Flash Flood (Feb 2021)</option>
+                <option value="phuktal-zanskar-2015">LD-2015-03-15-001 — Phuktal River Landslide Dam Lake (Mar 2015)</option>
+                <option value="wapriyang-2021">WP-2021-11-12-001 — Wapriyang River Landslide Outburst (Nov 2021)</option>
+                <option value="kosi-2008">KS-2008-08-18-001 — Kosi River Kushaha Embankment Breach (2008)</option>
               </select>
 
               <div style={{ marginTop: '0.6rem', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '4px', padding: '0.5rem 0.65rem', fontSize: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
@@ -362,6 +366,7 @@ export const DashboardPage: React.FC = () => {
                 <option value="terrain">Terrain</option>
                 <option value="light">Light Scientific</option>
                 <option value="osm">OpenStreetMap</option>
+                <option value="dark">Dark Vector</option>
               </select>
             </div>
 
@@ -376,6 +381,8 @@ export const DashboardPage: React.FC = () => {
               simulationId={selectedSimId}
               basemap={basemap}
               activeVariable={activeMapVariable}
+              activeMapTool={activeMapTool}
+              onActiveMapToolChange={(tool) => setActiveMapTool(tool)}
               layersConfig={{
                 extent: layerExtent,
                 depth: layerDepth,

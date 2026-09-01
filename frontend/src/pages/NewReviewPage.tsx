@@ -82,11 +82,11 @@ export const NewReviewPage: React.FC = () => {
             ⚙️ Hydraulic Scenario
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.88rem' }}>
-            <div><span style={{ color: 'var(--text-secondary)' }}>Event Type:</span> <strong style={{ textTransform: 'uppercase' }}>{scenario?.type || 'glof_spillway'}</strong></div>
-            <div><span style={{ color: 'var(--text-secondary)' }}>Reservoir Head:</span> {scenario?.parameters?.initialWaterLevelM || 50.0} m</div>
-            <div><span style={{ color: 'var(--text-secondary)' }}>Storage Volume:</span> {scenario?.parameters?.reservoirVolumeMm3 || 10.0} Mm³</div>
-            <div><span style={{ color: 'var(--text-secondary)' }}>Breach Width:</span> {scenario?.parameters?.breachWidthM || 100.0} m</div>
-            <div><span style={{ color: 'var(--text-secondary)' }}>Formation Time:</span> {scenario?.parameters?.breachFormationTimeMin || 30.0} min</div>
+            <div><span style={{ color: 'var(--text-secondary)' }}>Event Type:</span> <strong style={{ textTransform: 'uppercase' }}>{scenario?.type || 'glof'}</strong></div>
+            <div><span style={{ color: 'var(--text-secondary)' }}>Reservoir Head:</span> {scenario?.parameters?.initialWaterLevelM || 38.0} m</div>
+            <div><span style={{ color: 'var(--text-secondary)' }}>Storage Volume:</span> {scenario?.parameters?.reservoirVolumeMm3 || 14.6} Mm³</div>
+            <div><span style={{ color: 'var(--text-secondary)' }}>Breach Width:</span> {scenario?.parameters?.breachWidthM || 85.0} m</div>
+            <div><span style={{ color: 'var(--text-secondary)' }}>Formation Time:</span> {scenario?.parameters?.breachFormationTimeMin || 18.0} min</div>
             <div><span style={{ color: 'var(--text-secondary)' }}>Duration:</span> {scenario?.parameters?.simulationDurationHr || 2.25} hr</div>
           </div>
         </div>

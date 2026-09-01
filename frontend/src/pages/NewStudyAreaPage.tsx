@@ -17,16 +17,19 @@ export const NewStudyAreaPage: React.FC = () => {
   useEffect(() => {
     apiClient.getStudyAreas()
       .then((data) => {
-        const nepalAreas = data.filter((area) => /nepal|himalaya|lhende|bhote|rasuwa/i.test(`${area.id} ${area.name} ${area.river}`));
-        const activeAreas = nepalAreas.length > 0 ? nepalAreas : mockStudyAreas;
-        setStudyAreas(activeAreas);
-        if (activeAreas.length > 0) {
-          setSelectedAreaId(activeAreas[0].id);
+        const combined = [...mockStudyAreas];
+        data.forEach((item) => {
+          if (!combined.some((a) => a.id === item.id)) {
+            combined.push(item);
+          }
+        });
+        setStudyAreas(combined);
+        if (combined.length > 0) {
+          setSelectedAreaId(combined[0].id);
         }
         setLoading(false);
       })
       .catch(() => {
-        // Retain the Nepal workflow when a local API is temporarily unavailable.
         setStudyAreas(mockStudyAreas);
         setSelectedAreaId(mockStudyAreas[0].id);
         setError(null);

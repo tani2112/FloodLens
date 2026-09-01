@@ -62,7 +62,7 @@ export const ResultsPage: React.FC = () => {
             Hydrodynamic Simulation Results Workspace
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Nepal Himalayan GLOF | Simulation Run ID: <strong>{simId}</strong> | Level 1 2D Diffusive Wave Engine
+            Simulation Run: <strong>{simId}</strong> | Solver: Level 1 2D Diffusive Wave Engine
           </p>
         </div>
         <span className="badge badge-completed">Level 1 Complete</span>

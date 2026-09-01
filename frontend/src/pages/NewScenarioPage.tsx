@@ -1,16 +1,30 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { apiClient } from '../services/api/client';
 import { useSimulationDraftStore } from '../store/useSimulationDraftStore';
 import { SimulationStepper } from '../components/common/SimulationStepper';
-
 import { WorkflowSequenceBar } from '../components/common/WorkflowSequenceBar';
+import { mockStudyAreas } from '../data/mock';
 
 export const NewScenarioPage: React.FC = () => {
   const navigate = useNavigate();
-  const { studyArea, setScenario } = useSimulationDraftStore();
+  const [searchParams] = useSearchParams();
+  const queryStudyAreaId = searchParams.get('studyAreaId');
+  const { studyArea, setStudyArea, setScenario } = useSimulationDraftStore();
 
-  const [scenarioType, setScenarioType] = useState<string>('glof_spillway');
+  useEffect(() => {
+    if (!studyArea || (queryStudyAreaId && studyArea.id !== queryStudyAreaId)) {
+      const targetId = queryStudyAreaId || 'nepal-lhende-bhotekoshi-aoi';
+      apiClient.getStudyArea(targetId)
+        .then((area) => setStudyArea(area))
+        .catch(() => {
+          const matched = mockStudyAreas.find((a) => a.id === targetId) || mockStudyAreas[0];
+          setStudyArea(matched);
+        });
+    }
+  }, [queryStudyAreaId, studyArea, setStudyArea]);
+
+  const [scenarioType, setScenarioType] = useState<string>('glof');
   const [initialWaterLevelM, setInitialWaterLevelM] = useState<number>(38.0);
   const [reservoirVolumeMm3, setReservoirVolumeMm3] = useState<number>(14.6);
   const [breachWidthM, setBreachWidthM] = useState<number>(85.0);
@@ -29,16 +43,16 @@ export const NewScenarioPage: React.FC = () => {
   let calculatedQPeak = 0;
   let formulaLabel = '';
 
-  if (scenarioType.includes('overtopping')) {
+  if (scenarioType === 'dam_break' || scenarioType.includes('overtopping')) {
     const qFroehlich = 0.607 * Math.pow(Math.max(1, volM3), 0.295) * Math.pow(Math.max(1, initialWaterLevelM), 1.24);
     const qWeir = 1.7 * breachWidthM * Math.pow(initialWaterLevelM, 1.5);
     calculatedQPeak = Math.max(qFroehlich, qWeir);
     formulaLabel = 'Froehlich (2008) Empirical Overtopping + Broad-Crested Weir';
-  } else if (scenarioType.includes('piping')) {
+  } else if (scenarioType === 'natural_blockage' || scenarioType.includes('piping')) {
     const qMacdonald = 1.154 * Math.pow((volM3 * initialWaterLevelM) / 1e6, 0.412) * 1000.0;
     calculatedQPeak = Math.max(500, qMacdonald);
     formulaLabel = 'MacDonald & Langridge-Monopolis (1984) Piping Erosion';
-  } else if (scenarioType.includes('instantaneous')) {
+  } else if (scenarioType === 'water_release' || scenarioType.includes('instantaneous')) {
     const qRitter = (8.0 / 27.0) * breachWidthM * Math.sqrt(g) * Math.pow(initialWaterLevelM, 1.5);
     calculatedQPeak = Math.max(1000, qRitter);
     formulaLabel = 'Ritter (1892) 1D Analytical Shockwave Dam-Break';
@@ -52,7 +66,7 @@ export const NewScenarioPage: React.FC = () => {
     setLoading(true);
     setError(null);
 
-    const studyAreaId = studyArea?.id || 'nepal-lhende-bhotekoshi-aoi';
+    const studyAreaId = queryStudyAreaId || studyArea?.id || 'nepal-lhende-bhotekoshi-aoi';
 
     try {
       const created = await apiClient.createScenario({
@@ -94,6 +108,29 @@ export const NewScenarioPage: React.FC = () => {
       </div>
 
       <SimulationStepper currentStep={2} />
+
+      {/* Active River Catchment Display Box */}
+      <div style={{ background: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: '6px', padding: '0.85rem 1.1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#0284C7', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Active River Catchment & Study Area
+          </div>
+          <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0F172A', marginTop: '0.1rem' }}>
+            📍 {studyArea?.name || 'Trishuli & Bhote Koshi River Catchment'}
+          </div>
+          <div style={{ fontSize: '0.8rem', color: '#64748B', marginTop: '0.15rem' }}>
+            River: <strong>{studyArea?.river || 'Bhote Koshi / Trishuli River'}</strong> | Dam/Blockage: <strong>{studyArea?.damOrBlockage || 'Landslide Dam Barrier Lake'}</strong>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => navigate('/simulations/new/study-area')}
+          className="btn btn-secondary"
+          style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem', fontWeight: 700 }}
+        >
+          Change Catchment
+        </button>
+      </div>
 
       {error && (
         <div className="card" style={{ borderColor: '#fca5a5', background: '#fee2e2', color: '#991b1b' }}>
@@ -140,10 +177,10 @@ export const NewScenarioPage: React.FC = () => {
             onChange={(e) => setScenarioType(e.target.value)}
             className="form-select"
           >
-            <option value="glof_spillway">Himalayan GLOF / Landslide-Dam Barrier Breach</option>
-            <option value="overtopping_breach">Overtopping Barrier Failure (Froehlich 2008 & Broad-Crested Weir)</option>
-            <option value="piping_breach">Piping / Internal Erosion Breach (MacDonald & Langridge-Monopolis 1984)</option>
-            <option value="instantaneous_collapse">Instantaneous Structural Collapse (Ritter 1D Analytical Shockwave)</option>
+            <option value="glof">Himalayan GLOF / Landslide-Dam Barrier Breach</option>
+            <option value="dam_break">Overtopping Barrier Failure (Froehlich 2008 & Broad-Crested Weir)</option>
+            <option value="natural_blockage">Piping / Internal Erosion Breach (MacDonald & Langridge-Monopolis 1984)</option>
+            <option value="water_release">Instantaneous Structural Collapse (Ritter 1D Analytical Shockwave)</option>
           </select>
           <span className="form-help">Determines the physical outflow hydrograph equation used to inject water into the 2D Saint-Venant solver.</span>
         </div>

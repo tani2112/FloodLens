@@ -21,8 +21,13 @@ export const StudyAreasPage: React.FC = () => {
     setError(null);
     apiClient.getStudyAreas()
       .then((data) => {
-        const nepalAreas = data.filter((area) => /nepal|himalaya|lhende|bhote|rasuwa/i.test(`${area.id} ${area.name} ${area.river}`));
-        setStudyAreas(nepalAreas.length > 0 ? nepalAreas : mockStudyAreas);
+        const combined = [...mockStudyAreas];
+        data.forEach((item) => {
+          if (!combined.some((a) => a.id === item.id)) {
+            combined.push(item);
+          }
+        });
+        setStudyAreas(combined);
         setLoading(false);
       })
       .catch(() => {
