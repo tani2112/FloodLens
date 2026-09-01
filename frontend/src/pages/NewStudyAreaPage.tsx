@@ -41,7 +41,7 @@ export const NewStudyAreaPage: React.FC = () => {
     const selected = studyAreas.find((a) => a.id === selectedAreaId) || studyAreas[0];
     if (selected) {
       setStudyArea(selected);
-      navigate('/simulations/new/scenario');
+      navigate(`/simulations/new/scenario?studyAreaId=${selected.id}`);
     }
   };
 

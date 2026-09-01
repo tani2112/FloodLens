@@ -27,18 +27,27 @@ export const WorkflowSequenceBar: React.FC<WorkflowSequenceBarProps> = ({
 
   const activeStepNum = getDetectedStep();
 
+  const getStudyAreaIdFromSim = (id: string): string => {
+    const s = (id || '').toLowerCase();
+    if (s.includes('rishi') || s.includes('uk-') || s.includes('chamoli') || s.includes('uttarakhand')) return 'rishiganga-uttarakhand-2021';
+    if (s.includes('phuktal') || s.includes('ld-') || s.includes('zanskar') || s.includes('ladakh')) return 'phuktal-zanskar-2015';
+    if (s.includes('wapriyang') || s.includes('wp-') || s.includes('siang')) return 'wapriyang-2021';
+    if (s.includes('kosi') || s.includes('ks-') || s.includes('kushaha') || s.includes('bihar')) return 'kosi-2008';
+    return 'nepal-lhende-bhotekoshi-aoi';
+  };
+
   const steps = [
     {
       step: 1,
       title: '1. Select River & Dam',
       subtitle: 'Catchment & Baseline DEM',
-      path: '/study-areas'
+      path: '/simulations/new/study-area'
     },
     {
       step: 2,
       title: '2. Configure Breach Scenario',
       subtitle: 'Reservoir & Breach Width',
-      path: `/simulations/new/scenario?studyAreaId=bhotekoshi-nepal`
+      path: `/simulations/new/scenario?studyAreaId=${getStudyAreaIdFromSim(activeSimulationId)}`
     },
     {
       step: 3,
