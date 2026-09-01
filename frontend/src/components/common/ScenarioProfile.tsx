@@ -48,7 +48,9 @@ export const ScenarioProfile: React.FC<ScenarioProfileProps> = ({
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
         <div style={{ background: 'var(--bg-surface-secondary)', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
           <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block' }}>Study Area (AOI)</span>
-          <strong style={{ color: 'var(--text-primary)', fontSize: '0.88rem' }}>Bhote Koshi Corridor (Nepal)</strong>
+          <strong style={{ color: 'var(--text-primary)', fontSize: '0.88rem' }}>
+            {simulationId.includes('UK-') || simulationId.includes('rishi') ? 'Rishi Ganga / Chamoli Corridor (Uttarakhand)' : simulationId.includes('LD-') || simulationId.includes('phuktal') ? 'Phuktal / Zanskar Corridor (Ladakh)' : simulationId.includes('WP-') || simulationId.includes('wapriyang') ? 'Wapriyang / Siang Corridor (Arunachal)' : simulationId.includes('KS-') || simulationId.includes('kosi') ? 'Kosi / Supaul Basin (Bihar/Nepal)' : 'Bhote Koshi Corridor (Nepal)'}
+          </strong>
         </div>
 
         <div style={{ background: 'var(--bg-surface-secondary)', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}>

@@ -91,7 +91,7 @@ export const SimulationProgressPage: React.FC = () => {
 
       <div>
         <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '0.2rem' }}>
-          Step 3: Nepal Himalayan GLOF Solver Execution Pipeline
+          Step 3: {simDetails?.scenarioId?.includes('rishi') || id?.includes('UK-') ? 'Rishi Ganga Chamoli Flash Flood' : simDetails?.scenarioId?.includes('phuktal') || id?.includes('LD-') ? 'Phuktal River Landslide Dam Lake' : simDetails?.scenarioId?.includes('wapriyang') || id?.includes('WP-') ? 'Wapriyang River Landslide Outburst' : simDetails?.scenarioId?.includes('kosi') || id?.includes('KS-') ? 'Kosi Kushaha Embankment Breach' : 'Nepal Himalayan GLOF'} Solver Execution Pipeline
         </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
           {isComplete

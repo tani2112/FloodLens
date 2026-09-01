@@ -103,7 +103,7 @@ export const NewScenarioPage: React.FC = () => {
           Step 2: Configure Breach Scenario Parameters
         </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-          Configure the temporary landslide-dam / barrier-lake breach following the Lhende Khola ice-rock avalanche.
+          Configure the hydraulic source, barrier impoundment, or breach parameters for {studyArea?.name || 'the selected catchment'}.
         </p>
       </div>
 

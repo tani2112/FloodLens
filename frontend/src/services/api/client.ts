@@ -140,9 +140,24 @@ export const apiClient = {
     try {
       return await request<Simulation>(`/simulations/${id}`);
     } catch {
+      const matched = mockSimulations.find((s) => s.id === id);
+      if (matched) return matched;
+
+      const sLower = (id || '').toLowerCase();
+      let scenId = 'scen-nepal-glof';
+      if (sLower.includes('rishi') || sLower.includes('uk-') || sLower.includes('chamoli') || sLower.includes('uttarakhand')) {
+        scenId = 'rishiganga-uttarakhand-2021';
+      } else if (sLower.includes('phuktal') || sLower.includes('ld-') || sLower.includes('zanskar') || sLower.includes('ladakh')) {
+        scenId = 'phuktal-zanskar-2015';
+      } else if (sLower.includes('wapriyang') || sLower.includes('wp-') || sLower.includes('siang')) {
+        scenId = 'wapriyang-2021';
+      } else if (sLower.includes('kosi') || sLower.includes('ks-') || sLower.includes('kushaha') || sLower.includes('bihar')) {
+        scenId = 'kosi-2008';
+      }
+
       return {
         id,
-        scenarioId: 'scen-nepal-glof',
+        scenarioId: scenId,
         modelLevel: 'level1',
         status: 'completed',
         dataSource: 'live',
@@ -154,13 +169,28 @@ export const apiClient = {
   async createSimulation(payload: { scenarioId: string; modelLevel: string }): Promise<Simulation> {
     const scen = (payload.scenarioId || '').toLowerCase();
     let simPrefix = 'NP-2026-08-26';
-    if (scen.includes('rishi') || scen.includes('chamoli') || scen.includes('uttarakhand')) simPrefix = 'UK-2021-02-07';
-    else if (scen.includes('phuktal') || scen.includes('sumdo') || scen.includes('zanskar')) simPrefix = 'LD-2015-03-15';
-    else if (scen.includes('wapriyang')) simPrefix = 'WP-2021-11-12';
-    else if (scen.includes('kosi') || scen.includes('kushaha')) simPrefix = 'KS-2008-08-18';
+    if (scen.includes('rishi') || scen.includes('chamoli') || scen.includes('uttarakhand') || scen.includes('uk-')) {
+      simPrefix = 'UK-2021-02-07';
+    } else if (scen.includes('phuktal') || scen.includes('sumdo') || scen.includes('zanskar') || scen.includes('ladakh') || scen.includes('ld-')) {
+      simPrefix = 'LD-2015-03-15';
+    } else if (scen.includes('wapriyang') || scen.includes('wp-') || scen.includes('siang')) {
+      simPrefix = 'WP-2021-11-12';
+    } else if (scen.includes('kosi') || scen.includes('kushaha') || scen.includes('ks-') || scen.includes('bihar')) {
+      simPrefix = 'KS-2008-08-18';
+    }
 
-    const simId = `${simPrefix}-${Date.now().toString().slice(-4)}`;
+    const simId = `${simPrefix}-run-${Date.now().toString().slice(-4)}`;
     activeSimProgress[simId] = { percent: 10, startTime: Date.now() };
+
+    const newSim: Simulation = {
+      id: simId,
+      scenarioId: payload.scenarioId,
+      modelLevel: (payload.modelLevel || 'level1') as any,
+      status: 'completed',
+      dataSource: 'live',
+      createdAt: new Date().toISOString()
+    };
+    mockSimulations.unshift(newSim);
 
     try {
       const res = await request<Simulation>('/simulations', {
@@ -169,14 +199,7 @@ export const apiClient = {
       });
       return res;
     } catch {
-      return {
-        id: simId,
-        scenarioId: payload.scenarioId,
-        modelLevel: (payload.modelLevel || 'level1') as any,
-        status: 'running',
-        dataSource: 'live',
-        createdAt: new Date().toISOString()
-      };
+      return newSim;
     }
   },
 

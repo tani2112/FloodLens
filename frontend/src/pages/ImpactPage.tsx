@@ -91,10 +91,10 @@ export const ImpactPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-            Step 5: Bhote Koshi Corridor Impact & Settlement Risk Explorer
+            Step 5: {simId.includes('UK-') || simId.includes('rishi') ? 'Rishi Ganga & Dhauliganga Impact & Risk Explorer' : simId.includes('LD-') || simId.includes('phuktal') ? 'Phuktal & Zanskar Valley Impact & Risk Explorer' : simId.includes('WP-') || simId.includes('wapriyang') ? 'Wapriyang & Siang Valley Impact & Risk Explorer' : simId.includes('KS-') || simId.includes('kosi') ? 'Kosi Basin & Supaul District Impact & Risk Explorer' : 'Bhote Koshi Corridor Impact & Settlement Risk Explorer'}
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Nepal Himalayan GLOF & landslide-dam breach | Simulation: <strong>{simId}</strong> | Event: <strong>{impactData.scenarioType}</strong>
+            {simId.includes('UK-') || simId.includes('rishi') ? 'Uttarakhand Himalayan avalanche & flash flood' : simId.includes('LD-') || simId.includes('phuktal') ? 'Zanskar Ladakh landslide-dam outburst' : simId.includes('WP-') || simId.includes('wapriyang') ? 'Siang Arunachal landslide outburst' : simId.includes('KS-') || simId.includes('kosi') ? 'Kosi Kushaha embankment breach & mega-avulsion' : 'Nepal Himalayan GLOF & landslide-dam breach'} | Simulation: <strong>{simId}</strong> | Event: <strong>{impactData.scenarioType}</strong>
           </p>
         </div>
         <SeverityBadge severity={severitySummary.overallImpactSeverity} />

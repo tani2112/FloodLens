@@ -55,7 +55,7 @@ export const NewStudyAreaPage: React.FC = () => {
           Select Study Area AOI
         </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-          The canonical response corridor spans the Lhende Khola avalanche source, landslide-dam breach, Bhote Koshi valley and downstream settlements.
+          Select the river catchment and study Area of Interest (AOI) to configure a 2D hydrodynamic flood wave propagation model.
         </p>
       </div>
 
@@ -94,7 +94,7 @@ export const NewStudyAreaPage: React.FC = () => {
                       {area.description || 'Canonical Area of Interest for Hydrodynamic Simulation'}
                     </p>
                   </div>
-                  <span className="badge badge-completed">Nepal response corridor</span>
+                  <span className="badge badge-completed">{area.river.split('→')[0].trim()} Corridor</span>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem', fontSize: '0.85rem', color: 'var(--text-secondary)', background: 'var(--bg-surface-secondary)', padding: '0.75rem 1rem', borderRadius: '6px' }}>
                   <div><strong>River Catchment:</strong> {area.river}</div>
