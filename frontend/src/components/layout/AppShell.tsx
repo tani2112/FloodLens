@@ -7,7 +7,7 @@ export const AppShell: React.FC = () => {
   const isDashboard = location.pathname === '/';
 
   return (
-    <div className="command-center-light" style={{ minHeight: '100vh', width: '100vw', overflowX: 'hidden', display: 'flex', flexDirection: 'column', background: '#DFB096' }}>
+    <div className="command-center-light" style={{ minHeight: '100vh', width: '100vw', overflowX: 'hidden', display: 'flex', flexDirection: 'column', background: '#EBF3EE' }}>
       <TopNav />
       {isDashboard ? (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%' }}>
