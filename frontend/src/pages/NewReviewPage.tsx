@@ -17,7 +17,8 @@ export const NewReviewPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const handleRunSimulation = async () => {
-    const scenId = scenario?.id || 'scen-nepal-glof';
+    const studyAreaId = studyArea?.id || scenario?.studyAreaId || 'nepal-lhende-bhotekoshi-aoi';
+    const scenId = scenario?.id || `scen-${studyAreaId}`;
 
     setLoading(true);
     setError(null);
@@ -26,8 +27,9 @@ export const NewReviewPage: React.FC = () => {
     try {
       const simulation = await apiClient.createSimulation({
         scenarioId: scenId,
+        studyAreaId: studyAreaId,
         modelLevel: selectedModelLevel
-      });
+      } as any);
 
       navigate(`/simulations/${simulation.id}/progress`);
     } catch (err: any) {

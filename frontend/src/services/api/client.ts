@@ -166,8 +166,8 @@ export const apiClient = {
     }
   },
 
-  async createSimulation(payload: { scenarioId: string; modelLevel: string }): Promise<Simulation> {
-    const scen = (payload.scenarioId || '').toLowerCase();
+  async createSimulation(payload: { scenarioId: string; studyAreaId?: string; modelLevel: string }): Promise<Simulation> {
+    const scen = `${payload.scenarioId || ''} ${payload.studyAreaId || ''}`.toLowerCase();
     let simPrefix = 'NP-2026-08-26';
     if (scen.includes('rishi') || scen.includes('chamoli') || scen.includes('uttarakhand') || scen.includes('uk-')) {
       simPrefix = 'UK-2021-02-07';

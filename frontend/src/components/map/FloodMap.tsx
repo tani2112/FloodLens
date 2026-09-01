@@ -7,6 +7,7 @@ export type BasemapType = 'satellite' | 'terrain' | 'osm' | 'dark' | 'light';
 
 export interface FloodMapProps {
   simulationId: string;
+  studyAreaId?: string;
   basemap?: BasemapType;
   activeVariable?: 'extent' | 'depth' | 'velocity' | 'arrivalTime';
   layersConfig?: {
@@ -536,18 +537,18 @@ const kosiScenarioData: IncidentData = {
 };
 
 // Scenario Selector
-const resolveScenarioData = (simulationId: string): IncidentData => {
-  const s = (simulationId || '').toLowerCase();
-  if (s.includes('rishi') || s.includes('chamoli') || s.includes('uttarakhand') || s.includes('uk-')) {
+const resolveScenarioData = (simulationId: string, studyAreaId?: string): IncidentData => {
+  const s = `${simulationId || ''} ${studyAreaId || ''}`.toLowerCase();
+  if (s.includes('rishi') || s.includes('chamoli') || s.includes('uttarakhand') || s.includes('uk-') || s.includes('2021-02-07')) {
     return rishigangaScenarioData;
   }
-  if (s.includes('phuktal') || s.includes('sumdo') || s.includes('zanskar') || s.includes('ladakh') || s.includes('ld-')) {
+  if (s.includes('phuktal') || s.includes('sumdo') || s.includes('zanskar') || s.includes('ladakh') || s.includes('ld-') || s.includes('2015-03-15')) {
     return phuktalScenarioData;
   }
-  if (s.includes('wapriyang') || s.includes('wp-') || s.includes('siang')) {
+  if (s.includes('wapriyang') || s.includes('wp-') || s.includes('siang') || s.includes('2021-11-12')) {
     return wapriyangScenarioData;
   }
-  if (s.includes('kosi') || s.includes('kushaha') || s.includes('ks-') || s.includes('bihar')) {
+  if (s.includes('kosi') || s.includes('kushaha') || s.includes('ks-') || s.includes('bihar') || s.includes('2008-08-18')) {
     return kosiScenarioData;
   }
   // Default to Nepal GLOF / Trishuli Catchment for any general or new simulation ID
@@ -573,6 +574,7 @@ const getTileUrl = (type: BasemapType | string): string => {
 
 export const FloodMap: React.FC<FloodMapProps> = ({
   simulationId,
+  studyAreaId,
   basemap: propBasemap = 'satellite',
   activeVariable: propVariable,
   layersConfig,
@@ -600,7 +602,7 @@ export const FloodMap: React.FC<FloodMapProps> = ({
   const markersRef = useRef<maplibregl.Marker[]>([]);
 
   // Active Incident Data
-  const activeScenarioData = resolveScenarioData(simulationId);
+  const activeScenarioData = resolveScenarioData(simulationId, studyAreaId);
   const activeMilestones = activeScenarioData.milestones;
 
   // View Mode
