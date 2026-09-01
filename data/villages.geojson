@@ -1,0 +1,114 @@
+{
+  "type": "FeatureCollection",
+  "name": "villages",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "v-np-001",
+        "name": "Rasuwagadhi Border Compound",
+        "district": "Rasuwa",
+        "population": 350,
+        "asset_type": "village"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.378,
+          28.267
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "v-np-002",
+        "name": "Timure Freight Hub & Dry Port",
+        "district": "Rasuwa",
+        "population": 1250,
+        "asset_type": "village"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.375,
+          28.243
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "v-np-003",
+        "name": "Syabrubesi Township",
+        "district": "Rasuwa",
+        "population": 2800,
+        "asset_type": "village"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.337,
+          28.161
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "v-np-004",
+        "name": "Goljung Valley Village",
+        "district": "Rasuwa",
+        "population": 950,
+        "asset_type": "village"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.32,
+          28.14
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "v-np-005",
+        "name": "Dhunche District Center",
+        "district": "Rasuwa",
+        "population": 3400,
+        "asset_type": "village"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.3,
+          28.11
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "v-np-006",
+        "name": "Betrawati Basin Settlement",
+        "district": "Nuwakot",
+        "population": 1850,
+        "asset_type": "village"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          85.28,
+          28.07
+        ]
+      }
+    }
+  ]
+}

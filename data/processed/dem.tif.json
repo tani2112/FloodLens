@@ -1,0 +1,25 @@
+{
+  "driver": "GTiff",
+  "height": 1300,
+  "width": 1100,
+  "count": 1,
+  "dtype": "float32",
+  "crs": "EPSG:32643",
+  "transform": [
+    30.0,
+    0.0,
+    697000.0,
+    0.0,
+    -30.0,
+    1127000.0
+  ],
+  "nodata": -9999.0,
+  "bbox_wgs84": [
+    76.8,
+    9.85,
+    77.1,
+    10.2
+  ],
+  "min_elevation_m": 50.0,
+  "max_elevation_m": 700.0
+}

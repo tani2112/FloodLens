@@ -1,0 +1,31 @@
+{
+  "aoi_name": "Lhende Khola & Bhote Koshi / Trishuli River Catchment",
+  "country": "Nepal",
+  "state": "Bagmati Province",
+  "districts": ["Rasuwa", "Nuwakot"],
+  "river": "Bhote Koshi / Trishuli River",
+  "dam_name": "Rasuwagadhi Dam & Lhende Khola Barrier Lake",
+  "dam_location": {
+    "latitude": 28.275,
+    "longitude": 85.385
+  },
+  "bounding_box_wgs84": [85.20, 27.90, 85.50, 28.40],
+  "crs_metric": "EPSG:32645",
+  "crs_geographic": "EPSG:4326",
+  "dem_source": "Copernicus DEM 30m / SRTM 30m Nepal Himalayas",
+  "dem_resolution_m": 30.0,
+  "dam_parameters": {
+    "height_m": 45.0,
+    "crest_length_m": 120.0,
+    "full_reservoir_level_m": 1820.0,
+    "storage_capacity_mm3": 24.5
+  },
+  "downstream_villages": [
+    "Rasuwagadhi Border Compound",
+    "Timure Freight Hub & Dry Port",
+    "Syabrubesi Township",
+    "Goljung Valley Village",
+    "Dhunche District Center",
+    "Betrawati Basin Settlement"
+  ]
+}
