@@ -63,20 +63,20 @@ export const WorkflowSequenceBar: React.FC<WorkflowSequenceBarProps> = ({
   return (
     <div
       style={{
-        background: '#DEECE4',
-        border: '1px solid #B2D4C3',
+        background: '#C7D9CE',
+        border: '1px solid #8EAE9D',
         borderRadius: '8px',
         padding: '0.65rem 0.85rem',
         marginBottom: '0.85rem',
-        boxShadow: '0 1px 4px rgba(13, 38, 30, 0.06)'
+        boxShadow: '0 1px 4px rgba(8, 28, 21, 0.08)'
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#0D261E', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#081C15', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             OPERATIONAL WORKFLOW SEQUENCE
           </span>
-          <span style={{ fontSize: '0.7rem', fontWeight: 600, background: '#F7FAF8', color: '#1C4438', border: '1px solid #B2D4C3', padding: '0.1rem 0.45rem', borderRadius: '4px' }}>
+          <span style={{ fontSize: '0.7rem', fontWeight: 600, background: '#E2ECE5', color: '#13382B', border: '1px solid #8EAE9D', padding: '0.1rem 0.45rem', borderRadius: '4px' }}>
             Nepal Demonstration Baseline (NP-2026-08-26-001)
           </span>
         </div>
@@ -91,9 +91,9 @@ export const WorkflowSequenceBar: React.FC<WorkflowSequenceBarProps> = ({
                 fontWeight: 600,
                 padding: '0.2rem 0.55rem',
                 borderRadius: '4px',
-                border: '1px solid #B2D4C3',
-                background: '#F7FAF8',
-                color: '#0D261E',
+                border: '1px solid #8EAE9D',
+                background: '#E2ECE5',
+                color: '#081C15',
                 cursor: 'pointer'
               }}
             >
@@ -109,10 +109,10 @@ export const WorkflowSequenceBar: React.FC<WorkflowSequenceBarProps> = ({
                 padding: '0.2rem 0.65rem',
                 borderRadius: '4px',
                 border: '1px solid #00A37A',
-                background: '#008060',
+                background: '#006E52',
                 color: '#ffffff',
                 cursor: 'pointer',
-                boxShadow: '0 2px 6px rgba(0, 128, 96, 0.25)'
+                boxShadow: '0 2px 6px rgba(0, 110, 82, 0.3)'
               }}
             >
               Proceed to Step {activeStepNum + 1} →
@@ -137,8 +137,8 @@ export const WorkflowSequenceBar: React.FC<WorkflowSequenceBarProps> = ({
                 gap: '0.5rem',
                 padding: '0.4rem 0.55rem',
                 borderRadius: '6px',
-                background: isActive ? '#F7FAF8' : isCompleted ? '#EAF4ED' : '#F7FAF8',
-                border: isActive ? '1.5px solid #008060' : isCompleted ? '1px solid #C3E2CC' : '1px solid #C8E2D4',
+                background: isActive ? '#E2ECE5' : isCompleted ? '#D4EDD9' : '#E2ECE5',
+                border: isActive ? '1.5px solid #006E52' : isCompleted ? '1px solid #9ECDA7' : '1px solid #A4C3B2',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease'
               }}
@@ -153,7 +153,7 @@ export const WorkflowSequenceBar: React.FC<WorkflowSequenceBarProps> = ({
                   justifyContent: 'center',
                   fontSize: '0.72rem',
                   fontWeight: 800,
-                  background: isActive ? '#008060' : isCompleted ? '#1B4D2E' : '#B2D4C3',
+                  background: isActive ? '#006E52' : isCompleted ? '#134227' : '#8EAE9D',
                   color: '#ffffff',
                   flexShrink: 0
                 }}
@@ -165,7 +165,7 @@ export const WorkflowSequenceBar: React.FC<WorkflowSequenceBarProps> = ({
                   style={{
                     fontSize: '0.74rem',
                     fontWeight: isActive ? 800 : 700,
-                    color: isActive ? '#0D261E' : isCompleted ? '#1B4D2E' : '#1C4438',
+                    color: isActive ? '#081C15' : isCompleted ? '#134227' : '#13382B',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'
@@ -176,7 +176,7 @@ export const WorkflowSequenceBar: React.FC<WorkflowSequenceBarProps> = ({
                 <div
                   style={{
                     fontSize: '0.65rem',
-                    color: isActive ? '#008060' : isCompleted ? '#2D6A4F' : '#4D7568',
+                    color: isActive ? '#006E52' : isCompleted ? '#1E5C3A' : '#395E50',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'

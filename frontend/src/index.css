@@ -5,32 +5,32 @@
    (Light Scientific Command Center Visual Language)
    ================================================== */
 :root {
-  /* Light Sage Green & Deep Forest Green Design System */
-  --bg-app: #ebf3ee;
-  --bg-canvas: #ebf3ee;
-  --bg-surface: #f7faf8;
-  --bg-surface-secondary: #deece4;
-  --bg-surface-muted: #d2e4da;
-  --bg-surface-hover: #c5ddcf;
-  --bg-surface-active: #008060;
+  /* Rich Muted Sage Green & Deep Forest Green Design System */
+  --bg-app: #bed3c6;
+  --bg-canvas: #bed3c6;
+  --bg-surface: #e2ece5;
+  --bg-surface-secondary: #c7d9ce;
+  --bg-surface-muted: #b0c8bb;
+  --bg-surface-hover: #9fbcac;
+  --bg-surface-active: #006e52;
 
   /* Borders & Dividers */
-  --border-color: #b2d4c3;
-  --border-subtle: #c8e2d4;
-  --border-strong: #80afa0;
-  --border-focus: #008060;
+  --border-color: #8eae9d;
+  --border-subtle: #a4c3b2;
+  --border-strong: #5e8573;
+  --border-focus: #006e52;
 
   /* Text & Typography Tokens */
-  --text-primary: #0d261e;
-  --text-secondary: #1c4438;
-  --text-muted: #4d7568;
+  --text-primary: #081c15;
+  --text-secondary: #13382b;
+  --text-muted: #395e50;
   --text-inverse: #ffffff;
 
   /* Emerald & Forest Accents */
-  --accent-primary: #008060;
-  --accent-hover: #00684e;
+  --accent-primary: #006e52;
+  --accent-hover: #00543e;
   --accent-bright: #00a37a;
-  --accent-soft: #def2ea;
+  --accent-soft: #c7eadb;
 
   /* Status Colors */
   --success: #1e5c3a;
@@ -38,42 +38,42 @@
   --critical: #a42424;
 
   /* Severity Badges */
-  --severity-safe-bg: #eaf4ed;
-  --severity-safe-text: #1b4d2e;
-  --severity-safe-border: #c3e2cc;
+  --severity-safe-bg: #d4edd9;
+  --severity-safe-text: #134227;
+  --severity-safe-border: #9ecda7;
 
-  --severity-advisory-bg: #deece4;
-  --severity-advisory-text: #0d261e;
-  --severity-advisory-border: #b2d4c3;
+  --severity-advisory-bg: #c7d9ce;
+  --severity-advisory-text: #081c15;
+  --severity-advisory-border: #8eae9d;
 
-  --severity-watch-bg: #fef7e6;
-  --severity-watch-text: #8f5400;
-  --severity-watch-border: #fde2a7;
+  --severity-watch-bg: #fde8be;
+  --severity-watch-text: #6b3a00;
+  --severity-watch-border: #f8ca75;
 
-  --severity-warning-bg: #fef0eb;
-  --severity-warning-text: #a3360d;
-  --severity-warning-border: #fdc7b8;
+  --severity-warning-bg: #fcd5c3;
+  --severity-warning-text: #7a2807;
+  --severity-warning-border: #f5a786;
 
-  --severity-critical-bg: #fdebe7;
-  --severity-critical-text: #b91c1c;
-  --severity-critical-border: #fca5a5;
+  --severity-critical-bg: #fad2d2;
+  --severity-critical-text: #781010;
+  --severity-critical-border: #f29a9a;
 
   /* Simulation Status Badges */
-  --status-completed-bg: #eaf4ed;
-  --status-completed-text: #1b4d2e;
-  --status-completed-border: #c3e2cc;
+  --status-completed-bg: #d4edd9;
+  --status-completed-text: #134227;
+  --status-completed-border: #9ecda7;
 
-  --status-running-bg: #def2ea;
-  --status-running-text: #008060;
-  --status-running-border: #80afa0;
+  --status-running-bg: #c7eadb;
+  --status-running-text: #006e52;
+  --status-running-border: #5e8573;
 
-  --status-pending-bg: #deece4;
-  --status-pending-text: #4d7568;
-  --status-pending-border: #b2d4c3;
+  --status-pending-bg: #c7d9ce;
+  --status-pending-text: #395e50;
+  --status-pending-border: #8eae9d;
 
-  --status-failed-bg: #fdebe7;
-  --status-failed-text: #b91c1c;
-  --status-failed-border: #fca5a5;
+  --status-failed-bg: #fad2d2;
+  --status-failed-text: #781010;
+  --status-failed-border: #f29a9a;
 
   /* Fonts */
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -116,7 +116,7 @@ code, pre {
   border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 1.25rem;
-  box-shadow: 0 1px 4px rgba(13, 38, 30, 0.05);
+  box-shadow: 0 1px 4px rgba(8, 28, 21, 0.08);
   color: var(--text-primary);
 }
 
@@ -129,8 +129,8 @@ code, pre {
 }
 
 .card-accent {
-  background: #def2ea;
-  border: 1px solid #80afa0;
+  background: #c7eadb;
+  border: 1px solid #5e8573;
   border-radius: 6px;
   padding: 1.25rem;
   color: var(--text-primary);
@@ -178,40 +178,40 @@ code, pre {
 }
 
 .btn-primary {
-  background: #008060;
+  background: #006e52;
   color: #ffffff;
-  border-color: #008060;
-  box-shadow: 0 2px 6px rgba(0, 128, 96, 0.25);
+  border-color: #006e52;
+  box-shadow: 0 2px 6px rgba(0, 110, 82, 0.3);
 }
 
 .btn-primary:hover {
-  background: #00684e;
-  border-color: #00684e;
+  background: #00543e;
+  border-color: #00543e;
   color: #ffffff;
   text-decoration: none;
 }
 
 .btn-secondary {
   background: var(--bg-surface-secondary);
-  color: #0d261e;
+  color: #081c15;
   border: 1px solid var(--border-color);
 }
 
 .btn-secondary:hover {
   background: var(--bg-surface-muted);
-  color: #0d261e;
+  color: #081c15;
   text-decoration: none;
 }
 
 .btn-outline {
   background: var(--bg-surface);
-  color: #008060;
-  border: 1px solid #008060;
+  color: #006e52;
+  border: 1px solid #006e52;
 }
 
 .btn-outline:hover {
-  background: #def2ea;
-  color: #00684e;
+  background: #c7eadb;
+  color: #00543e;
   text-decoration: none;
 }
 
@@ -254,7 +254,7 @@ code, pre {
 .form-input:focus, .form-select:focus {
   outline: none;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 2px rgba(0, 128, 96, 0.2);
+  box-shadow: 0 0 0 2px rgba(0, 110, 82, 0.25);
 }
 
 /* Data Tables */
@@ -264,7 +264,7 @@ code, pre {
   border: 1px solid var(--border-color);
   border-radius: 6px;
   background: var(--bg-surface);
-  box-shadow: 0 1px 4px rgba(13, 38, 30, 0.05);
+  box-shadow: 0 1px 4px rgba(8, 28, 21, 0.08);
 }
 
 table.data-table {
@@ -294,21 +294,21 @@ table.data-table tr:last-child td {
 }
 
 table.data-table tr:hover td {
-  background: #deece4;
+  background: #c7d9ce;
 }
 
 /* MapLibre GL Popup Styling */
 .maplibregl-popup-content {
   background: var(--bg-surface) !important;
-  color: #0d261e !important;
+  color: #081c15 !important;
   border-radius: 6px !important;
-  box-shadow: 0 4px 16px rgba(13, 38, 30, 0.15) !important;
+  box-shadow: 0 4px 16px rgba(8, 28, 21, 0.2) !important;
   padding: 12px 16px !important;
   font-family: var(--font-sans) !important;
   border: 1px solid var(--border-color) !important;
 }
 .maplibregl-popup-close-button {
-  color: #4d7568 !important;
+  color: #395e50 !important;
   font-size: 16px !important;
   padding: 4px 8px !important;
 }
@@ -320,11 +320,11 @@ table.data-table tr:hover td {
 }
 
 /* ==================================================
-   COMMAND CENTER LIGHT SAGE GREEN THEME
+   COMMAND CENTER DEEP SAGE GREEN THEME
    ================================================== */
 .command-center-dark, .command-center-light {
-  background-color: #ebf3ee !important;
-  color: #0d261e !important;
+  background-color: #bed3c6 !important;
+  color: #081c15 !important;
   font-family: var(--font-sans);
   min-height: 100vh;
   display: flex;
@@ -344,15 +344,15 @@ table.data-table tr:hover td {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  color: #0d261e;
-  box-shadow: 0 1px 4px rgba(13, 38, 30, 0.05);
+  color: #081c15;
+  box-shadow: 0 1px 4px rgba(8, 28, 21, 0.08);
 }
 
 .cc-panel-sub {
   background: var(--bg-surface-secondary);
   border: 1px solid var(--border-color);
   border-radius: 4px;
-  color: #0d261e;
+  color: #081c15;
 }
 
 .cc-kpi-card {
@@ -363,13 +363,13 @@ table.data-table tr:hover td {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  box-shadow: 0 1px 3px rgba(13, 38, 30, 0.04);
+  box-shadow: 0 1px 3px rgba(8, 28, 21, 0.06);
 }
 
 .cc-input, .cc-select {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
-  color: #0d261e;
+  color: #081c15;
   border-radius: 4px;
   padding: 0.4rem 0.65rem;
   font-size: 0.82rem;
@@ -378,14 +378,14 @@ table.data-table tr:hover td {
 
 .cc-input:focus, .cc-select:focus {
   outline: none;
-  border-color: #008060;
-  box-shadow: 0 0 0 2px rgba(0, 128, 96, 0.2);
+  border-color: #006e52;
+  box-shadow: 0 0 0 2px rgba(0, 110, 82, 0.25);
 }
 
 .cc-btn {
   background: var(--bg-surface-secondary);
   border: 1px solid var(--border-color);
-  color: #1c4438;
+  color: #13382b;
   border-radius: 4px;
   padding: 0.35rem 0.65rem;
   font-size: 0.78rem;
@@ -399,13 +399,13 @@ table.data-table tr:hover td {
 
 .cc-btn:hover {
   background: var(--bg-surface-muted);
-  color: #0d261e;
+  color: #081c15;
 }
 
 .cc-btn-active {
-  background: #008060;
+  background: #006e52;
   color: #ffffff;
-  border-color: #008060;
+  border-color: #006e52;
 }
 
 .cc-scrollbar::-webkit-scrollbar {
@@ -414,16 +414,16 @@ table.data-table tr:hover td {
 }
 
 .cc-scrollbar::-webkit-scrollbar-track {
-  background: #deece4;
+  background: #c7d9ce;
 }
 
 .cc-scrollbar::-webkit-scrollbar-thumb {
-  background: #b2d4c3;
+  background: #8eae9d;
   border-radius: 3px;
 }
 
 .cc-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #80afa0;
+  background: #5e8573;
 }
 
 
