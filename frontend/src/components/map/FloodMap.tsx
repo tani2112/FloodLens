@@ -236,11 +236,11 @@ const nepalScenarioData: IncidentData = {
     ]
   },
   markers: [
-    { label: 'Lhende Khola source', coords: [85.405, 28.311], labelCoords: [85.414, 28.314], bg: '#0284C7', border: '#38BDF8' },
-    { label: 'Landslide / barrier lake', coords: [85.390, 28.284], labelCoords: [85.401, 28.287], bg: '#2563EB', border: '#60A5FA' },
-    { label: 'Rasuwagadhi', coords: [85.378, 28.263], labelCoords: [85.389, 28.266], bg: '#0F172A', border: '#38BDF8' },
-    { label: 'Timure Hub', coords: [85.363, 28.230], labelCoords: [85.374, 28.233], bg: '#0F172A', border: '#FBBF24' },
-    { label: 'Syabrubesi', coords: [85.339, 28.169], labelCoords: [85.326, 28.173], bg: '#0F172A', border: '#F87171' }
+    { label: 'Lhende Khola source', coords: [85.405, 28.311], labelCoords: [85.414, 28.314], bg: '#0F2D25', border: '#00E5FF' },
+    { label: 'Landslide / barrier lake', coords: [85.390, 28.284], labelCoords: [85.401, 28.287], bg: '#0F2D25', border: '#38BDF8' },
+    { label: 'Rasuwagadhi', coords: [85.378, 28.263], labelCoords: [85.389, 28.266], bg: '#0F2D25', border: '#4ADE80' },
+    { label: 'Timure Hub', coords: [85.363, 28.230], labelCoords: [85.374, 28.233], bg: '#0F2D25', border: '#FBBF24' },
+    { label: 'Syabrubesi', coords: [85.339, 28.169], labelCoords: [85.326, 28.173], bg: '#0F2D25', border: '#F87171' }
   ]
 };
 
@@ -904,8 +904,8 @@ export const FloodMap: React.FC<FloodMapProps> = ({
       map.addLayer({ id: 'flow-direction-arrows', type: 'symbol', source: 'flow-direction-src', layout: { 'text-field': ['get', 'symbol'], 'text-size': ['interpolate', ['linear'], ['zoom'], 8, 11, 13, 22], 'text-rotate': ['get', 'bearing'], 'text-rotation-alignment': 'map', 'text-allow-overlap': true, 'text-ignore-placement': true }, paint: { 'text-color': '#ffffff', 'text-halo-color': '#075985', 'text-halo-width': 1.5, 'text-opacity': 0.92 } });
       map.addLayer({ id: 'debris-particles', type: 'circle', source: 'debris-particles-src', paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 2, 13, 5], 'circle-color': '#fbbf24', 'circle-stroke-color': '#7c2d12', 'circle-stroke-width': 1, 'circle-opacity': 0.9 } });
 
-      map.addLayer({ id: 'label-leaders', type: 'line', source: 'label-leaders-src', paint: { 'line-color': '#e0f2fe', 'line-width': 1.25, 'line-opacity': 0.85, 'line-dasharray': [1.2, 1.2] } });
-      map.addLayer({ id: 'location-markers', type: 'circle', source: 'location-marker-src', paint: { 'circle-radius': 4.5, 'circle-color': '#f8fafc', 'circle-stroke-color': '#0284c7', 'circle-stroke-width': 2 } });
+      map.addLayer({ id: 'label-leaders', type: 'line', source: 'label-leaders-src', paint: { 'line-color': '#FFFFFF', 'line-width': 2.0, 'line-opacity': 0.95, 'line-dasharray': [2, 1.5] } });
+      map.addLayer({ id: 'location-markers', type: 'circle', source: 'location-marker-src', paint: { 'circle-radius': 5.5, 'circle-color': '#00E5FF', 'circle-stroke-color': '#FFFFFF', 'circle-stroke-width': 2.5 } });
       map.addLayer({ id: 'context-bridges', type: 'circle', source: 'nepal-context-src', filter: ['==', ['get', 'kind'], 'bridge'], paint: { 'circle-radius': 5, 'circle-color': '#fbbf24', 'circle-stroke-color': '#713f12', 'circle-stroke-width': 1.5 } });
       map.addLayer({ id: 'context-settlements', type: 'circle', source: 'nepal-context-src', filter: ['==', ['get', 'kind'], 'settlement'], paint: { 'circle-radius': 5.5, 'circle-color': '#f8fafc', 'circle-stroke-color': '#1d4ed8', 'circle-stroke-width': 2 } });
       map.addLayer({ id: 'context-infrastructure', type: 'circle', source: 'nepal-context-src', filter: ['==', ['get', 'kind'], 'infrastructure'], paint: { 'circle-radius': 6, 'circle-color': '#fb923c', 'circle-stroke-color': '#9a3412', 'circle-stroke-width': 2 } });
@@ -935,7 +935,8 @@ export const FloodMap: React.FC<FloodMapProps> = ({
         activeScenarioData.markers.forEach((item) => {
           const el = document.createElement('div');
           el.innerHTML = `
-            <div style="background: ${item.bg}; color: #ffffff; font-weight: 800; padding: 4px 9px; border-radius: 16px; border: 1.5px solid ${item.border}; box-shadow: 0 4px 14px rgba(0,0,0,0.85); display: flex; align-items: center; gap: 4px; font-size: 11px; white-space: nowrap; cursor: pointer;">
+            <div style="background: rgba(15, 45, 37, 0.96); color: #ffffff; font-weight: 800; padding: 5px 12px; border-radius: 20px; border: 2px solid ${item.border}; box-shadow: 0 4px 16px rgba(0,0,0,0.9), 0 0 10px ${item.border}; display: flex; align-items: center; gap: 6px; font-size: 12px; font-family: Inter, sans-serif; letter-spacing: 0.02em; white-space: nowrap; cursor: pointer; text-shadow: 0 1px 3px rgba(0,0,0,0.9);">
+              <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: ${item.border}; box-shadow: 0 0 6px ${item.border}; flex-shrink: 0;"></span>
               <span>${item.label}</span>
             </div>
           `;
